@@ -119,6 +119,8 @@ button{font:inherit;color:inherit}
 .gps-dot{flex:none;width:12px;height:12px;border-radius:50%;background:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.22);margin-top:3px}
 .gps-dot.weak{background:#d97706;box-shadow:0 0 0 3px rgba(217,119,6,.22)}
 .gps-dot.err,.gps-dot.far{background:var(--muted);box-shadow:none}
+.gps-dot.rot{background:var(--verde);box-shadow:0 0 0 3px rgba(145,176,62,.25)}
+.north svg{transition:transform .08s linear}
 .gps-t{flex:1;min-width:0}
 .gps-t small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
 .gps-t a{color:var(--verde-ink);font-weight:600;word-break:break-all}
@@ -286,6 +288,7 @@ button{font:inherit;color:inherit}
       <button id="zout" title="Reduzir" aria-label="Reduzir">−</button>
       <button id="zfit" title="Ver tudo" aria-label="Ver tudo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
       <button id="gpsbtn" title="Onde estou" aria-label="Onde estou" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg></button>
+      <button id="rotbtn" title="Rodar o mapa com a direção do telemóvel" aria-label="Rodar o mapa com a direção do telemóvel" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9.5"/><path d="M12 4.5 15 12H9z" fill="currentColor" stroke="none"/><path d="M12 19.5 9.3 12.8h5.4z" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
       <button id="rulerbtn" title="Medir distância" aria-label="Medir distância" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17 17 3l4 4L7 21z"/><path d="m7 13 2 2M10 10l2 2M13 7l2 2"/></svg></button>
       <button id="lyrbtn" title="Camadas" aria-label="Camadas" aria-pressed="false" aria-controls="layers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 13 9 5 9-5"/></svg></button>
     </div>
@@ -305,6 +308,7 @@ button{font:inherit;color:inherit}
     </div>
     <div class="tlstack">
     <div class="gps" id="gps" hidden role="status" aria-live="polite"><i class="gps-dot" id="gpsdot"></i><div class="gps-t" id="gpstxt"></div><button id="gpsx" aria-label="Desligar localização" title="Desligar localização">×</button></div>
+    <div class="gps" id="rotmsg" hidden role="status" aria-live="polite"><i class="gps-dot rot" id="rotdot"></i><div class="gps-t" id="rottxt"></div><button id="rotx" aria-label="Fechar" title="Fechar">×</button></div>
     <div class="meas" id="meas" hidden>
       <div class="meas-h"><b>Medir distância</b><button id="measx" aria-label="Fechar medição">×</button></div>
       <p id="meastxt">Toque no mapa para marcar pontos. Perto de uma árvore ou arbusto, o ponto fica no centro da planta.</p>
@@ -470,10 +474,11 @@ for (const c of cells) for (const m of new Set(c.m)) grow(modStat[m].bb,...c.bb)
 const PLANT_BB = (() => { const bb=[1e9,1e9,-1e9,-1e9]; for (const st of stat) if (st.bb[0]<1e9) grow(bb,...st.bb); for (const m in modStat) if (modStat[m].bb[0]<1e9) grow(bb,...modStat[m].bb); return [bb[0]-10,bb[1]-10,bb[2]+10,bb[3]+10]; })();
 // ---------- state
 const S = { scale:1, tx:0, ty:0, vis:SP.map(()=>true), modVis:{A:true,B:true,C:true,D:true,E:true},
-  hl:null, sel:null, meas:null, L:{ortho:true,orthoop:.55,codes:true,orig:false,dims:false,tdist:false,paths:true,water:true,base:true,limit:true,topo:true} };
+  hl:null, sel:null, meas:null, rot:0, L:{ortho:true,orthoop:.55,codes:true,orig:false,dims:false,tdist:false,paths:true,water:true,base:true,limit:true,topo:true} };
 
 // ---------- canvas
 const wrap = document.getElementById('mapwrap'), cv = document.getElementById('map'), ctx = cv.getContext('2d');
+const northSvg = document.querySelector('.north svg');
 const hit = document.createElement('canvas').getContext('2d');
 let W=0,H=0,dpr=1, minScale=0.5, maxScale=40;
 const ortho = new Image(); let orthoReady=false; ortho.onload=()=>{orthoReady=true; req();}; ortho.src=ORTHO_SRC;
@@ -497,12 +502,18 @@ function resize(){
 function fit(bb, pad=24){
   bb = bb || [0,0,D.W,D.H];
   const bw = Math.max(bb[2]-bb[0], 8), bh = Math.max(bb[3]-bb[1], 8);
-  const s = Math.min((W-pad*2)/bw, (H-pad*2)/bh, maxScale);
+  rcs(); const rw=bw*Math.abs(_rc)+bh*Math.abs(_rs), rh=bw*Math.abs(_rs)+bh*Math.abs(_rc);
+  const s = Math.min((W-pad*2)/rw, (H-pad*2)/rh, maxScale);
   S.scale = Math.max(s, minScale);
-  S.tx = W/2 - (bb[0]+bw/2)*S.scale; S.ty = H/2 - (bb[1]+bh/2)*S.scale;
-  req();
+  centreOn(bb[0]+bw/2, bb[1]+bh/2);
 }
-const toWorld = (sx,sy) => [(sx-S.tx)/S.scale, (sy-S.ty)/S.scale];
+// Mundo (metros do desenho) ↔ ecrã, com a rotação opcional do mapa (S.rot, em radianos; 0 = norte à direita, como no desenho)
+let _rr=NaN, _rc=1, _rs=0;
+function rcs(){ if (S.rot!==_rr){ _rr=S.rot; _rc=Math.cos(_rr); _rs=Math.sin(_rr); } }
+const SX = (x,y) => { rcs(); return (x*_rc-y*_rs)*S.scale+S.tx; };
+const SY = (x,y) => { rcs(); return (x*_rs+y*_rc)*S.scale+S.ty; };
+const toWorld = (sx,sy) => { rcs(); const dx=(sx-S.tx)/S.scale, dy=(sy-S.ty)/S.scale; return [dx*_rc+dy*_rs, -dx*_rs+dy*_rc]; };
+function centreOn(x,y){ rcs(); S.tx = W/2-(x*_rc-y*_rs)*S.scale; S.ty = H/2-(x*_rs+y*_rc)*S.scale; req(); }
 function zoomAt(f, sx, sy){
   const ns = Math.min(maxScale, Math.max(minScale, S.scale*f)); f = ns/S.scale;
   S.tx = sx - (sx-S.tx)*f; S.ty = sy - (sy-S.ty)*f; S.scale = ns; req();
@@ -532,8 +543,9 @@ function draw(){
   const s = S.scale, px = 1/s;
   ctx.setTransform(1,0,0,1,0,0);
   ctx.fillStyle = COL.bg; ctx.fillRect(0,0,cv.width,cv.height);
-  ctx.setTransform(dpr*s,0,0,dpr*s,dpr*S.tx,dpr*S.ty);
-  const [vx0,vy0] = toWorld(0,0), [vx1,vy1] = toWorld(W,H);
+  rcs(); ctx.setTransform(dpr*s*_rc,dpr*s*_rs,-dpr*s*_rs,dpr*s*_rc,dpr*S.tx,dpr*S.ty);
+  const vc=[toWorld(0,0),toWorld(W,0),toWorld(0,H),toWorld(W,H)];
+  const vx0=Math.min(...vc.map(c=>c[0])), vx1=Math.max(...vc.map(c=>c[0])), vy0=Math.min(...vc.map(c=>c[1])), vy1=Math.max(...vc.map(c=>c[1]));
   const inView = bb => !(bb[2]<vx0||bb[0]>vx1||bb[3]<vy0||bb[1]>vy1);
 
   if (S.L.ortho && orthoReady){ ctx.globalAlpha=S.L.orthoop; const o=D.ortho; ctx.imageSmoothingQuality='high'; ctx.drawImage(ortho,o[0],o[1],o[2]-o[0],o[3]-o[1]); ctx.globalAlpha=1; }
@@ -586,13 +598,13 @@ function draw(){
   ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.lineJoin='round';
   const label = (txt,x,y,font,fill,halo='rgba(255,255,255,.9)',hw=3) => { ctx.font=font; ctx.strokeStyle=halo; ctx.lineWidth=hw; ctx.strokeText(txt,x,y); ctx.fillStyle=fill; ctx.fillText(txt,x,y); };
   if (S.L.topo){
-    for (const [t,x,y] of topo){ const sx=x*s+S.tx, sy=y*s+S.ty; if(sx<-100||sx>W+100||sy<-20||sy>H+20) continue;
+    for (const [t,x,y] of topo){ const sx=SX(x,y), sy=SY(x,y); if(sx<-100||sx>W+100||sy<-20||sy>H+20) continue;
       label(t,sx,sy,'italic 600 12px "Source Sans 3", sans-serif',COL.topo, COL.bg, 3); }
   }
   // module letters
   if (s>2.2){
     const fs = Math.min(15, Math.max(9, s*2.2));
-    for (const [m,x,y] of D.modlabels){ if(!S.modVis[m]) continue; const sx=x*s+S.tx, sy=y*s+S.ty; if(sx<-10||sx>W+10||sy<-10||sy>H+10) continue;
+    for (const [m,x,y] of D.modlabels){ if(!S.modVis[m]) continue; const sx=SX(x,y), sy=SY(x,y); if(sx<-10||sx>W+10||sy<-10||sy>H+10) continue;
       ctx.globalAlpha = (S.hl&&!(S.hl.t==='mod'&&S.hl.k===m))?.25:1;
       label(m,sx,sy,`700 ${fs}px "Source Sans 3", sans-serif`,MODC[m]); }
     ctx.globalAlpha=1;
@@ -605,7 +617,7 @@ function draw(){
     for (const pi of order){ const p=patches[pi];
       if (!S.vis[p.s]) continue; if (S.hl && !(S.hl.t==='sp'&&S.hl.k===p.s)) continue;
       const bw=(p.bb[2]-p.bb[0])*s, bh=(p.bb[3]-p.bb[1])*s; if (bw<22||bh<12) continue;
-      const sx=p.lp[0]*s+S.tx, sy=p.lp[1]*s+S.ty; if(sx<-30||sx>W+30||sy<-10||sy>H+10) continue;
+      const sx=SX(p.lp[0],p.lp[1]), sy=SY(p.lp[0],p.lp[1]); if(sx<-30||sx>W+30||sy<-10||sy>H+10) continue;
       const code=SP[p.s].code, tw=ctx.measureText(code).width; if (tw+4>bw) continue;
       const r=[sx-tw/2-2, sy-7, sx+tw/2+2, sy+7];
       if (placed.some(q=>!(r[2]<q[0]||r[0]>q[2]||r[3]<q[1]||r[1]>q[3]))) continue;
@@ -618,7 +630,7 @@ function draw(){
       SP.forEach((sp,i)=>{ if(sp.g==='herb'||!S.vis[i]||!plants[i]) return; const a=plants[i];
         if (S.hl && !(S.hl.t==='sp'&&S.hl.k===i)) return;
         const f = `700 ${sp.g==='arv'?11:10}px "Source Sans 3", sans-serif`;
-        for (let j=0;j<a.length;j+=3){ const sx=a[j]*s+S.tx, sy=a[j+1]*s+S.ty; if(sx<-20||sx>W+20||sy<-20||sy>H+20) continue;
+        for (let j=0;j<a.length;j+=3){ const sx=SX(a[j],a[j+1]), sy=SY(a[j],a[j+1]); if(sx<-20||sx>W+20||sy<-20||sy>H+20) continue;
           const dy = sp.g==='arv' ? -9 : -(Math.max(a[j+2]*s,2.4)+7);
           label(sp.code, sx, sy+dy, f, sp.color);
         }
@@ -630,7 +642,7 @@ function draw(){
     const v=p.edge.v, n=v.length; ctx.font='700 11.5px "Source Sans 3", sans-serif';
     for (let i=0;i<n;i++){
       const a=v[i], b=v[(i+1)%n], L=p.edge.e[i];
-      const ax=a[0]*s+S.tx, ay=a[1]*s+S.ty, bx=b[0]*s+S.tx, by=b[1]*s+S.ty;
+      const ax=SX(a[0],a[1]), ay=SY(a[0],a[1]), bx=SX(b[0],b[1]), by=SY(b[0],b[1]);
       const sl=Math.hypot(bx-ax,by-ay); const txt=fmt2(L)+' m'; const tw=ctx.measureText(txt).width;
       if (sl < tw+10) continue;
       const mx=(ax+bx)/2, my=(ay+by)/2; if (mx<-40||mx>W+40||my<-20||my>H+20) continue;
@@ -643,7 +655,7 @@ function draw(){
     }
     if (numbers){
       ctx.font='700 10.5px "Source Sans 3", sans-serif';
-      v.forEach((q,i)=>{ const x=q[0]*s+S.tx, y=q[1]*s+S.ty; ctx.beginPath(); ctx.arc(x,y,8,0,Math.PI*2); ctx.fillStyle='#10120c'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke(); ctx.fillStyle='#fff'; ctx.fillText(String(i+1),x,y+.5); });
+      v.forEach((q,i)=>{ const x=SX(q[0],q[1]), y=SY(q[0],q[1]); ctx.beginPath(); ctx.arc(x,y,8,0,Math.PI*2); ctx.fillStyle='#10120c'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke(); ctx.fillStyle='#fff'; ctx.fillText(String(i+1),x,y+.5); });
     }
   };
   {
@@ -654,7 +666,7 @@ function draw(){
         if (!S.vis[p.s] || (S.sel&&S.sel.t==='patch'&&patches[S.sel.i]===p)) continue;
         if (S.hl ? !(S.hl.t==='sp'&&S.hl.k===p.s) : false) continue;
         if (!(S.hl && S.hl.t==='sp') && !S.L.dims) continue;
-        const b=p.bb; if (b[2]*s+S.tx<0||b[0]*s+S.tx>W||b[3]*s+S.ty<0||b[1]*s+S.ty>H) continue;
+        if (!inView(p.bb)) continue;
         edgeLabels(p, placed, false);
       }
     }
@@ -672,19 +684,19 @@ function draw(){
     const placed=[]; ctx.setLineDash([4,3]); ctx.strokeStyle='rgba(20,22,16,.75)'; ctx.lineWidth=1.2;
     ctx.beginPath();
     for (const [i,j,d] of TREE_EDGES){ const p=PL.arv[i], q=PL.arv[j]; if (!S.vis[p.s]||!S.vis[q.s]) continue; if (S.hl && (p.s!==S.hl.k||q.s!==S.hl.k)) continue;
-      const ax=p.x*s+S.tx, ay=p.y*s+S.ty, bx=q.x*s+S.tx, by=q.y*s+S.ty; if (Math.max(ax,bx)<0||Math.min(ax,bx)>W||Math.max(ay,by)<0||Math.min(ay,by)>H) continue; ctx.moveTo(ax,ay); ctx.lineTo(bx,by); }
+      const ax=SX(p.x,p.y), ay=SY(p.x,p.y), bx=SX(q.x,q.y), by=SY(q.x,q.y); if (Math.max(ax,bx)<0||Math.min(ax,bx)>W||Math.max(ay,by)<0||Math.min(ay,by)>H) continue; ctx.moveTo(ax,ay); ctx.lineTo(bx,by); }
     ctx.stroke(); ctx.setLineDash([]);
     for (const [i,j,d] of TREE_EDGES){ const p=PL.arv[i], q=PL.arv[j]; if (!S.vis[p.s]||!S.vis[q.s]) continue; if (S.hl && (p.s!==S.hl.k||q.s!==S.hl.k)) continue;
-      distLabel(p.x*s+S.tx,p.y*s+S.ty,q.x*s+S.tx,q.y*s+S.ty,d,placed,false); }
+      distLabel(SX(p.x,p.y),SY(p.x,p.y),SX(q.x,q.y),SY(q.x,q.y),d,placed,false); }
   }
   if (S.sel && S.sel.t==='plant' && S.sel.nb){
-    const p=PL[S.sel.g][S.sel.pi]; const ax=p.x*s+S.tx, ay=p.y*s+S.ty; const placed=[];
+    const p=PL[S.sel.g][S.sel.pi]; const ax=SX(p.x,p.y), ay=SY(p.x,p.y); const placed=[];
     ctx.strokeStyle='#c2410c'; ctx.lineWidth=2;
-    for (const nb of S.sel.nb){ const q=PL[S.sel.g][nb.n]; ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(q.x*s+S.tx,q.y*s+S.ty); ctx.stroke(); }
-    for (const nb of S.sel.nb){ const q=PL[S.sel.g][nb.n]; distLabel(ax,ay,q.x*s+S.tx,q.y*s+S.ty,nb.d,placed,true); }
+    for (const nb of S.sel.nb){ const q=PL[S.sel.g][nb.n]; ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(SX(q.x,q.y),SY(q.x,q.y)); ctx.stroke(); }
+    for (const nb of S.sel.nb){ const q=PL[S.sel.g][nb.n]; distLabel(ax,ay,SX(q.x,q.y),SY(q.x,q.y),nb.d,placed,true); }
   }
   if (S.meas && S.meas.pts.length){
-    const pts=S.meas.pts.map(([x,y])=>[x*s+S.tx,y*s+S.ty]);
+    const pts=S.meas.pts.map(([x,y])=>[SX(x,y),SY(x,y)]);
     ctx.strokeStyle='#ffffff'; ctx.lineWidth=5; ctx.beginPath(); pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y)); ctx.stroke();
     ctx.strokeStyle='#1d4ed8'; ctx.lineWidth=2.5; ctx.beginPath(); pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y)); ctx.stroke();
     for (let i=1;i<pts.length;i++){ const a=S.meas.pts[i-1], b=S.meas.pts[i]; distLabel(pts[i-1][0],pts[i-1][1],pts[i][0],pts[i][1],Math.hypot(b[0]-a[0],b[1]-a[1]),null,true); }
@@ -692,18 +704,21 @@ function draw(){
   }
   if (S.gps){
     // posição GPS: círculo de precisão, direção de marcha (quando se anda) e ponto
-    const gx=S.gps.x*s+S.tx, gy=S.gps.y*s+S.ty, gr=S.gps.acc*s, gc=S.gps.acc>15?'217,119,6':'37,99,235';
+    const gx=SX(S.gps.x,S.gps.y), gy=SY(S.gps.x,S.gps.y), gr=S.gps.acc*s, gc=S.gps.acc>15?'217,119,6':'37,99,235';
     if (gr>9){ ctx.beginPath(); ctx.arc(gx,gy,gr,0,Math.PI*2); ctx.fillStyle=`rgba(${gc},.12)`; ctx.fill(); ctx.strokeStyle=`rgba(${gc},.5)`; ctx.lineWidth=1.2; ctx.stroke(); }
-    if (S.gps.head!=null){ const a=S.gps.head*Math.PI/180; ctx.beginPath(); ctx.moveTo(gx+Math.cos(a)*24,gy+Math.sin(a)*24); ctx.lineTo(gx+Math.cos(a+2.4)*11,gy+Math.sin(a+2.4)*11); ctx.lineTo(gx+Math.cos(a-2.4)*11,gy+Math.sin(a-2.4)*11); ctx.closePath(); ctx.fillStyle=`rgb(${gc})`; ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.fill(); ctx.stroke(); }
+    // direção: a da bússola, se o mapa estiver a rodar; senão, a direção de marcha dada pelo GPS
+    const hd = (ROT.on && ROT.h!=null) ? ROT.h : (S.gps.head!=null ? S.gps.head*Math.PI/180 : null);
+    if (hd!=null){ const a=hd+S.rot; ctx.beginPath(); ctx.moveTo(gx+Math.cos(a)*24,gy+Math.sin(a)*24); ctx.lineTo(gx+Math.cos(a+2.4)*11,gy+Math.sin(a+2.4)*11); ctx.lineTo(gx+Math.cos(a-2.4)*11,gy+Math.sin(a-2.4)*11); ctx.closePath(); ctx.fillStyle=`rgb(${gc})`; ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.fill(); ctx.stroke(); }
     ctx.beginPath(); ctx.arc(gx,gy,9,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.shadowColor='rgba(0,0,0,.35)'; ctx.shadowBlur=4; ctx.fill(); ctx.shadowBlur=0; ctx.shadowColor='transparent';
     ctx.beginPath(); ctx.arc(gx,gy,6.5,0,Math.PI*2); ctx.fillStyle=`rgb(${gc})`; ctx.fill();
   }
   if (S.L.orig && s>2.5){
     const fs=Math.min(12,Math.max(8,s*0.9));
-    for (const [t,x,y] of D.plabels){ const sx=x*s+S.tx, sy=y*s+S.ty; if(sx<-30||sx>W+30||sy<-10||sy>H+10) continue;
+    for (const [t,x,y] of D.plabels){ const sx=SX(x,y), sy=SY(x,y); if(sx<-30||sx>W+30||sy<-10||sy>H+10) continue;
       label(t,sx,sy,`600 ${fs}px "Source Sans 3", sans-serif`,'#111'); }
   }
   updateScale();
+  northSvg.style.transform = S.rot ? `rotate(${S.rot}rad)` : '';
 }
 
 function updateScale(){
@@ -857,7 +872,8 @@ narrowMQ.addEventListener?.('change', placeInfo); placeInfo();
 function keepVisible(bb){
   if (narrowMQ.matches || info.hidden) return;
   const cw = info.offsetWidth + 24; const free = W - cw;
-  const x0 = bb[0]*S.scale+S.tx, x1 = bb[2]*S.scale+S.tx, y0=bb[1]*S.scale+S.ty, y1=bb[3]*S.scale+S.ty;
+  const cx=[[bb[0],bb[1]],[bb[2],bb[1]],[bb[0],bb[3]],[bb[2],bb[3]]].map(([x,y])=>[SX(x,y),SY(x,y)]);
+  const x0=Math.min(...cx.map(c=>c[0])), x1=Math.max(...cx.map(c=>c[0])), y0=Math.min(...cx.map(c=>c[1])), y1=Math.max(...cx.map(c=>c[1]));
   let dx = 0, dy = 0;
   if (x1 > free - 16) dx = Math.max((free - 16) - x1, 16 - x0);
   if (x0 + dx < 16) dx = 16 - x0;
@@ -1162,7 +1178,7 @@ function gpsMsg(html, kind){ gpsEl.hidden=false; gpsTxt.innerHTML=html; gpsDot.c
 function gpsSetBtn(){ gpsbtn.setAttribute('aria-pressed', String(G.watch!==null)); gpsbtn.classList.toggle('follow', G.watch!==null && G.follow); }
 function gpsUnfollow(){ if (G.follow){ G.follow=false; gpsSetBtn(); } }
 function gpsStop(){ if (G.watch!==null && navigator.geolocation) navigator.geolocation.clearWatch(G.watch); G.watch=null; G.follow=false; S.gps=null; gpsEl.hidden=true; gpsSetBtn(); req(); }
-function gpsCentre(){ if (!S.gps) return; if (S.scale<4) S.scale=Math.min(maxScale,4); S.tx=W/2-S.gps.x*S.scale; S.ty=H/2-S.gps.y*S.scale; req(); }
+function gpsCentre(){ if (!S.gps) return; if (S.scale<4) S.scale=Math.min(maxScale,4); centreOn(S.gps.x,S.gps.y); }
 function whereTxt(x,y){
   hit.setTransform(1,0,0,1,0,0);
   for (let i=patches.length-1;i>=0;i--){ const p=patches[i], b=p.bb; if (x<b[0]||x>b[2]||y<b[1]||y>b[3]) continue;
@@ -1218,11 +1234,87 @@ gpsbtn.onclick=()=>{
 };
 document.getElementById('gpsx').onclick=gpsStop;
 
+// ---------- rodar o mapa com a direção do telemóvel (opção; por defeito o mapa fica como o desenho, norte à direita)
+const rotbtn=document.getElementById('rotbtn'), rotEl=document.getElementById('rotmsg'), rotTxt=document.getElementById('rottxt'), rotDot=document.getElementById('rotdot');
+const ROT={on:false, h:null, vx:0, vy:0, ev:null, wait:0, hide:0, anim:0};
+const wrapA = d => Math.atan2(Math.sin(d), Math.cos(d));
+function rotMsg(html, kind, ms){ clearTimeout(ROT.hide); rotEl.hidden=false; rotTxt.innerHTML=html; rotDot.className='gps-dot '+(kind||'rot'); if (ms) ROT.hide=setTimeout(()=>{ rotEl.hidden=true; }, ms); }
+function rotSetBtn(){ rotbtn.setAttribute('aria-pressed', String(ROT.on)); }
+function screenAngle(){
+  const a = (screen.orientation && typeof screen.orientation.angle==='number') ? screen.orientation.angle : (typeof window.orientation==='number' ? window.orientation : 0);
+  return ((Math.round(a/90)*90)%360+360)%360;
+}
+// Rumo (graus a partir do norte, sentido dos ponteiros do relógio) do lado de cima do ecrã,
+// a partir dos ângulos alpha/beta/gamma absolutos (Android). Junta o topo do ecrã com a direção da câmara,
+// para funcionar com o telemóvel deitado, inclinado ou na vertical.
+function headingFromEuler(a,b,g,ang){
+  const R=Math.PI/180, ca=Math.cos(a*R), sa=Math.sin(a*R), cb=Math.cos(b*R), sb=Math.sin(b*R), cg=Math.cos(g*R), sg=Math.sin(g*R);
+  const X=[ca*cg-sa*sg*sb, sa*cg+ca*sg*sb], Y=[-sa*cb, ca*cb], B=[-ca*sg-sa*sb*cg, -sa*sg+ca*sb*cg]; // (Este, Norte)
+  const up = ang===90 ? X : ang===180 ? [-Y[0],-Y[1]] : ang===270 ? [-X[0],-X[1]] : Y;
+  const E=up[0]+B[0], N=up[1]+B[1];
+  if (Math.hypot(E,N)<1e-3) return null;
+  return (Math.atan2(E,N)/R+360)%360;
+}
+function setRotKeep(r){ const [x,y]=toWorld(W/2,H/2); S.rot=r; centreOn(x,y); }
+function onOri(e){
+  if (!ROT.on) return;
+  let h=null;
+  if (typeof e.webkitCompassHeading==='number' && isFinite(e.webkitCompassHeading) && e.webkitCompassHeading>=0) h=(e.webkitCompassHeading+screenAngle())%360; // iPhone
+  else if ((e.absolute===true || e.type==='deviceorientationabsolute') && e.alpha!=null) h=headingFromEuler(e.alpha, e.beta||0, e.gamma||0, screenAngle());
+  if (h==null) return;
+  const r=h*Math.PI/180;
+  if (ROT.h==null){ ROT.vx=Math.cos(r); ROT.vy=Math.sin(r); clearTimeout(ROT.wait); }
+  else { const k=.2; ROT.vx=ROT.vx*(1-k)+Math.cos(r)*k; ROT.vy=ROT.vy*(1-k)+Math.sin(r)*k; } // suaviza a agulha
+  ROT.h=Math.atan2(ROT.vy, ROT.vx);
+  // No mapa, o norte é +X e o este +Y; para a direção em que se está virado ficar para cima: rot = −90° − rumo
+  const d=wrapA(-Math.PI/2-ROT.h-S.rot);
+  if (Math.abs(d)>0.004) setRotKeep(S.rot+d); else if (S.gps) req();
+}
+function rotInFrame(){ try{ return window.self!==window.top; }catch(_){ return true; } }
+const rotSiteMsg = () => `A bússola não responde nesta pré-visualização.<small>Abra o mapa no telemóvel, no site da obra: <a href="${SITE_URL}" target="_blank" rel="noopener">${SITE_URL.replace('https://','').replace(/\/$/,'')}</a></small>`;
+function rotDenied(){
+  const ios=/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+  rotMsg(rotInFrame() ? rotSiteMsg()
+    : ios ? 'Sem autorização para usar a bússola.<small>Toque de novo no botão e escolha «Permitir». Se não aparecer o pedido, feche o separador e abra o mapa outra vez.</small>'
+    : 'Sem autorização para usar a bússola.<small>Permita os sensores de movimento para este site nas definições do browser e toque de novo no botão.</small>', 'err');
+}
+async function rotStart(){
+  try{
+    if (typeof DeviceOrientationEvent!=='undefined' && typeof DeviceOrientationEvent.requestPermission==='function'){
+      const r=await DeviceOrientationEvent.requestPermission(); // iPhone: tem de ser pedido no toque
+      if (r!=='granted'){ rotDenied(); return; }
+    }
+  }catch(_){ rotDenied(); return; }
+  cancelAnimationFrame(ROT.anim);
+  ROT.on=true; ROT.h=null; rotSetBtn();
+  ROT.ev = ('ondeviceorientationabsolute' in window) ? 'deviceorientationabsolute' : 'deviceorientation';
+  addEventListener(ROT.ev, onOri);
+  rotMsg('O mapa roda conforme a direção para onde aponta o telemóvel.<small>Segure-o à sua frente. Perto de carros ou de ferro, a bússola pode desviar-se.</small>','rot',7000);
+  ROT.wait=setTimeout(()=>{
+    if (!ROT.on || ROT.h!=null) return;
+    rotStop(true);
+    rotMsg(rotInFrame() ? rotSiteMsg()
+      : 'Este aparelho não tem bússola ou não a dá ao browser.<small>No computador esta opção não funciona; use-a no telemóvel.</small>', 'err');
+  }, 3500);
+}
+function rotStop(keepMsg){
+  ROT.on=false; ROT.h=null; if (ROT.ev) removeEventListener(ROT.ev, onOri); ROT.ev=null; clearTimeout(ROT.wait); rotSetBtn();
+  if (!keepMsg){ clearTimeout(ROT.hide); rotEl.hidden=true; }
+  // volta à orientação do desenho (norte à direita), com uma pequena animação
+  const from=S.rot, d=wrapA(-from), t0=performance.now();
+  cancelAnimationFrame(ROT.anim);
+  const step=t=>{ const k=Math.min(1,(t-t0)/380), e=k<.5?2*k*k:1-((-2*k+2)**2)/2; setRotKeep(from+d*e);
+    if (k<1) ROT.anim=requestAnimationFrame(step); else { S.rot=0; req(); } };
+  ROT.anim=requestAnimationFrame(step);
+}
+rotbtn.onclick=()=>{ if (ROT.on) rotStop(); else rotStart(); };
+document.getElementById('rotx').onclick=()=>{ clearTimeout(ROT.hide); rotEl.hidden=true; };
+
 // ---------- sem rede (só no site publicado, que tem manifesto e service worker)
 (function(){
   const el=document.getElementById('offl');
   if (!document.querySelector('link[rel="manifest"]') || !('serviceWorker' in navigator) || !window.caches) return;
-  const BUILD='27/10/2026 22:10';
+  const BUILD='27/10/2026 23:39';
   const urls=[...new Set(Object.values(FLORA).flatMap(F=>F.ph.map(p=>p.f).filter(Boolean)))];
   const set=(h,k)=>{ el.hidden=false; el.className='offl'+(k?' '+k:''); el.innerHTML=h; };
   const ios=/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);

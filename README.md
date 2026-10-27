@@ -9,4 +9,5 @@ Mapa interativo de trabalho da We Garden para a obra do Parque Ecológico da Eri
 ## No terreno
 
 - **Onde estou**: o botão com a mira mostra a posição do telemóvel no mapa (GPS, ± alguns metros), em que mancha ou módulo está e a árvore mais próxima. As coordenadas do desenho estão em ETRS89 / PT-TM06.
+- **Rodar o mapa**: o botão com a bússola (desligado por defeito) roda o mapa conforme a direção para onde aponta o telemóvel; ao desligar, o mapa volta à orientação do desenho (norte à direita).
 - **Sem rede**: na primeira visita com rede, a página, as fotos (cerca de 20 MB) e os tipos de letra ficam guardados no aparelho. Depois o mapa abre sem cobertura. No iPhone, convém adicionar ao ecrã principal (Partilhar → Adicionar ao ecrã principal).
