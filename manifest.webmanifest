@@ -1,0 +1,24 @@
+{
+  "name": "Parque Ecológico da Ericeira · Plantação",
+  "short_name": "Plantação Ericeira",
+  "description": "Mapa de plantação da obra do Parque Ecológico da Ericeira — We Garden.",
+  "lang": "pt-PT",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FCFDFA",
+  "theme_color": "#91B03E",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

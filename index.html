@@ -6,6 +6,13 @@
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="description" content="Plano de plantação do Parque Ecológico da Ericeira — documento de trabalho da We Garden.">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#91B03E">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Plantação Ericeira">
 <title>Plantação do Parque Ecológico da Ericeira</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -105,7 +112,26 @@ button{font:inherit;color:inherit}
 .nbl li span{flex:1;font-style:italic;min-width:0}
 .nbl .sw{width:14px;height:14px}
 #map.measuring{cursor:crosshair}
-.meas{position:absolute;left:12px;top:12px;z-index:4;width:270px;max-width:calc(100% - 80px);background:var(--surface);border:1px solid var(--line-strong);border-radius:8px;box-shadow:var(--shadow);padding:10px 12px}
+.tlstack{position:absolute;left:12px;top:12px;z-index:4;width:290px;max-width:calc(100% - 76px);display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.tlstack>*{pointer-events:auto}
+.gps{display:flex;align-items:flex-start;gap:9px;background:var(--surface);border:1px solid var(--line-strong);border-radius:8px;box-shadow:var(--shadow);padding:8px 6px 8px 11px;font-size:13px;line-height:1.35;color:var(--ink)}
+.gps[hidden],.offl[hidden]{display:none}
+.gps-dot{flex:none;width:12px;height:12px;border-radius:50%;background:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.22);margin-top:3px}
+.gps-dot.weak{background:#d97706;box-shadow:0 0 0 3px rgba(217,119,6,.22)}
+.gps-dot.err,.gps-dot.far{background:var(--muted);box-shadow:none}
+.gps-t{flex:1;min-width:0}
+.gps-t small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.gps-t a{color:var(--verde-ink);font-weight:600;word-break:break-all}
+.gps>button{flex:none;border:none;background:none;font-size:18px;cursor:pointer;color:var(--muted);width:28px;height:28px;border-radius:6px;margin-top:-4px}
+.gps>button:hover{background:var(--chip)}
+#gpsbtn.follow{color:#2563eb}
+.offl{margin:0 0 12px;font-size:12.5px;line-height:1.35;color:var(--muted);background:var(--chip);border-radius:6px;padding:7px 10px}
+.offl b{color:var(--ink);font-weight:600}
+.offl.ok b{color:var(--verde-ink)}
+.offl.warn{background:var(--warn-bg);color:var(--warn)}
+.offl.warn b{color:var(--warn)}
+.offl small{display:block;font-size:12px;margin-top:2px}
+.meas{width:auto;background:var(--surface);border:1px solid var(--line-strong);border-radius:8px;box-shadow:var(--shadow);padding:10px 12px}
 .meas-h{display:flex;justify-content:space-between;align-items:center}
 .meas-h b{font-family:var(--f-display);font-weight:500;font-size:14px}
 .meas-h button{border:none;background:none;font-size:18px;cursor:pointer;color:var(--muted);width:28px;height:28px;border-radius:6px}
@@ -230,7 +256,8 @@ button{font:inherit;color:inherit}
   .ttl p,.brand small{display:none}
   .top{gap:12px}
 }
-@media (prefers-reduced-motion: no-preference){ .row,.btn,.ctl button{transition:background-color .12s} }
+@media (prefers-reduced-motion: no-preference){ .row,.btn,.ctl button{transition:background-color .12s} .gps-dot.wait{animation:gpspulse 1.1s ease-in-out infinite} }
+@keyframes gpspulse{50%{opacity:.3}}
 </style>
 
 </head>
@@ -258,6 +285,7 @@ button{font:inherit;color:inherit}
       <button id="zin" title="Ampliar" aria-label="Ampliar">+</button>
       <button id="zout" title="Reduzir" aria-label="Reduzir">−</button>
       <button id="zfit" title="Ver tudo" aria-label="Ver tudo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+      <button id="gpsbtn" title="Onde estou" aria-label="Onde estou" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg></button>
       <button id="rulerbtn" title="Medir distância" aria-label="Medir distância" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17 17 3l4 4L7 21z"/><path d="m7 13 2 2M10 10l2 2M13 7l2 2"/></svg></button>
       <button id="lyrbtn" title="Camadas" aria-label="Camadas" aria-pressed="false" aria-controls="layers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 13 9 5 9-5"/></svg></button>
     </div>
@@ -275,10 +303,13 @@ button{font:inherit;color:inherit}
       <label><input type="checkbox" id="L-limit" checked> Limite de intervenção</label>
       <label><input type="checkbox" id="L-topo" checked> Toponímia</label>
     </div>
+    <div class="tlstack">
+    <div class="gps" id="gps" hidden role="status" aria-live="polite"><i class="gps-dot" id="gpsdot"></i><div class="gps-t" id="gpstxt"></div><button id="gpsx" aria-label="Desligar localização" title="Desligar localização">×</button></div>
     <div class="meas" id="meas" hidden>
       <div class="meas-h"><b>Medir distância</b><button id="measx" aria-label="Fechar medição">×</button></div>
       <p id="meastxt">Toque no mapa para marcar pontos. Perto de uma árvore ou arbusto, o ponto fica no centro da planta.</p>
       <div class="meas-a"><button class="btn" id="measundo">Desfazer</button><button class="btn" id="measclr">Limpar</button></div>
+    </div>
     </div>
     <div class="hl-chip" id="hlchip" hidden><i class="sw" id="hlsw"></i><span id="hltxt"></span><button id="hlclear">Mostrar tudo</button></div>
     <div class="scalebox">
@@ -302,6 +333,7 @@ button{font:inherit;color:inherit}
       <button role="tab" id="t-not" aria-selected="false" aria-controls="p-not">Notas<span class="n" id="nnotes"></span></button>
     </nav>
     <div class="pane" id="p-esp" role="tabpanel">
+      <p class="offl" id="offl" hidden role="status" aria-live="polite"></p>
       <div class="sum" id="sum"></div>
       <input class="search" id="q" type="search" placeholder="Procurar espécie ou código (ex.: Cistus, T.m.)" aria-label="Procurar espécie">
       <div id="legend"></div>
@@ -658,6 +690,14 @@ function draw(){
     for (let i=1;i<pts.length;i++){ const a=S.meas.pts[i-1], b=S.meas.pts[i]; distLabel(pts[i-1][0],pts[i-1][1],pts[i][0],pts[i][1],Math.hypot(b[0]-a[0],b[1]-a[1]),null,true); }
     pts.forEach(([x,y])=>{ ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2); ctx.fillStyle='#1d4ed8'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke(); });
   }
+  if (S.gps){
+    // posição GPS: círculo de precisão, direção de marcha (quando se anda) e ponto
+    const gx=S.gps.x*s+S.tx, gy=S.gps.y*s+S.ty, gr=S.gps.acc*s, gc=S.gps.acc>15?'217,119,6':'37,99,235';
+    if (gr>9){ ctx.beginPath(); ctx.arc(gx,gy,gr,0,Math.PI*2); ctx.fillStyle=`rgba(${gc},.12)`; ctx.fill(); ctx.strokeStyle=`rgba(${gc},.5)`; ctx.lineWidth=1.2; ctx.stroke(); }
+    if (S.gps.head!=null){ const a=S.gps.head*Math.PI/180; ctx.beginPath(); ctx.moveTo(gx+Math.cos(a)*24,gy+Math.sin(a)*24); ctx.lineTo(gx+Math.cos(a+2.4)*11,gy+Math.sin(a+2.4)*11); ctx.lineTo(gx+Math.cos(a-2.4)*11,gy+Math.sin(a-2.4)*11); ctx.closePath(); ctx.fillStyle=`rgb(${gc})`; ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.fill(); ctx.stroke(); }
+    ctx.beginPath(); ctx.arc(gx,gy,9,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.shadowColor='rgba(0,0,0,.35)'; ctx.shadowBlur=4; ctx.fill(); ctx.shadowBlur=0; ctx.shadowColor='transparent';
+    ctx.beginPath(); ctx.arc(gx,gy,6.5,0,Math.PI*2); ctx.fillStyle=`rgb(${gc})`; ctx.fill();
+  }
   if (S.L.orig && s>2.5){
     const fs=Math.min(12,Math.max(8,s*0.9));
     for (const [t,x,y] of D.plabels){ const sx=x*s+S.tx, sy=y*s+S.ty; if(sx<-30||sx>W+30||sy<-10||sy>H+10) continue;
@@ -871,7 +911,7 @@ cv.addEventListener('pointermove', e => {
     S.scale=ns; S.tx = mx - (pinch.mx-pinch.tx)*f; S.ty = my - (pinch.my-pinch.ty)*f; moved=true; req(); return;
   }
   if (drag){
-    const dx=e.offsetX-drag.x, dy=e.offsetY-drag.y; if (Math.abs(dx)+Math.abs(dy)>4){ moved=true; cv.classList.add('dragging'); }
+    const dx=e.offsetX-drag.x, dy=e.offsetY-drag.y; if (Math.abs(dx)+Math.abs(dy)>4){ moved=true; cv.classList.add('dragging'); gpsUnfollow(); }
     if (moved){ S.tx=drag.tx+dx; S.ty=drag.ty+dy; req(); }
     return;
   }
@@ -1096,6 +1136,126 @@ rulerbtn.onclick=()=>setMeasure(!S.meas);
 document.getElementById('measx').onclick=()=>setMeasure(false);
 document.getElementById('measundo').onclick=()=>{ if(S.meas){ S.meas.pts.pop(); updMeas(); req(); } };
 document.getElementById('measclr').onclick=()=>{ if(S.meas){ S.meas.pts=[]; updMeas(); req(); } };
+
+// ---------- onde estou (GPS do telemóvel)
+// ETRS89 / PT-TM06 (EPSG:3763) a partir de latitude/longitude — série de Krüger, elipsoide GRS80.
+// As coordenadas do desenho estão neste sistema (M, P); no mapa, X = P − Y0 e Y = M − X0.
+const PTTM = (()=>{
+  const a=6378137, f=1/298.257222101, n=f/(2-f);
+  const A=a/(1+n)*(1+n*n/4+n**4/64);
+  const al=[n/2-2/3*n*n+5/16*n**3, 13/48*n*n-3/5*n**3, 61/240*n**3];
+  const e2n=2*Math.sqrt(n)/(1+n), R=Math.PI/180, lat0=39.66825833333333*R, lon0=-8.133108333333334*R;
+  function xe(phi, dl){
+    const sn=Math.sin(phi), t=Math.sinh(Math.atanh(sn)-e2n*Math.atanh(e2n*sn));
+    const xp=Math.atan2(t,Math.cos(dl)), ep=Math.atanh(Math.sin(dl)/Math.sqrt(1+t*t));
+    let xi=xp, eta=ep; for (let j=1;j<=3;j++){ xi+=al[j-1]*Math.sin(2*j*xp)*Math.cosh(2*j*ep); eta+=al[j-1]*Math.cos(2*j*xp)*Math.sinh(2*j*ep); }
+    return [xi,eta];
+  }
+  const xi0=xe(lat0,0)[0];
+  return (lat,lon)=>{ const [xi,eta]=xe(lat*R,lon*R-lon0); return [A*eta, A*(xi-xi0)]; };
+})();
+const SITE_URL='https://patr0cini.github.io/parque-ericeira-plantacao/';
+const gpsbtn=document.getElementById('gpsbtn'), gpsEl=document.getElementById('gps'), gpsTxt=document.getElementById('gpstxt'), gpsDot=document.getElementById('gpsdot');
+const G={watch:null, follow:false};
+S.gps=null;
+function gpsMsg(html, kind){ gpsEl.hidden=false; gpsTxt.innerHTML=html; gpsDot.className='gps-dot'+(kind?' '+kind:''); }
+function gpsSetBtn(){ gpsbtn.setAttribute('aria-pressed', String(G.watch!==null)); gpsbtn.classList.toggle('follow', G.watch!==null && G.follow); }
+function gpsUnfollow(){ if (G.follow){ G.follow=false; gpsSetBtn(); } }
+function gpsStop(){ if (G.watch!==null && navigator.geolocation) navigator.geolocation.clearWatch(G.watch); G.watch=null; G.follow=false; S.gps=null; gpsEl.hidden=true; gpsSetBtn(); req(); }
+function gpsCentre(){ if (!S.gps) return; if (S.scale<4) S.scale=Math.min(maxScale,4); S.tx=W/2-S.gps.x*S.scale; S.ty=H/2-S.gps.y*S.scale; req(); }
+function whereTxt(x,y){
+  hit.setTransform(1,0,0,1,0,0);
+  for (let i=patches.length-1;i>=0;i--){ const p=patches[i], b=p.bb; if (x<b[0]||x>b[2]||y<b[1]||y>b[3]) continue;
+    if (hit.isPointInPath(p.path,x,y,'evenodd')) return `Dentro da mancha <b>${esc(SP[p.s].code)}</b> · <i>${esc(SP[p.s].name)}</i>`; }
+  for (let i=cells.length-1;i>=0;i--){ const c=cells[i], b=c.bb; if (x<b[0]||x>b[2]||y<b[1]||y>b[3]) continue;
+    if (hit.isPointInPath(c.path,x,y)) return c.m.length>1 ? 'Dentro da faixa de módulos A/B' : `Dentro de um módulo <b>${c.mod}</b>`; }
+  const nb=nearest('arv',x,y,1,40,-1)[0];
+  if (nb){ const p=PL.arv[nb.n]; return `Árvore mais próxima: <i>${esc(SP[p.s].name)}</i> a ${fmt1(nb.d)} m`; }
+  return '';
+}
+function gpsFix(pos){
+  const c=pos.coords, [M,P]=PTTM(c.latitude,c.longitude);
+  const x=P-D.Y0, y=M-D.X0, acc=Math.max(0,c.accuracy||0);
+  const bb=PLANT_BB, far=Math.hypot(Math.max(bb[0]-x,0,x-bb[2]), Math.max(bb[1]-y,0,y-bb[3]));
+  if (far>300){
+    S.gps=null; req();
+    gpsMsg(`Está a <b>${far>=1000 ? fmt1(far/1000)+' km' : Math.round(far)+' m'}</b> da obra.<small>O ponto aparece no mapa quando estiver no parque.</small>`, 'far');
+    return;
+  }
+  const head = (c.heading!=null && isFinite(c.heading) && (c.speed||0)>0.6) ? c.heading : null;
+  S.gps={x,y,acc,head};
+  const w=whereTxt(x,y), weak=acc>15;
+  gpsMsg(`<b>Está aqui</b> · precisão ± ${Math.max(1,Math.round(acc))} m${weak?' (sinal fraco)':''}${w?`<small>${w}</small>`:''}`, weak?'weak':'');
+  if (G.follow) gpsCentre(); else req();
+}
+function gpsErr(e){
+  let inFrame=true; try{ inFrame = window.self!==window.top; }catch(_){}
+  const code = e ? e.code : 0;
+  if (!navigator.geolocation || (code===1 && inFrame)){
+    gpsMsg(`A localização não funciona nesta pré-visualização.<small>Abra o mapa no site da obra: <a href="${SITE_URL}" target="_blank" rel="noopener">${SITE_URL.replace('https://','').replace(/\/$/,'')}</a></small>`, 'err');
+  } else if (code===1){
+    gpsMsg('Sem autorização para usar a localização.<small>Permita a localização para este site nas definições do browser e toque de novo no botão.</small>', 'err');
+  } else if (code===2 || code===3){
+    // falha passageira: o telemóvel continua a tentar
+    if (S.gps) gpsMsg('Sinal de GPS perdido por momentos.<small>O ponto mostra a última posição conhecida.</small>', 'weak');
+    else gpsMsg('Ainda à procura da posição…<small>Confirme que a localização do telemóvel está ligada. Ao ar livre costuma bastar meio minuto.</small>', 'wait');
+    return;
+  } else {
+    gpsMsg('Não foi possível obter a posição.<small>Confirme que a localização do telemóvel está ligada e tente de novo.</small>', 'err');
+  }
+  if (G.watch!==null && navigator.geolocation) navigator.geolocation.clearWatch(G.watch);
+  G.watch=null; G.follow=false; S.gps=null; gpsSetBtn(); req();
+}
+gpsbtn.onclick=()=>{
+  if (G.watch!==null){
+    if (!G.follow && S.gps){ G.follow=true; gpsSetBtn(); gpsCentre(); return; }  // voltar a centrar
+    gpsStop(); return;
+  }
+  if (!navigator.geolocation){ gpsErr(null); return; }
+  G.follow=true; gpsMsg('A procurar a sua posição…','wait');
+  G.watch=navigator.geolocation.watchPosition(gpsFix, gpsErr, {enableHighAccuracy:true, maximumAge:3000, timeout:30000});
+  gpsSetBtn();
+};
+document.getElementById('gpsx').onclick=gpsStop;
+
+// ---------- sem rede (só no site publicado, que tem manifesto e service worker)
+(function(){
+  const el=document.getElementById('offl');
+  if (!document.querySelector('link[rel="manifest"]') || !('serviceWorker' in navigator) || !window.caches) return;
+  const BUILD='27/10/2026 22:10';
+  const urls=[...new Set(Object.values(FLORA).flatMap(F=>F.ph.map(p=>p.f).filter(Boolean)))];
+  const set=(h,k)=>{ el.hidden=false; el.className='offl'+(k?' '+k:''); el.innerHTML=h; };
+  const ios=/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+  const standalone=navigator.standalone===true || matchMedia('(display-mode: standalone)').matches;
+  const hint = ios && !standalone ? '<small>No iPhone, use Partilhar → Adicionar ao ecrã principal e abra o mapa por esse ícone. Assim o Safari não apaga a cópia guardada.</small>' : '';
+  let busy=false;
+  async function countCached(c){ let n=0; for (const u of urls) if (await c.match(u)) n++; return n; }
+  async function sync(){
+    if (busy) return; busy=true;
+    try{
+      const c=await caches.open('fotos-v1');
+      if (!navigator.onLine){
+        const n=await countCached(c);
+        set(`<b>Sem rede</b> · a usar a cópia guardada (versão de ${BUILD}).${n<urls.length?`<small>${n} de ${urls.length} fotos guardadas; as restantes aparecem quando houver rede.</small>`:''}`, 'warn');
+        return;
+      }
+      const todo=[]; let done=0;
+      for (const u of urls){ if (await c.match(u)) done++; else todo.push(u); }
+      const show=()=>set(`A guardar para usar sem rede… <b>${Math.round(100*done/urls.length)} %</b><small>Deixe a página aberta até terminar (cerca de 20 MB, só da primeira vez).</small>`);
+      if (todo.length) show();
+      let i=0;
+      const worker=async()=>{ while (i<todo.length){ const u=todo[i++]; try{ const r=await fetch(u); if (r.ok){ await c.put(u,r); done++; show(); } }catch(_){} } };
+      await Promise.all([worker(),worker(),worker(),worker()]);
+      if (done===urls.length) set(`<b>✓ Disponível sem rede</b> neste aparelho · versão de ${BUILD}${hint}`, 'ok');
+      else set(`Ficaram ${urls.length-done} fotos por guardar.<small>Abra o mapa outra vez com rede para completar.</small>`, 'warn');
+    } finally { busy=false; }
+  }
+  navigator.serviceWorker.register('sw.js').then(()=>navigator.serviceWorker.ready).then(async()=>{
+    try{ if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); }catch(_){}
+    sync();
+  }).catch(()=>{});
+  addEventListener('online', sync); addEventListener('offline', sync);
+})();
 
 // ---------- lightbox
 const lb=document.getElementById('lb'); let LB={key:null,j:0};
