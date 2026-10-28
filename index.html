@@ -144,12 +144,39 @@ button{font:inherit;color:inherit}
 .guide #guidetxt > b{font-size:16px}
 .gnav{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap}
 .gnav[hidden]{display:none}
-.gnav .btn{padding:4px 10px;font-size:12.5px}
+.gnav .btn{padding:4px 8px;font-size:12.5px}
 .vgo{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:10px}
 .vgo span{font-size:12.5px;font-weight:600;margin-right:4px;flex-basis:100%}
 .vbtn{width:32px;height:32px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #10120c;background:#10120c;color:#fff;font-weight:700;font-size:13px;cursor:pointer;padding:0}
 .vbtn:hover{background:#6d28d9;box-shadow:0 0 0 1px #6d28d9}
 .garrow{flex:none;width:32px;height:32px;transition:transform .15s linear}
+.ctl button[hidden]{display:none}
+.reg{border-color:var(--verde-ink)}
+.reg button:disabled{opacity:.45;cursor:default}
+.regbox{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0 0;padding:9px 11px;border-radius:7px;background:var(--chip);border:1px solid var(--line);font-size:13.5px}
+.regbox.ok{background:var(--erva);border-color:var(--verde)}
+.regbox.ok b{color:var(--verde-ink)}
+.ava-h{font-family:var(--f-display);font-weight:500;font-size:17px;margin:2px 0 6px}
+.ava-p{font-size:13.5px;color:var(--muted);margin:6px 0 12px}
+.ava-form{display:grid;gap:10px;max-width:340px}
+.ava-form label{display:grid;gap:4px;font-size:13px;font-weight:600}
+.ava-form input,.ava-ctl input{font:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface);color:var(--ink)}
+.ava-msg{margin:0;font-size:13px;color:var(--muted)}
+.ava-msg.warn,.ava-sync .warn{color:var(--warn)}
+.ava-top{display:flex;flex-direction:column;gap:3px;font-size:13.5px;margin-bottom:10px}
+.ava-sync{font-size:12.5px;color:var(--muted)}
+.ava-ctl{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+.ava-ctl label{display:grid;gap:3px;font-size:12px;font-weight:600;color:var(--muted)}
+.ava-ctl input{font-size:14px;padding:5px 8px}
+.ava-sum b small{font-size:13px;color:var(--muted);font-weight:400}
+.pbar{display:block;height:6px;border-radius:3px;background:color-mix(in srgb,var(--line) 70%,transparent);overflow:hidden;margin-top:5px}
+.pbar i{display:block;height:100%;background:var(--verde)}
+.ava-t{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px;font-variant-numeric:tabular-nums}
+.ava-t th{text-align:left;font-size:11.5px;color:var(--muted);font-weight:600;padding:4px 4px;border-bottom:1px solid var(--line)}
+.ava-t td{padding:5px 4px;border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent);vertical-align:middle}
+.ava-t .n{text-align:right;white-space:nowrap}
+.ava-t td.pc{width:84px;font-size:12px;color:var(--muted);text-align:right;white-space:nowrap}
+.ava-t td.pc .pbar{margin:0 0 2px}
 .gps-dot.rot{background:var(--verde);box-shadow:0 0 0 3px rgba(145,176,62,.25)}
 .north svg{transition:transform .08s linear}
 .gps-t{flex:1;min-width:0}
@@ -323,6 +350,7 @@ button{font:inherit;color:inherit}
       <button id="gpsbtn" title="Onde estou" aria-label="Onde estou" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg></button>
       <button id="rotbtn" title="Rodar o mapa com a direção do telemóvel" aria-label="Rodar o mapa com a direção do telemóvel" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9.5"/><path d="M12 4.5 15 12H9z" fill="currentColor" stroke="none"/><path d="M12 19.5 9.3 12.8h5.4z" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
       <button id="rulerbtn" title="Medir distância" aria-label="Medir distância" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17 17 3l4 4L7 21z"/><path d="m7 13 2 2M10 10l2 2M13 7l2 2"/></svg></button>
+      <button id="regbtn" title="Modo registo: marcar o que já está plantado" aria-label="Modo registo" aria-pressed="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="m7.5 12.5 3 3 6-7"/></svg></button>
       <button id="lyrbtn" title="Camadas" aria-label="Camadas" aria-pressed="false" aria-controls="layers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 13 9 5 9-5"/></svg></button>
     </div>
     <div class="layers" id="layers" hidden>
@@ -333,6 +361,7 @@ button{font:inherit;color:inherit}
       <label><input type="checkbox" id="L-orig"> Etiquetas originais do desenho</label>
       <label><input type="checkbox" id="L-dims"> Medidas dos lados de todas as manchas</label>
       <label><input type="checkbox" id="L-tdist"> Distâncias entre árvores</label>
+      <label><input type="checkbox" id="L-prog" checked> Avanço da plantação (com registo)</label>
       <label><input type="checkbox" id="L-paths" checked> Caminhos existentes</label>
       <label><input type="checkbox" id="L-water" checked> Linhas de água</label>
       <label><input type="checkbox" id="L-base" checked> Arruamentos e construções</label>
@@ -341,6 +370,7 @@ button{font:inherit;color:inherit}
     </div>
     <div class="tlstack">
     <div class="gps guide" id="guide" hidden><svg class="garrow" id="guidearrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 19.5 21 12 16.8 4.5 21z" fill="#6d28d9" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/></svg><div class="gps-t"><div id="guidetxt" aria-live="off"></div><div class="gnav" id="guidenav" hidden></div></div><button id="guidex" aria-label="Parar de guiar" title="Parar de guiar">×</button></div>
+    <div class="gps reg" id="regchip" hidden><i class="gps-dot rot"></i><div class="gps-t"><div id="regtxt" aria-live="polite"></div><div class="gnav"><button class="btn" id="regundo">Desfazer</button><button class="btn" id="reghere">Marcar onde estou</button></div></div><button id="regx" aria-label="Sair do modo registo" title="Sair do modo registo">×</button></div>
     <div class="gps" id="gps" hidden role="status" aria-live="polite"><i class="gps-dot" id="gpsdot"></i><div class="gps-t" id="gpstxt"></div><button id="gpsx" aria-label="Desligar localização" title="Desligar localização">×</button></div>
     <div class="gps" id="rotmsg" hidden role="status" aria-live="polite"><i class="gps-dot rot" id="rotdot"></i><div class="gps-t" id="rottxt"></div><button id="rotx" aria-label="Fechar" title="Fechar">×</button></div>
     <div class="meas" id="meas" hidden>
@@ -369,6 +399,7 @@ button{font:inherit;color:inherit}
       <button role="tab" id="t-esp" aria-selected="true" aria-controls="p-esp">Espécies</button>
       <button role="tab" id="t-mod" aria-selected="false" aria-controls="p-mod">Módulos</button>
       <button role="tab" id="t-not" aria-selected="false" aria-controls="p-not">Notas<span class="n" id="nnotes"></span></button>
+      <button role="tab" id="t-ava" aria-selected="false" aria-controls="p-ava">Avanço</button>
     </nav>
     <div class="pane" id="p-esp" role="tabpanel">
       <p class="offl" id="offl" hidden role="status" aria-live="polite"></p>
@@ -378,6 +409,7 @@ button{font:inherit;color:inherit}
       <p class="foot">Toque no nome para destacar a espécie no mapa. A caixa liga e desliga. A seta leva o mapa até onde a espécie está. <span class="warn">●</span> = há um ponto a confirmar em Notas.</p>
     </div>
     <div class="pane" id="p-mod" role="tabpanel" hidden></div>
+    <div class="pane" id="p-ava" role="tabpanel" hidden></div>
     <div class="pane notes" id="p-not" role="tabpanel" hidden></div>
   </aside>
 </main>
@@ -466,14 +498,14 @@ const patches = D.patches.map(([s,id,a,polys,lp,ol]) => {
       if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
     p.closePath();
   }
-  return {s,id,a,path:p,lp,ol,bb:[x0,y0,x1,y1],edge:prepEdges(polys[0][0]),rings:polys.flat()};
+  return {s,id,a,path:p,lp,ol,bb:[x0,y0,x1,y1],edge:prepEdges(polys[0][0]),rings:polys.flat(),key:'mancha:'+id};
 });
-const cells = D.cells.map(([m,a,r]) => {
+const cells = D.cells.map(([m,a,r], ci) => {
   const p=new Path2D(); let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9, cx=0, cy=0;
   for (let i=0;i<r.length;i+=2){ const x=r[i],y=r[i+1]; if(i===0)p.moveTo(x,y); else p.lineTo(x,y);
     if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; cx+=x; cy+=y; }
   p.closePath(); const n=r.length/2;
-  return {m, mod:m[0], a, path:p, bb:[x0,y0,x1,y1], c:[cx/n,cy/n], rings:[r]};
+  return {m, mod:m[0], a, path:p, bb:[x0,y0,x1,y1], c:[cx/n,cy/n], rings:[r], key:'mod:'+ci};
 });
 const plants = {}; // sp index -> Float32Array [x,y,r]
 for (const k in D.plants) plants[k] = D.plants[k];
@@ -508,7 +540,7 @@ for (const c of cells) for (const m of new Set(c.m)) grow(modStat[m].bb,...c.bb)
 const PLANT_BB = (() => { const bb=[1e9,1e9,-1e9,-1e9]; for (const st of stat) if (st.bb[0]<1e9) grow(bb,...st.bb); for (const m in modStat) if (modStat[m].bb[0]<1e9) grow(bb,...modStat[m].bb); return [bb[0]-10,bb[1]-10,bb[2]+10,bb[3]+10]; })();
 // ---------- state
 const S = { scale:1, tx:0, ty:0, vis:SP.map(()=>true), modVis:{A:true,B:true,C:true,D:true,E:true},
-  hl:null, sel:null, meas:null, rot:0, sun:false, L:{ortho:true,orthoop:.55,codes:true,orig:false,dims:false,tdist:false,paths:true,water:true,base:true,limit:true,topo:true} };
+  hl:null, sel:null, meas:null, rot:0, sun:false, L:{ortho:true,orthoop:.55,codes:true,orig:false,dims:false,tdist:false,prog:true,paths:true,water:true,base:true,limit:true,topo:true} };
 
 // ---------- canvas
 const wrap = document.getElementById('mapwrap'), cv = document.getElementById('map'), ctx = cv.getContext('2d');
@@ -580,6 +612,7 @@ function dimFor(kind, key){
 function draw(){
   const s = S.scale, px = 1/s;
   const SUN = S.sun, LW = SUN?1.8:1, FZ = SUN?1.3:1, HW = SUN?1.6:1;  // modo sol: linhas, letras e contornos maiores
+  const PROG = progOn();   // avanço da plantação: o que já está plantado fica esbatido e com um visto
   ctx.setTransform(1,0,0,1,0,0);
   ctx.fillStyle = COL.bg; ctx.fillRect(0,0,cv.width,cv.height);
   rcs(); ctx.setTransform(dpr*s*_rc,dpr*s*_rs,-dpr*s*_rs,dpr*s*_rc,dpr*S.tx,dpr*S.ty);
@@ -596,14 +629,14 @@ function draw(){
   for (const c of cells){
     const vis = c.m.split('').some(m=>S.modVis[m]); if(!vis || !inView(c.bb)) continue;
     const a = c.m.length>1 ? (S.hl&&S.hl.t==='mod'&&c.m.includes(S.hl.k)?1:dimFor('mod',c.mod)) : dimFor('mod',c.mod);
-    ctx.globalAlpha=a; ctx.fillStyle=modPattern(c.mod); ctx.fill(c.path);
+    ctx.globalAlpha=a*(PROG && isPlanted(c.key) ? .35 : 1); ctx.fillStyle=modPattern(c.mod); ctx.fill(c.path);
     ctx.strokeStyle=hexA(MODC[c.mod],SUN?1:.7); ctx.lineWidth=.9*LW*px; ctx.stroke(c.path);
   }
   ctx.globalAlpha=1;
   // herb patches
   for (const p of patches){
     if (!S.vis[p.s] || !inView(p.bb)) continue;
-    ctx.globalAlpha = dimFor('sp',p.s);
+    ctx.globalAlpha = dimFor('sp',p.s)*(PROG && isPlanted(p.key) ? .35 : 1);
     ctx.fillStyle = SP[p.s].color; ctx.fill(p.path,'evenodd');
     ctx.strokeStyle=SUN?'rgba(0,0,0,.9)':'rgba(25,28,20,.6)'; ctx.lineWidth=.7*LW*px; ctx.stroke(p.path);
   }
@@ -613,14 +646,18 @@ function draw(){
   for (const g of ['arv','arb']){
     SP.forEach((sp,i)=>{
       if (sp.g!==g || !S.vis[i] || !plants[i]) return;
-      const a=plants[i]; ctx.globalAlpha=dimFor('sp',i);
-      ctx.beginPath();
-      const minR = plantMinPx(g)*px;
-      for (let j=0;j<a.length;j+=3){ const x=a[j],y=a[j+1],r=Math.max(a[j+2],minR); if(x+r<vx0||x-r>vx1||y+r<vy0||y-r>vy1) continue; ctx.moveTo(x+r,y); ctx.arc(x,y,r,0,Math.PI*2); }
-      const ZS = SUN && s>=3, cd=(ZS?2.3:1.6)*px;
-      if (g==='arv'){ ctx.fillStyle=hexA(sp.color,SUN?.36:.22); ctx.fill(); ctx.strokeStyle=sp.color; ctx.lineWidth=1.6*(ZS?LW:1)*px; ctx.stroke();
-        ctx.beginPath(); for (let j=0;j<a.length;j+=3){ ctx.moveTo(a[j]+cd,a[j+1]); ctx.arc(a[j],a[j+1],cd,0,Math.PI*2);} ctx.fillStyle=sp.color; ctx.fill(); }
-      else { ctx.fillStyle=sp.color; ctx.fill(); if (!SUN || ZS){ ctx.strokeStyle=ZS?'rgba(0,0,0,.85)':'rgba(255,255,255,.95)'; ctx.lineWidth=(ZS?1.1:.9)*px; ctx.stroke(); } }
+      const a=plants[i], keys=PKEY[i], dimA=dimFor('sp',i);
+      const minR = plantMinPx(g)*px, ZS = SUN && s>=3, cd=(ZS?2.3:1.6)*px;
+      // com o avanço ligado: o que já está plantado fica esbatido (com um visto); o que falta plantar fica por cima, com a cor toda
+      for (const [want,alpha] of (PROG ? [[true,.35],[false,1]] : [[null,1]])){
+        ctx.globalAlpha=dimA*alpha;
+        const skip = j => want!==null && isPlanted(keys[j/3])!==want;
+        ctx.beginPath();
+        for (let j=0;j<a.length;j+=3){ if (skip(j)) continue; const x=a[j],y=a[j+1],r=Math.max(a[j+2],minR); if(x+r<vx0||x-r>vx1||y+r<vy0||y-r>vy1) continue; ctx.moveTo(x+r,y); ctx.arc(x,y,r,0,Math.PI*2); }
+        if (g==='arv'){ ctx.fillStyle=hexA(sp.color,SUN?.36:.22); ctx.fill(); ctx.strokeStyle=sp.color; ctx.lineWidth=1.6*(ZS?LW:1)*px; ctx.stroke();
+          ctx.beginPath(); for (let j=0;j<a.length;j+=3){ if (skip(j)) continue; ctx.moveTo(a[j]+cd,a[j+1]); ctx.arc(a[j],a[j+1],cd,0,Math.PI*2);} ctx.fillStyle=sp.color; ctx.fill(); }
+        else { ctx.fillStyle=sp.color; ctx.fill(); if (!SUN || ZS){ ctx.strokeStyle=ZS?'rgba(0,0,0,.85)':'rgba(255,255,255,.95)'; ctx.lineWidth=(ZS?1.1:.9)*px; ctx.stroke(); } }
+      }
     });
   }
   ctx.globalAlpha=1;
@@ -745,6 +782,16 @@ function draw(){
     for (let i=1;i<pts.length;i++){ const a=S.meas.pts[i-1], b=S.meas.pts[i]; distLabel(pts[i-1][0],pts[i-1][1],pts[i][0],pts[i][1],Math.hypot(b[0]-a[0],b[1]-a[1]),null,true); }
     pts.forEach(([x,y])=>{ ctx.beginPath(); ctx.arc(x,y,5*FZ,0,Math.PI*2); ctx.fillStyle='#1d4ed8'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke(); });
   }
+  if (PROG && s>2.2){
+    // visto verde sobre o que já está plantado (árvores, manchas e módulos)
+    const tick=(x,y,r)=>{ ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fillStyle='#2f6d0f'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x-r*.45,y+r*.02); ctx.lineTo(x-r*.1,y+r*.38); ctx.lineTo(x+r*.48,y-r*.35); ctx.strokeStyle='#fff'; ctx.lineWidth=Math.max(1.6,r*.28); ctx.lineCap='round'; ctx.lineJoin='round'; ctx.stroke(); ctx.lineCap='butt'; };
+    const tr=(SUN?8:6.5);
+    for (const k in PKEY){ const sp=SP[+k]; if (sp.g!=='arv' || !S.vis[+k]) continue; const a=plants[k];
+      PKEY[k].forEach((key,j)=>{ if (!isPlanted(key)) return; const sx=SX(a[j*3],a[j*3+1]), sy=SY(a[j*3],a[j*3+1]); if (sx<-10||sx>W+10||sy<-10||sy>H+10) return; tick(sx+Math.max(a[j*3+2]*s*.55,7),sy-Math.max(a[j*3+2]*s*.55,7),tr); }); }
+    if (s>3) for (const p of patches){ if (!S.vis[p.s] || !isPlanted(p.key)) continue; const sx=SX(p.lp[0],p.lp[1]), sy=SY(p.lp[0],p.lp[1]); if (sx<-10||sx>W+10||sy<-10||sy>H+10) continue; tick(sx, sy+12*FZ, tr); }
+    if (s>4) for (const c of cells){ if (!isPlanted(c.key)) continue; const sx=SX(c.c[0],c.c[1]), sy=SY(c.c[0],c.c[1]); if (sx<-10||sx>W+10||sy<-10||sy>H+10) continue; tick(sx+8, sy-8, tr*.85); }
+  }
   if (GUIDE.t){
     const T = S.gps ? guideTarget(S.gps.x,S.gps.y) : ((GUIDE.t==='plant'||GUIDE.t==='vertex') ? {x:GUIDE.x, y:GUIDE.y, inside:false} : null);
     if (T && !T.inside){
@@ -861,6 +908,7 @@ function speciesCard(i){
   return `<div class="kind">${KIND[sp.g]}</div><h2>${swHTML(i)}${esc(sp.name)}</h2>${cpBox(cp)}
     <dl><dt>Código</dt><dd><b>${esc(sp.code)}</b>${sp.lcode!==sp.code?` · no desenho «${esc(sp.lcode)}»`:''}</dd>
     <dt>No desenho</dt><dd>${drawn}</dd>
+    ${REG.cfg ? (()=>{ const C=regCounts(); const herb=sp.g==='herb'; const done=herb?C.per[i].a:C.per[i].n, tot=herb?st.a:st.count; return tot?`<dt>Plantado</dt><dd>${herb?fmt0(Math.round(done))+' de '+fmt0(Math.round(tot))+' m²':fmt0(done)+' de '+fmt0(tot)} · ${pct(done,tot)} %</dd>`:''; })() : ''}
     ${cp?`<dt>Área na lista</dt><dd>${fmt2(cp.a)} m² · ≈ ${fmt0(Math.round(cp.a*cp.d))} plantas${Math.abs(dif)>1?`<br><span class="diff">${dif>0?'+':'−'}${fmt1(Math.abs(dif))} m² em relação ao desenho</span>`:''}</dd>`:''}</dl>
     ${sp.g==='herb'?`<p class="credit">As medidas dos lados aparecem no mapa à medida que se aproxima. Toque numa mancha para ver os vértices numerados e a lista de lados.</p>`:''}
     ${galleryHTML(sp.id)}
@@ -894,6 +942,7 @@ function showInfo(o, at){
     <dt>Coordenadas</dt><dd class="coord">${coordTxt(a[j],a[j+1])}</dd></dl>
     ${o.nb && o.nb.length ? `<div class="sides"><div class="sides-h"><b>${sp.g==='arv'?'Árvores mais próximas':'Arbustos mais próximos'}</b><span>de centro a centro</span></div>
       <ol class="nbl">${o.nb.map(nb=>{ const q=PL[o.g][nb.n]; return `<li><i class="sw ${D.sp[q.s].g==='arv'?'tree':'shrub'}" style="${D.sp[q.s].g==='arv'?`border-color:${SP[q.s].color};background:${hexA(SP[q.s].color,.22)}`:`background:${SP[q.s].color}`}"></i><span>${esc(SP[q.s].name)}</span><b>${fmt2(nb.d)} m</b></li>`; }).join('')}</ol></div>` : ''}
+    ${regBox(o)}
     ${galleryHTML(sp.id)}
     ${sp.note?`<div class="note">${esc(sp.note)}</div>`:''}
     <div class="acts"><button class="btn primary" data-hl="${o.s}">Destacar ${esc(sp.code)}</button><button class="btn" data-guide>Guiar até aqui</button>${o.under!==undefined?`<button class="btn" data-under="${o.under}">Ver a mancha por baixo (${esc(SP[patches[o.under].s].code)})</button>`:''}</div>`;
@@ -908,6 +957,7 @@ function showInfo(o, at){
     <dt>Total desenhado</dt><dd>${st.n} ${st.n===1?'mancha':'manchas'} · ${fmt1(st.a)} m²${cp?` · ≈ ${fmt0(Math.round(st.a*cp.d))} plantas`:''}</dd>
     ${cp?`<dt>Área na lista</dt><dd>${fmt2(cp.a)} m² · ≈ ${fmt0(Math.round(cp.a*cp.d))} plantas${Math.abs(dif)>1?`<br><span class="diff">${dif>0?'+':'−'}${fmt1(Math.abs(dif))} m² em relação ao desenho</span>`:''}</dd>`:''}
     <dt>Etiqueta no desenho</dt><dd>${ol}</dd></dl>
+    ${regBox(o)}
     ${sidesHTML(p)}
     ${galleryHTML(sp.id)}
     ${cp&&cp.obs?`<div class="note">${esc(cp.obs)}</div>`:''}
@@ -930,6 +980,7 @@ function showInfo(o, at){
       <dl><dt>Sequência</dt><dd><b>${c.m.split('').join(' · ')}</b></dd><dt>Módulos</dt><dd>${nA} A + ${nB} B</dd><dt>Área da faixa</dt><dd>${fmt1(c.a)} m²</dd>
       <dt>Coordenadas</dt><dd class="coord">${coordTxt(wx,wy)}</dd></dl>
       <div class="note">No desenho esta faixa não está dividida: as letras alternam ao longo dela.</div>
+      ${regBox(o)}
       <div class="acts"><button class="btn" data-mod="A">Ver Módulo A</button><button class="btn" data-mod="B">Ver Módulo B</button><button class="btn" data-guide>Guiar até aqui</button></div>`;
     } else {
       const M=D.modules[c.mod];
@@ -937,6 +988,7 @@ function showInfo(o, at){
       <dl><dt>Esta célula</dt><dd>${fmt1(c.a)} m²</dd><dt>Esquema</dt><dd>${M.dim}</dd>
       <dt>Espécies</dt><dd>${M.list.map(([cd,n])=>`<b>${esc(cd)}</b> <i>${esc(n)}</i>`).join('<br>')}</dd>
       <dt>Coordenadas</dt><dd class="coord">${coordTxt(wx,wy)}</dd></dl>
+      ${regBox(o)}
       <div class="acts"><button class="btn primary" data-hlmod="${c.mod}">Destacar Módulo ${c.mod}</button><button class="btn" data-mod="${c.mod}">Ver esquema</button><button class="btn" data-guide>Guiar até aqui</button></div>`;
     }
   }
@@ -965,6 +1017,7 @@ info.addEventListener('click', e => {
   if (b.classList.contains('x')) return showInfo(null);
   if (b.classList.contains('ph')) return openLB(b.dataset.key, +b.dataset.j);
   if (b.dataset.guide!==undefined){ if (S.sel) guideStart(S.sel); return; }
+  if (b.dataset.reg!==undefined){ if (S.sel){ regSet(S.sel, b.dataset.reg==='1'); const box=b.closest('.regbox'); if (box) box.outerHTML=regBox(S.sel); } return; }
   if (b.dataset.gv!==undefined){ if (S.sel && (S.sel.t==='patch'||S.sel.t==='vertex')) guideStart({t:'vertex', i:S.sel.i, k:+b.dataset.gv}); return; }
   if (b.dataset.backpatch!==undefined){ const i=+b.dataset.backpatch; showInfo({t:'patch',i}, patches[i].lp); return; }
   if (b.dataset.under!==undefined){ const i=+b.dataset.under; const p=patches[i]; showInfo({t:'patch',i}, p.lp); return; }
@@ -1026,6 +1079,7 @@ const endPtr = e => {
   if (ptrs.size===0){
     if (!moved && downAt && e.type==='pointerup'){
       if (S.meas){ addMeasPoint(e.offsetX,e.offsetY); }
+      else if (REG.mode){ regTap(pick(e.offsetX,e.offsetY)); }
       else { const vx=vertexAt(e.offsetX,e.offsetY); if (vx) showInfo(vx); else { const o=pick(e.offsetX,e.offsetY); showInfo(o, toWorld(e.offsetX,e.offsetY)); } }
     }
     drag=null;
@@ -1048,7 +1102,7 @@ document.getElementById('zout').onclick=()=>zoomAt(1/1.6,W/2,H/2);
 document.getElementById('zfit').onclick=()=>fit(PLANT_BB, 14);
 const lyrbtn=document.getElementById('lyrbtn'), layers=document.getElementById('layers');
 lyrbtn.onclick=()=>{ layers.hidden=!layers.hidden; lyrbtn.setAttribute('aria-pressed',String(!layers.hidden)); };
-for (const k of ['ortho','codes','orig','dims','tdist','paths','water','base','limit','topo']){
+for (const k of ['ortho','codes','orig','dims','tdist','prog','paths','water','base','limit','topo']){
   const el=document.getElementById('L-'+k); el.checked=S.L[k]; el.onchange=()=>{ S.L[k]=el.checked; req(); };
 }
 document.getElementById('L-orthoop').oninput=e=>{ S.L.orthoop=e.target.value/100; req(); };
@@ -1302,6 +1356,7 @@ function gpsFix(pos){
   const w=whereTxt(x,y), weak=acc>15;
   gpsMsg(`<b>Está aqui</b> · precisão ± ${Math.max(1,Math.round(acc))} m${weak?' (sinal fraco)':''}${w?`<small>${w}</small>`:''}`, weak?'weak':'');
   if (GUIDE.t){ gpsEl.hidden=true; guideUpdate(true); }   // a guiar: o quadro do guia mostra o que interessa
+  if (REG.here) setTimeout(regHere, 0);
   if (G.follow) gpsCentre(); else req();
 }
 function gpsErr(e){
@@ -1512,11 +1567,241 @@ async function guideStart(o){
 function guideStop(){ GUIDE.t=null; guideEl.hidden=true; compassOff('guide'); if (S.gps && G.watch!==null) gpsEl.hidden=false; req(); }
 document.getElementById('guidex').onclick=guideStop;
 
+// ---------- registo do que já está plantado (partilhado pela equipa através da base de dados da We Garden)
+// Árvores e arbustos um a um; manchas e módulos inteiros. Funciona sem rede: os registos ficam numa fila
+// neste aparelho e seguem quando houver ligação.
+const SB_URL='https://swouvxexiuiqeljnvprl.supabase.co', SB_KEY='sb_publishable_KOddM7qzeYxcS7tHLoOAPA_S4aoPrG8', OBRA='ericeira-empa';
+const PKEY = {};   // índice da espécie -> chaves das plantas (arv:pinpin:12)
+for (const k in plants){ const sp=SP[+k]; if (sp.g==='herb') continue; PKEY[k]=Array.from({length:plants[k].length/3}, (_,j)=>`${sp.g}:${sp.id}:${j}`); }
+const todayISO = () => { const d=new Date(); return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10); };
+const fmtDate = s => s ? s.slice(8,10)+'/'+s.slice(5,7)+'/'+s.slice(0,4) : '';
+const REG = { cfg:null, map:new Map(), queue:[], last:null, dia:todayISO(), mode:false, busy:false, state:'', err:'', syncAt:null, undo:[], here:false, flash:0 };
+const LSK = 'wg-ericeira-registo';
+function regSave(){ try{ localStorage.setItem(LSK, JSON.stringify({cfg:REG.cfg, map:[...REG.map], queue:REG.queue, last:REG.last})); }catch(_){} }
+(function regLoad(){ try{ const o=JSON.parse(localStorage.getItem(LSK)||'null'); if (!o) return; REG.cfg=o.cfg||null; REG.map=new Map(o.map||[]); REG.queue=o.queue||[]; REG.last=o.last||null; }catch(_){} })();
+const isPlanted = k => { const m=REG.map.get(k); return !!(m && m.p); };
+const progOn = () => !!(REG.cfg && S.L.prog);
+
+function elemKey(o){
+  if (!o) return null;
+  if (o.t==='plant') return PKEY[o.s] ? PKEY[o.s][o.j] : null;
+  if (o.t==='patch') return patches[o.i].key;
+  if (o.t==='cell') return cells[o.i].key;
+  return null;
+}
+function elemName(o){
+  if (o.t==='plant'){ const sp=SP[o.s]; return `<i>${esc(sp.name)}</i> (${esc(sp.code)})`; }
+  if (o.t==='patch'){ const sp=SP[patches[o.i].s]; return `mancha ${esc(sp.code)} n.º ${patches[o.i].id}`; }
+  const c=cells[o.i]; return c.m.length>1 ? 'faixa de módulos A/B' : 'módulo '+c.mod;
+}
+function regItem(o, plantado){
+  const base={elem:elemKey(o), plantado, dia:REG.dia, por:REG.cfg.nome};
+  if (o.t==='plant'){ const sp=SP[o.s]; return {...base, tipo:sp.g==='arv'?'arvore':'arbusto', especie:`${sp.code} ${sp.name}`, n:1}; }
+  if (o.t==='patch'){ const p=patches[o.i], sp=SP[p.s], cp=CP[sp.id]; return {...base, tipo:'mancha', especie:`${sp.code} ${sp.name}`, area:+p.a.toFixed(2), n:cp?Math.round(p.a*cp.d):null}; }
+  const c=cells[o.i]; return {...base, tipo:'modulo', especie:c.m.length>1?'Faixa de módulos A/B':'Módulo '+c.mod, area:+c.a.toFixed(2), n:c.m.length};
+}
+function regSet(o, plantado, noUndo){
+  const k=elemKey(o); if (!k || !REG.cfg) return;
+  if (!noUndo) REG.undo.push({o, was:isPlanted(k)});
+  if (REG.undo.length>50) REG.undo.shift();
+  const it=regItem(o, plantado);
+  REG.map.set(k, {p:plantado, dia:it.dia, por:it.por, pend:true});
+  REG.queue=REG.queue.filter(q=>q.elem!==k); REG.queue.push(it);
+  regSave(); regRender(); req(); regSyncSoon();
+}
+async function rpc(fn, body){
+  const r=await fetch(`${SB_URL}/rest/v1/rpc/${fn}`, {method:'POST', headers:{apikey:SB_KEY, 'Content-Type':'application/json'}, body:JSON.stringify(body)});
+  const t=await r.text(); let j=null; try{ j=JSON.parse(t); }catch(_){}
+  if (!r.ok){ const e=new Error((j&&j.message)||t||('HTTP '+r.status)); e.code=j&&j.message; throw e; }
+  return j;
+}
+let regTimer=0;
+function regSyncSoon(){ clearTimeout(regTimer); regTimer=setTimeout(regSync, 1200); }
+async function regSync(){
+  if (!REG.cfg || REG.busy) return;
+  if (!navigator.onLine){ REG.state='offline'; regRender(); return; }
+  REG.busy=true; REG.state='sync'; regRender();
+  try{
+    while (REG.queue.length){
+      const batch=REG.queue.slice(0,300);
+      await rpc('plantacao_marcar', {p_obra:OBRA, p_codigo:REG.cfg.codigo, p_itens:batch});
+      REG.queue=REG.queue.filter(q=>!batch.includes(q));
+      for (const q of batch){ if (!REG.queue.some(x=>x.elem===q.elem)){ const m=REG.map.get(q.elem); if (m) delete m.pend; } }
+      regSave();
+    }
+    const rows=await rpc('plantacao_ler', {p_obra:OBRA, p_codigo:REG.cfg.codigo, p_desde:REG.last});
+    for (const r of rows){
+      if (!REG.last || r.atualizado>REG.last) REG.last=r.atualizado;
+      if (REG.queue.some(x=>x.elem===r.elem)) continue;
+      REG.map.set(r.elem, {p:r.plantado, dia:r.dia, por:r.por});
+    }
+    REG.state='ok'; REG.err=''; REG.syncAt=new Date();
+  }catch(e){
+    if (e.code==='codigo_invalido'){ REG.state='codigo'; }
+    else { REG.state = navigator.onLine ? 'erro' : 'offline'; REG.err=e.message; }
+  }finally{ REG.busy=false; regSave(); regRender(); req(); }
+}
+setInterval(()=>{ if (document.visibilityState==='visible') regSync(); }, 45000);
+addEventListener('online', regSync);
+document.addEventListener('visibilitychange', ()=>{ if (document.visibilityState==='visible') regSync(); });
+
+// contagens para o separador «Avanço» e para a exportação
+function regCounts(){
+  const per=SP.map(()=>({n:0,a:0}));
+  let arv=0, arb=0, area=0, mods=0, modsTot=0; const modL={A:[0,0],B:[0,0],C:[0,0],D:[0,0],E:[0,0]};
+  for (const k in PKEY){ const g=SP[+k].g; for (const key of PKEY[k]) if (isPlanted(key)){ per[+k].n++; if (g==='arv') arv++; else arb++; } }
+  for (const p of patches) if (isPlanted(p.key)){ per[p.s].a+=p.a; area+=p.a; }
+  for (const c of cells){ const on=isPlanted(c.key); for (const m of c.m){ modL[m][1]++; modsTot++; if (on){ modL[m][0]++; mods++; } } }
+  let arvT=0, arbT=0; SP.forEach((sp,i)=>{ if (sp.g==='arv') arvT+=stat[i].count; else if (sp.g==='arb') arbT+=stat[i].count; });
+  const areaT=patches.reduce((s,p)=>s+p.a,0);
+  return {per, arv, arb, area, mods, arvT, arbT, areaT, modsTot, modL};
+}
+const pct = (a,b) => b ? Math.round(100*a/b) : 0;
+const bar = (a,b) => `<span class="pbar"><i style="width:${Math.min(100,b?100*a/b:0).toFixed(1)}%"></i></span>`;
+
+// ---------- separador «Avanço»
+const avaEl=document.getElementById('p-ava'), regbtn=document.getElementById('regbtn');
+const regChip=document.getElementById('regchip'), regTxt=document.getElementById('regtxt');
+function regStatusHTML(){
+  const n=REG.queue.length, pend = n ? ` · <b>${n}</b> ${n===1?'registo':'registos'} por enviar` : '';
+  if (REG.state==='codigo') return `<span class="warn">O código da obra mudou. Volte a entrar.</span>`;
+  if (REG.state==='offline') return `<span class="warn">Sem rede${pend}. Seguem quando houver ligação.</span>`;
+  if (REG.state==='erro') return `<span class="warn">Não foi possível sincronizar${pend}. Tenta de novo sozinho.</span>`;
+  if (REG.state==='sync') return `A sincronizar…${pend}`;
+  if (REG.syncAt) return `Sincronizado às ${REG.syncAt.toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'})}${pend}`;
+  return pend ? pend.slice(3) : '';
+}
+function regRender(){
+  regbtn.hidden = !REG.cfg;
+  regbtn.setAttribute('aria-pressed', String(REG.mode));
+  if (REG.mode && REG.cfg) regChipRender(); else regChip.hidden=true;
+  if (!REG.cfg || REG.state==='codigo'){
+    const nome = REG.cfg ? REG.cfg.nome : '';
+    avaEl.innerHTML = `<h3 class="ava-h">Registo da plantação</h3>
+      <p class="ava-p">Marque no mapa o que já está plantado: árvores e arbustos um a um, manchas e módulos inteiros. O registo é partilhado por todos os telemóveis com o código da obra e funciona sem rede (envia quando houver ligação).</p>
+      ${REG.state==='codigo'?'<p class="ava-msg warn">O código da obra mudou. Introduza o código novo.</p>':''}
+      <form class="ava-form" id="regform" autocomplete="off">
+        <label>O seu nome<input id="regnome" maxlength="40" required value="${esc(nome)}" placeholder="ex.: João Silva"></label>
+        <label>Código da obra<input id="regcod" required autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="xxxx-xxxx"></label>
+        <button class="btn primary" type="submit">Entrar</button>
+        <p class="ava-msg" id="regmsg" role="status"></p>
+      </form>`;
+    document.getElementById('regform').onsubmit=e=>{ e.preventDefault(); regLogin(document.getElementById('regnome').value, document.getElementById('regcod').value); };
+    return;
+  }
+  const C=regCounts();
+  const sum = `<div class="sum ava-sum">
+      <div><b>${fmt0(C.arv)} <small>/ ${fmt0(C.arvT)}</small></b><span>árvores · ${pct(C.arv,C.arvT)} %</span>${bar(C.arv,C.arvT)}</div>
+      <div><b>${fmt0(C.arb)} <small>/ ${fmt0(C.arbT)}</small></b><span>arbustos · ${pct(C.arb,C.arbT)} %</span>${bar(C.arb,C.arbT)}</div>
+      <div><b>${fmt0(Math.round(C.area))} <small>/ ${fmt0(Math.round(C.areaT))} m²</small></b><span>manchas · ${pct(C.area,C.areaT)} %</span>${bar(C.area,C.areaT)}</div>
+      <div><b>${fmt0(C.mods)} <small>/ ${fmt0(C.modsTot)}</small></b><span>módulos · ${pct(C.mods,C.modsTot)} %</span>${bar(C.mods,C.modsTot)}</div></div>`;
+  const rowsSp = SP.map((sp,i)=>({sp,i})).filter(r=>r.sp.g!=='herb' ? stat[r.i].count : stat[r.i].n)
+    .map(({sp,i})=>{ const herb=sp.g==='herb', done=herb?C.per[i].a:C.per[i].n, tot=herb?stat[i].a:stat[i].count;
+      return `<tr><td><b>${esc(sp.code)}</b> <i>${esc(sp.name)}</i></td><td class="n">${herb?fmt0(Math.round(done))+' / '+fmt0(Math.round(tot))+' m²':fmt0(done)+' / '+fmt0(tot)}</td><td class="pc">${bar(done,tot)}${pct(done,tot)} %</td></tr>`; }).join('');
+  const rowsMod = Object.entries(C.modL).filter(([m,v])=>v[1]).map(([m,v])=>`<tr><td><b>Módulo ${m}</b></td><td class="n">${fmt0(v[0])} / ${fmt0(v[1])}</td><td class="pc">${bar(v[0],v[1])}${pct(v[0],v[1])} %</td></tr>`).join('');
+  avaEl.innerHTML = `<div class="ava-top"><div>A registar como <b>${esc(REG.cfg.nome)}</b> · <button class="lnk" id="regsair">mudar</button></div><div class="ava-sync">${regStatusHTML()}</div></div>
+    <div class="ava-ctl"><button class="btn ${REG.mode?'':'primary'}" id="regmodebtn">${REG.mode?'Desligar modo registo':'Ligar modo registo'}</button>
+      <label>Data a registar <input type="date" id="regdia" value="${REG.dia}" max="${todayISO()}"></label></div>
+    <p class="ava-p">Com o modo registo ligado, cada toque numa planta, mancha ou módulo marca-o como plantado (outro toque desmarca). Também se marca na ficha de cada elemento. No mapa, o que já está plantado fica esbatido e com um visto verde.</p>
+    ${sum}
+    <table class="ava-t"><thead><tr><th>Espécie</th><th class="n">Plantado</th><th></th></tr></thead><tbody>${rowsSp}${rowsMod}</tbody></table>
+    <div class="acts"><button class="btn" id="regcsv">Exportar para Excel (CSV)</button><button class="btn" id="regnow">Sincronizar agora</button></div>
+    <p class="foot">O registo fica na base de dados da We Garden. Num terreno sem rede, os registos ficam guardados neste telemóvel e seguem sozinhos quando houver ligação.</p>`;
+  document.getElementById('regsair').onclick=()=>{
+    if (REG.queue.length && !confirm(`Há ${REG.queue.length} registos por enviar neste telemóvel. Se mudar de nome agora, seguem com o nome antigo quando houver rede. Continuar?`)) return;
+    REG.cfg=null; REG.mode=false; regSave(); regRender(); req(); };
+  document.getElementById('regmodebtn').onclick=()=>regMode(!REG.mode);
+  document.getElementById('regdia').onchange=e=>{ REG.dia=e.target.value||todayISO(); regRender(); };
+  document.getElementById('regcsv').onclick=regCSV;
+  document.getElementById('regnow').onclick=regSync;
+}
+async function regLogin(nome, codigo){
+  const msg=document.getElementById('regmsg'); nome=nome.trim(); codigo=codigo.trim();
+  if (!nome || !codigo){ msg.textContent='Escreva o nome e o código.'; return; }
+  msg.textContent='A verificar…'; msg.className='ava-msg';
+  try{
+    const ok=await rpc('plantacao_verificar', {p_obra:OBRA, p_codigo:codigo});
+    if (!ok){ msg.textContent='Código errado. Confirme com o responsável da obra.'; msg.className='ava-msg warn'; return; }
+    REG.cfg={nome, codigo}; REG.state=''; regSave(); regRender(); req(); regSync();
+  }catch(e){
+    msg.className='ava-msg warn';
+    msg.innerHTML = inFrame() ? `O registo só funciona no site da obra: ${siteLink()}` : 'Sem ligação. A primeira entrada precisa de rede; depois funciona sem ela.';
+  }
+}
+function regMode(on){
+  REG.mode=!!on && !!REG.cfg;
+  if (REG.mode){ if (S.meas) setMeasure(false); showInfo(null); }
+  regRender(); req();
+}
+function regChipRender(){
+  regChip.hidden=false;
+  if (REG.flash && Date.now()<REG.flash) return;
+  const n=REG.queue.length;
+  regTxt.innerHTML=`<b>Modo registo</b> · toque numa planta, mancha ou módulo para marcar ou desmarcar<small>Data ${fmtDate(REG.dia)} · ${esc(REG.cfg.nome)}${n?` · ${n} por enviar`:''}</small>`;
+  document.getElementById('regundo').disabled = !REG.undo.length;
+}
+function regFlash(html){ REG.flash=Date.now()+2600; regTxt.innerHTML=html; setTimeout(()=>{ if (REG.mode) regChipRender(); }, 2700); }
+function regTap(o){
+  if (!o || !['plant','patch','cell'].includes(o.t)){ regFlash('Aqui não há nada para marcar.<small>Toque numa árvore, arbusto, mancha ou módulo.</small>'); return; }
+  const k=elemKey(o), now=!isPlanted(k);
+  regSet(o, now);
+  regFlash(`<b>${now?'✓ Plantado':'Desmarcado'}</b> · ${elemName(o)}<small>${now?`a ${fmtDate(REG.dia)} por ${esc(REG.cfg.nome)}`:'volta a ficar por plantar'}</small>`);
+}
+regbtn.onclick=()=>regMode(!REG.mode);
+document.getElementById('regx').onclick=()=>regMode(false);
+document.getElementById('regundo').onclick=()=>{ const u=REG.undo.pop(); if (!u) return; regSet(u.o, u.was, true); regFlash(`<b>Desfeito</b> · ${elemName(u.o)}<small>${u.was?'volta a estar plantado':'volta a ficar por plantar'}</small>`); };
+// «Marcar onde estou»: abre a ficha da planta por plantar mais próxima (até 6 m ou a precisão do GPS), ou da mancha/módulo onde se está
+document.getElementById('reghere').onclick=()=>{ if (S.gps) regHere(); else { REG.here=true; if (G.watch===null) gpsbtn.click(); regFlash('A obter a sua posição…<small>Ao ar livre costuma bastar meio minuto.</small>'); } };
+function regHere(){
+  REG.here=false; const g=S.gps; if (!g) return;
+  const lim=Math.max(6, Math.min(g.acc||0, 12)); let best=null;
+  for (const grp of ['arv','arb']) for (const nb of nearest(grp,g.x,g.y,10,lim,-1)){ const p=PL[grp][nb.n]; if (isPlanted(PKEY[p.s][p.j])) continue; if (!best || nb.d<best.d) best={...nb, grp, p}; }
+  let o=null;
+  if (best) o={t:'plant', s:best.p.s, j:best.p.j};
+  else {
+    hit.setTransform(1,0,0,1,0,0);
+    const pi=patches.findIndex(p=>{ const b=p.bb; return g.x>=b[0]&&g.x<=b[2]&&g.y>=b[1]&&g.y<=b[3]&&hit.isPointInPath(p.path,g.x,g.y,'evenodd'); });
+    if (pi>=0) o={t:'patch', i:pi};
+    else { const ci=cells.findIndex(c=>{ const b=c.bb; return g.x>=b[0]&&g.x<=b[2]&&g.y>=b[1]&&g.y<=b[3]&&hit.isPointInPath(c.path,g.x,g.y); }); if (ci>=0) o={t:'cell', i:ci}; }
+  }
+  if (!o){ regFlash(`Nada por plantar a menos de ${Math.round(lim)} m.<small>Aproxime-se da planta ou toque nela no mapa.</small>`); return; }
+  const at = o.t==='plant' ? [plants[o.s][o.j*3], plants[o.s][o.j*3+1]] : o.t==='patch' ? patches[o.i].lp : cells[o.i].c;
+  centreOn(at[0], at[1]);
+  showInfo(o, at);
+  regFlash(`Confirme na ficha: ${elemName(o)}${best?`<small>a ${fmt1(best.d)} m de si</small>`:''}`);
+}
+// caixa de estado nas fichas
+function regBox(o){
+  if (!REG.cfg) return '';
+  const k=elemKey(o); if (!k) return '';
+  const m=REG.map.get(k), on=!!(m&&m.p);
+  return `<div class="regbox ${on?'ok':''}"><span>${on?`<b>✓ Plantado</b> a ${fmtDate(m.dia)} · ${esc(m.por||'')}${m.pend?' · por enviar':''}`:'<b>Por plantar</b>'}</span><button class="btn ${on?'':'primary'}" data-reg="${on?0:1}">${on?'Desmarcar':'Marcar como plantado'}</button></div>`;
+}
+// exportação para Excel (CSV com ; e vírgula decimal)
+function regCSV(){
+  const C=regCounts(), q=v=>{ const s=v==null?'':String(v); return /[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }, num=v=>v==null?'':String(v).replace('.',',');
+  const L=[];
+  L.push(['Parque Ecológico da Ericeira — avanço da plantação', '', '', '', `exportado a ${fmtDate(todayISO())}`]);
+  L.push([]); L.push(['Resumo por espécie']); L.push(['Grupo','Código','Espécie','Unidade','No plano','Plantado','%']);
+  SP.forEach((sp,i)=>{ const herb=sp.g==='herb'; const tot=herb?stat[i].a:stat[i].count; if (!tot) return; const done=herb?C.per[i].a:C.per[i].n;
+    L.push([herb?'Herbácea/subarbusto':sp.g==='arv'?'Árvore':'Arbusto', sp.code, sp.name, herb?'m²':'un', num(herb?tot.toFixed(2):tot), num(herb?done.toFixed(2):done), pct(done,tot)]); });
+  Object.entries(C.modL).forEach(([m,v])=>{ if (v[1]) L.push(['Módulo', m, 'Módulo '+m, 'módulos', v[1], v[0], pct(v[0],v[1])]); });
+  L.push([]); L.push(['Elementos plantados']); L.push(['Tipo','Elemento','Código','Espécie / módulo','Área (m²)','Plantas (estimativa)','Plantado em','Registado por']);
+  for (const k in PKEY){ const sp=SP[+k]; PKEY[k].forEach((key,j)=>{ const m=REG.map.get(key); if (m&&m.p) L.push([sp.g==='arv'?'Árvore':'Arbusto', `${sp.code} n.º ${j+1}`, sp.code, sp.name, '', 1, fmtDate(m.dia), m.por]); }); }
+  patches.forEach(p=>{ const m=REG.map.get(p.key); if (m&&m.p){ const sp=SP[p.s], cp=CP[sp.id]; L.push(['Mancha', `n.º ${p.id}`, sp.code, sp.name, num(p.a.toFixed(2)), cp?Math.round(p.a*cp.d):'', fmtDate(m.dia), m.por]); } });
+  cells.forEach((c,i)=>{ const m=REG.map.get(c.key); if (m&&m.p) L.push(['Módulo', c.m.length>1?`faixa A/B (${c.m.length} módulos)`:`célula ${i+1}`, c.m.length>1?'A/B':c.mod, c.m.length>1?'Faixa de módulos A/B':'Módulo '+c.mod, num(c.a.toFixed(2)), '', fmtDate(m.dia), m.por]); });
+  const csv='﻿'+L.map(r=>r.map(q).join(';')).join('\r\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`avanco-plantacao-ericeira-${todayISO()}.csv`; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+regRender();
+if (REG.cfg) regSync();
+
 // ---------- sem rede (só no site publicado, que tem manifesto e service worker)
 (function(){
   const el=document.getElementById('offl');
   if (!document.querySelector('link[rel="manifest"]') || !('serviceWorker' in navigator) || !window.caches) return;
-  const BUILD='28/10/2026 16:23';
+  const BUILD='28/10/2026 16:40';
   const urls=[...new Set(Object.values(FLORA).flatMap(F=>F.ph.map(p=>p.f).filter(Boolean)))];
   const set=(h,k)=>{ el.hidden=false; el.className='offl'+(k?' '+k:''); el.innerHTML=h; };
   const ios=/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
@@ -1565,10 +1850,10 @@ document.addEventListener('keydown',e=>{ if(lb.hidden) return; if(e.key==='Escap
 
 // ---------- tabs
 function openTab(k){
-  for (const [t,p] of [['esp','p-esp'],['mod','p-mod'],['not','p-not']]){
+  for (const [t,p] of [['esp','p-esp'],['mod','p-mod'],['not','p-not'],['ava','p-ava']]){
     document.getElementById('t-'+t).setAttribute('aria-selected', String(t===k)); document.getElementById(p).hidden = t!==k; }
 }
-for (const t of ['esp','mod','not']) document.getElementById('t-'+t).onclick=()=>openTab(t);
+for (const t of ['esp','mod','not','ava']) document.getElementById('t-'+t).onclick=()=>openTab(t);
 
 buildLegend(); syncLegend(); resize();
 })();
