@@ -72,7 +72,7 @@ button{font:inherit;color:inherit}
 .sun .gps,.sun .meas,.sun .info,.sun .layers,.sun .hl-chip{border:2px solid #000}
 .sun .ttl h1{font-weight:600}
 .sun .cpbox b{white-space:nowrap}
-@media (min-width: 861px){ .sun .info{right:60px} }
+@media (min-width: 861px){ .mapwrap > .info{right:60px} }   /* a ficha fica à esquerda da coluna de botões */
 
 .app{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 392px}
 .mapwrap{position:relative;min-width:0;min-height:0;background:var(--map-bg);overflow:hidden;touch-action:none}
@@ -194,11 +194,22 @@ button{font:inherit;color:inherit}
 .meas{width:auto;background:var(--surface);border:1px solid var(--line-strong);border-radius:8px;box-shadow:var(--shadow);padding:10px 12px}
 .meas-h{display:flex;justify-content:space-between;align-items:center}
 .meas-h b{font-family:var(--f-display);font-weight:500;font-size:14px}
-.meas-h button{border:none;background:none;font-size:18px;cursor:pointer;color:var(--muted);width:28px;height:28px;border-radius:6px}
-.meas-h button:hover{background:var(--chip)}
+.meas-h > button{border:none;background:none;font-size:18px;cursor:pointer;color:var(--muted);width:28px;height:28px;border-radius:6px}
+.meas-h > button:hover{background:var(--chip)}
 .meas p{margin:6px 0 8px;font-size:13px;color:var(--muted)}
 .meas-tot{font-family:var(--f-display);font-size:20px;font-weight:500;color:#1d4ed8}
-.meas-a{display:flex;gap:6px}
+.meas-a{display:flex;gap:6px;flex-wrap:wrap}
+.meas-a .btn[hidden]{display:none}
+.seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:7px;overflow:hidden}
+.seg button{border:none;background:var(--surface);padding:5px 12px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted)}
+.seg button+button{border-left:1px solid var(--line-strong)}
+.seg button[aria-pressed="true"]{background:var(--verde-ink);color:var(--paper)}
+.zt{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;font-variant-numeric:tabular-nums}
+.zt th{text-align:left;font-size:11.5px;color:var(--muted);font-weight:600;padding:4px;border-bottom:1px solid var(--line)}
+.zt td{padding:4px;border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent);vertical-align:top}
+.zt .n{text-align:right;white-space:nowrap}
+.zt tr.zg td{font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding-top:12px;border-bottom:1px solid var(--line)}
+.zt .sub{font-size:11.5px;color:var(--muted)}
 .sides{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
 .sides-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
 .sides-h b{font-size:13.5px}
@@ -349,7 +360,7 @@ button{font:inherit;color:inherit}
       <button id="zfit" title="Ver tudo" aria-label="Ver tudo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
       <button id="gpsbtn" title="Onde estou" aria-label="Onde estou" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg></button>
       <button id="rotbtn" title="Rodar o mapa com a direção do telemóvel" aria-label="Rodar o mapa com a direção do telemóvel" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9.5"/><path d="M12 4.5 15 12H9z" fill="currentColor" stroke="none"/><path d="M12 19.5 9.3 12.8h5.4z" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
-      <button id="rulerbtn" title="Medir distância" aria-label="Medir distância" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17 17 3l4 4L7 21z"/><path d="m7 13 2 2M10 10l2 2M13 7l2 2"/></svg></button>
+      <button id="rulerbtn" title="Medir distância ou selecionar uma zona" aria-label="Medir distância ou selecionar uma zona" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17 17 3l4 4L7 21z"/><path d="m7 13 2 2M10 10l2 2M13 7l2 2"/></svg></button>
       <button id="regbtn" title="Modo registo: marcar o que já está plantado" aria-label="Modo registo" aria-pressed="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="m7.5 12.5 3 3 6-7"/></svg></button>
       <button id="lyrbtn" title="Camadas" aria-label="Camadas" aria-pressed="false" aria-controls="layers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 13 9 5 9-5"/></svg></button>
     </div>
@@ -374,9 +385,9 @@ button{font:inherit;color:inherit}
     <div class="gps" id="gps" hidden role="status" aria-live="polite"><i class="gps-dot" id="gpsdot"></i><div class="gps-t" id="gpstxt"></div><button id="gpsx" aria-label="Desligar localização" title="Desligar localização">×</button></div>
     <div class="gps" id="rotmsg" hidden role="status" aria-live="polite"><i class="gps-dot rot" id="rotdot"></i><div class="gps-t" id="rottxt"></div><button id="rotx" aria-label="Fechar" title="Fechar">×</button></div>
     <div class="meas" id="meas" hidden>
-      <div class="meas-h"><b>Medir distância</b><button id="measx" aria-label="Fechar medição">×</button></div>
+      <div class="meas-h"><div class="seg" role="group" aria-label="O que medir"><button id="mz-d" aria-pressed="true">Distância</button><button id="mz-z" aria-pressed="false">Zona</button></div><button id="measx" aria-label="Fechar medição">×</button></div>
       <p id="meastxt">Toque no mapa para marcar pontos. Perto de uma árvore ou arbusto, o ponto fica no centro da planta.</p>
-      <div class="meas-a"><button class="btn" id="measundo">Desfazer</button><button class="btn" id="measclr">Limpar</button></div>
+      <div class="meas-a"><button class="btn" id="measundo">Desfazer</button><button class="btn" id="measclr">Limpar</button><button class="btn primary" id="measlist" hidden>Ver lista</button></div>
     </div>
     </div>
     <div class="hl-chip" id="hlchip" hidden><i class="sw" id="hlsw"></i><span id="hltxt"></span><button id="hlclear">Mostrar tudo</button></div>
@@ -498,7 +509,7 @@ const patches = D.patches.map(([s,id,a,polys,lp,ol]) => {
       if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
     p.closePath();
   }
-  return {s,id,a,path:p,lp,ol,bb:[x0,y0,x1,y1],edge:prepEdges(polys[0][0]),rings:polys.flat(),key:'mancha:'+id};
+  return {s,id,a,path:p,lp,ol,bb:[x0,y0,x1,y1],edge:prepEdges(polys[0][0]),rings:polys.flat(),polys,key:'mancha:'+id};
 });
 const cells = D.cells.map(([m,a,r], ci) => {
   const p=new Path2D(); let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9, cx=0, cy=0;
@@ -775,7 +786,14 @@ function draw(){
     for (const nb of S.sel.nb){ const q=PL[S.sel.g][nb.n]; ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(SX(q.x,q.y),SY(q.x,q.y)); ctx.stroke(); }
     for (const nb of S.sel.nb){ const q=PL[S.sel.g][nb.n]; distLabel(ax,ay,SX(q.x,q.y),SY(q.x,q.y),nb.d,placed,true); }
   }
-  if (S.meas && S.meas.pts.length){
+  if (S.meas && S.meas.mode==='zona' && S.meas.pts.length){
+    // zona: polígono fechado a laranja, com a medida de cada lado
+    const W0=S.meas.pts, pts=W0.map(([x,y])=>[SX(x,y),SY(x,y)]), closed=pts.length>=3, ZC='#c2410c';
+    ctx.beginPath(); pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y)); if (closed){ ctx.closePath(); ctx.fillStyle='rgba(234,88,12,.14)'; ctx.fill(); }
+    ctx.lineJoin='round'; ctx.strokeStyle='#fff'; ctx.lineWidth=5*LW; ctx.stroke(); ctx.strokeStyle=ZC; ctx.lineWidth=2.5*LW; ctx.setLineDash([8*LW,5*LW]); ctx.stroke(); ctx.setLineDash([]);
+    const n=pts.length; for (let i=0;i<(closed?n:n-1);i++){ const j=(i+1)%n, a=W0[i], b=W0[j]; distLabel(pts[i][0],pts[i][1],pts[j][0],pts[j][1],Math.hypot(b[0]-a[0],b[1]-a[1]),null,false); }
+    pts.forEach(([x,y])=>{ ctx.beginPath(); ctx.arc(x,y,5*FZ,0,Math.PI*2); ctx.fillStyle=ZC; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke(); });
+  } else if (S.meas && S.meas.pts.length){
     const pts=S.meas.pts.map(([x,y])=>[SX(x,y),SY(x,y)]);
     ctx.strokeStyle='#ffffff'; ctx.lineWidth=5*LW; ctx.beginPath(); pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y)); ctx.stroke();
     ctx.strokeStyle='#1d4ed8'; ctx.lineWidth=2.5*LW; ctx.beginPath(); pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y)); ctx.stroke();
@@ -928,9 +946,11 @@ function coordTxt(X,Y){ const mx = Y + D.X0, my = X + D.Y0; return `M ${fmt1(mx)
 function showInfo(o, at){
   if (o && o.t==='plant'){ const g=SP[o.s].g; const pi=plantIndex(o.s,o.j); const p=PL[g][pi]; o.g=g; o.pi=pi; o.nb=nearest(g,p.x,p.y,4,30,pi); }
   S.sel = o; req();
+  delete info.dataset.zone;
   if (!o){ info.hidden=true; return; }
   let h='';
   const [wx,wy] = at || [0,0];
+  if (o.t==='zone'){ S.sel=null; req(); info.innerHTML = `<button class="x" aria-label="Fechar">×</button>` + zoneCard(); info.hidden=false; info.dataset.zone='1'; return; }
   if (o.t==='species'){ S.sel=null; req(); info.innerHTML = `<button class="x" aria-label="Fechar">×</button>` + speciesCard(o.s); info.hidden=false; info.scrollTop=0; return; }
   if (o.t==='mspecies'){ S.sel=null; req(); info.innerHTML = `<button class="x" aria-label="Fechar">×</button>` + modSpeciesCard(o.key,o.code,o.mod); info.hidden=false; info.scrollTop=0; if (narrowMQ.matches) setTimeout(()=>info.scrollIntoView({behavior:'smooth',block:'nearest'}),50); return; }
   if (o.t==='plant'){
@@ -1003,7 +1023,7 @@ narrowMQ.addEventListener?.('change', placeInfo); placeInfo();
 // Afasta a mancha selecionada de debaixo da ficha (computador)
 function keepVisible(bb){
   if (narrowMQ.matches || info.hidden) return;
-  const cw = info.offsetWidth + 24; const free = W - cw;
+  const cw = info.offsetWidth + 72; const free = W - cw;
   const cx=[[bb[0],bb[1]],[bb[2],bb[1]],[bb[0],bb[3]],[bb[2],bb[3]]].map(([x,y])=>[SX(x,y),SY(x,y)]);
   const x0=Math.min(...cx.map(c=>c[0])), x1=Math.max(...cx.map(c=>c[0])), y0=Math.min(...cx.map(c=>c[1])), y1=Math.max(...cx.map(c=>c[1]));
   let dx = 0, dy = 0;
@@ -1014,7 +1034,9 @@ function keepVisible(bb){
 }
 info.addEventListener('click', e => {
   const b = e.target.closest('button'); if(!b) return;
-  if (b.classList.contains('x')) return showInfo(null);
+  if (b.classList.contains('x')){ if (info.dataset.zone) info.dataset.zoneClosed='1'; return showInfo(null); }
+  if (b.dataset.zcsv!==undefined) return zoneCSV();
+  if (b.dataset.zclr!==undefined){ if (S.meas){ S.meas.pts=[]; delete info.dataset.zoneClosed; showInfo(null); updMeas(); req(); } return; }
   if (b.classList.contains('ph')) return openLB(b.dataset.key, +b.dataset.j);
   if (b.dataset.guide!==undefined){ if (S.sel) guideStart(S.sel); return; }
   if (b.dataset.reg!==undefined){ if (S.sel){ regSet(S.sel, b.dataset.reg==='1'); const box=b.closest('.regbox'); if (box) box.outerHTML=regBox(S.sel); } return; }
@@ -1268,27 +1290,170 @@ document.getElementById('q').addEventListener('input', e => {
     <p>Rega, drenagem, pavimentos, mobiliário e cotas não entram neste mapa. Ficaram só os caminhos existentes, as linhas de água, os arruamentos e o limite de intervenção, para orientação. Os nomes científicos seguem a legenda do projeto, com a grafia corrigida onde havia gralhas evidentes (por exemplo, «milefolium» passou a «millefolium» e «puleginoides» passou a «pulegioides»).</p>`;
 })();
 
-// ---------- medir distâncias
+// ---------- medir distâncias e selecionar uma zona
 const measEl=document.getElementById('meas'), rulerbtn=document.getElementById('rulerbtn');
+let measMode='dist';
 function setMeasure(on){
-  S.meas = on ? {pts:[]} : null; measEl.hidden=!on; rulerbtn.setAttribute('aria-pressed',String(on));
-  cv.classList.toggle('measuring',on); if (on){ showInfo(null); } updMeas(); req();
+  if (on && REG.mode) regMode(false);
+  delete info.dataset.zoneClosed;
+  S.meas = on ? {pts:[], mode:measMode} : null; measEl.hidden=!on; rulerbtn.setAttribute('aria-pressed',String(on));
+  cv.classList.toggle('measuring',on); showInfo(null); updMeas(); req();
+}
+function setMeasMode(m){
+  measMode=m; delete info.dataset.zoneClosed; if (S.meas){ S.meas.mode=m; S.meas.pts=[]; }
+  document.getElementById('mz-d').setAttribute('aria-pressed', String(m==='dist'));
+  document.getElementById('mz-z').setAttribute('aria-pressed', String(m==='zona'));
+  showInfo(null); updMeas(); req();
 }
 function addMeasPoint(sx,sy){
-  let [x,y]=toWorld(sx,sy); const tol=14/S.scale; let best=null;
-  for (const g of ['arv','arb']) for (const nb of nearest(g,x,y,1,Math.max(tol,0.5),-1)){ if (!best||nb.d<best.d) best={...nb,g}; }
-  if (best && best.d<=tol){ const p=PL[best.g][best.n]; x=p.x; y=p.y; }
+  let [x,y]=toWorld(sx,sy);
+  if (S.meas.mode==='dist'){   // na distância, o ponto agarra ao centro da planta mais próxima
+    const tol=14/S.scale; let best=null;
+    for (const g of ['arv','arb']) for (const nb of nearest(g,x,y,1,Math.max(tol,0.5),-1)){ if (!best||nb.d<best.d) best={...nb,g}; }
+    if (best && best.d<=tol){ const p=PL[best.g][best.n]; x=p.x; y=p.y; }
+  }
   S.meas.pts.push([x,y]); updMeas(); req();
 }
 function updMeas(){
-  if (!S.meas) return; const pts=S.meas.pts; let tot=0; for (let i=1;i<pts.length;i++) tot+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);
+  if (!S.meas) return; const pts=S.meas.pts, Z=S.meas.mode==='zona';
+  document.getElementById('measlist').hidden = !(Z && pts.length>=3);
+  if (Z){
+    if (pts.length<3){ document.getElementById('meastxt').innerHTML='Toque nos cantos da zona, pela ordem do contorno. Com 3 ou mais pontos, a zona fecha sozinha e aparece a lista do que leva.'; if (pts.length<3 && info.dataset.zone) showInfo(null); return; }
+    const A=Math.abs(polyArea(pts)), per=pts.reduce((s,p,i)=>{ const q=pts[(i+1)%pts.length]; return s+Math.hypot(q[0]-p[0],q[1]-p[1]); },0);
+    document.getElementById('meastxt').innerHTML = `<b class="meas-tot">${fmt0(Math.round(A))} m²</b> · perímetro ${fmt1(per)} m · ${pts.length} cantos. Toque para acrescentar cantos.`;
+    zoneShowSoon(); return;
+  }
+  let tot=0; for (let i=1;i<pts.length;i++) tot+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);
   document.getElementById('meastxt').innerHTML = pts.length<2 ? 'Toque no mapa para marcar pontos. Perto de uma árvore ou arbusto, o ponto fica no centro da planta.' :
     `<b class="meas-tot">${fmt2(tot)} m</b> ${pts.length>2?`em ${pts.length-1} troços`:'entre os dois pontos'}. Toque para continuar a medir.`;
 }
 rulerbtn.onclick=()=>setMeasure(!S.meas);
 document.getElementById('measx').onclick=()=>setMeasure(false);
 document.getElementById('measundo').onclick=()=>{ if(S.meas){ S.meas.pts.pop(); updMeas(); req(); } };
-document.getElementById('measclr').onclick=()=>{ if(S.meas){ S.meas.pts=[]; updMeas(); req(); } };
+document.getElementById('measclr').onclick=()=>{ if(S.meas){ S.meas.pts=[]; delete info.dataset.zoneClosed; showInfo(null); updMeas(); req(); } };
+document.getElementById('mz-d').onclick=()=>setMeasMode('dist');
+document.getElementById('mz-z').onclick=()=>setMeasMode('zona');
+document.getElementById('measlist').onclick=()=>zoneShow(true);
+
+// geometria da zona: área, cruzamentos, triângulos e recorte (Sutherland–Hodgman num triângulo)
+function polyArea(p){ let a=0; for (let i=0;i<p.length;i++){ const q=p[(i+1)%p.length]; a+=p[i][0]*q[1]-q[0]*p[i][1]; } return a/2; }
+const crossP=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
+function segX(a,b,c,d){ const d1=crossP(c,d,a), d2=crossP(c,d,b), d3=crossP(a,b,c), d4=crossP(a,b,d); return ((d1>0)!==(d2>0)) && ((d3>0)!==(d4>0)) && d1&&d2&&d3&&d4; }
+function selfCross(p){ const n=p.length; if (n<4) return false;
+  for (let i=0;i<n;i++) for (let j=i+2;j<n;j++){ if (i===0 && j===n-1) continue; if (segX(p[i],p[(i+1)%n],p[j],p[(j+1)%n])) return true; } return false; }
+function triangulate(p){
+  let v=p.slice(); if (polyArea(v)<0) v.reverse();
+  const tris=[]; let guard=0;
+  while (v.length>3 && guard++<500){
+    let cut=false;
+    for (let i=0;i<v.length;i++){
+      const a=v[(i-1+v.length)%v.length], b=v[i], c=v[(i+1)%v.length];
+      if (crossP(a,b,c)<=1e-9) continue;   // canto reentrante
+      if (v.some(q=>q!==a&&q!==b&&q!==c && crossP(a,b,q)>=0 && crossP(b,c,q)>=0 && crossP(c,a,q)>=0)) continue;
+      tris.push([a,b,c]); v.splice(i,1); cut=true; break;
+    }
+    if (!cut) break;
+  }
+  if (v.length===3) tris.push(v);
+  return tris;
+}
+function clipTri(ring, T){   // ring: [x,y,x,y,…]; T: triângulo com área positiva
+  let out=[]; for (let i=0;i<ring.length;i+=2) out.push([ring[i],ring[i+1]]);
+  for (let e=0;e<3 && out.length;e++){
+    const A=T[e], B=T[(e+1)%3], inp=out; out=[];
+    const ins=P=>crossP(A,B,P)>=0;
+    for (let i=0;i<inp.length;i++){
+      const P=inp[i], Q=inp[(i+1)%inp.length], pi=ins(P), qi=ins(Q);
+      if (pi) out.push(P);
+      if (pi!==qi){ const dx=Q[0]-P[0], dy=Q[1]-P[1], ex=B[0]-A[0], ey=B[1]-A[1]; const t=((A[0]-P[0])*ey-(A[1]-P[1])*ex)/(dx*ey-dy*ex); out.push([P[0]+t*dx, P[1]+t*dy]); }
+    }
+  }
+  return out.length>=3 ? Math.abs(polyArea(out)) : 0;
+}
+const ringArea=(ring,tris)=>tris.reduce((s,T)=>s+clipTri(ring,T),0);
+function pip(x,y,p){ let c=false; for (let i=0,j=p.length-1;i<p.length;j=i++){ const a=p[i], b=p[j]; if (((a[1]>y)!==(b[1]>y)) && x < (b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0]) c=!c; } return c; }
+const MODNAMES = (()=>{ const m={}; for (const k of 'ABCDE') for (const [c,n] of D.modules[k].list) m[c]=n; return m; })();
+function zoneSummary(p){
+  const tris=triangulate(p), reg=!!REG.cfg;
+  const bb=[Math.min(...p.map(q=>q[0])),Math.min(...p.map(q=>q[1])),Math.max(...p.map(q=>q[0])),Math.max(...p.map(q=>q[1]))];
+  const over=b=>!(b[2]<bb[0]||b[0]>bb[2]||b[3]<bb[1]||b[1]>bb[3]);
+  const plantsBy={}, herbBy={}, modBy={};
+  for (const g of ['arv','arb']) for (const q of PL[g]){
+    if (q.x<bb[0]||q.x>bb[2]||q.y<bb[1]||q.y>bb[3] || !pip(q.x,q.y,p)) continue;
+    const r=plantsBy[q.s]||(plantsBy[q.s]={n:0,todo:0}); r.n++; if (!reg || !isPlanted(PKEY[q.s][q.j])) r.todo++;
+  }
+  patches.forEach(pt=>{
+    if (!over(pt.bb)) return;
+    let a=0; for (const poly of pt.polys){ poly.forEach((ring,k)=>{ const v=ringArea(ring,tris); a += k===0 ? v : -v; }); }
+    if (a<0.01) return;
+    const r=herbBy[pt.s]||(herbBy[pt.s]={a:0,todo:0}); r.a+=a; if (!reg || !isPlanted(pt.key)) r.todo+=a;
+  });
+  cells.forEach(c=>{
+    if (!over(c.bb)) return;
+    const a=ringArea(c.rings[0],tris); if (a<0.01) return;
+    const f=a/c.a, todo=!reg || !isPlanted(c.key);
+    for (const L of c.m){ const r=modBy[L]||(modBy[L]={n:0,todo:0,a:0}); r.n+=f; r.a+=a/c.m.length; if (todo) r.todo+=f; }
+  });
+  const modPlants={};
+  for (const L in modBy){ const sch=D.modules[L].scheme||{}; for (const code in sch){ const r=modPlants[code]||(modPlants[code]={n:0,todo:0}); r.n+=modBy[L].n*sch[code]; r.todo+=modBy[L].todo*sch[code]; } }
+  return {area:Math.abs(polyArea(p)), plantsBy, herbBy, modBy, modPlants, reg};
+}
+let zoneTimer=0;
+function zoneShowSoon(){ clearTimeout(zoneTimer); zoneTimer=setTimeout(()=>zoneShow(false), 120); }
+function zoneShow(force){
+  if (!S.meas || S.meas.mode!=='zona' || S.meas.pts.length<3) return;
+  if (!force && info.hidden && info.dataset.zoneClosed) return;   // a pessoa fechou a lista: não voltar a abrir sozinha
+  showInfo({t:'zone'});
+}
+function zoneCard(){
+  const p=S.meas.pts;
+  if (selfCross(p)) return `<div class="kind">Zona selecionada</div><h2 class="plain">As linhas da zona cruzam-se</h2><div class="note">Toque nos cantos pela ordem do contorno. Use «Desfazer» no quadro de cima para tirar o último ponto.</div>`;
+  const Z=zoneSummary(p), reg=Z.reg, cols=reg?3:2;
+  const th = `<tr><th>Espécie</th><th class="n">Na zona</th>${reg?'<th class="n">Por plantar</th>':''}</tr>`;
+  const grp = t => `<tr class="zg"><td colspan="${cols}">${t}</td></tr>`;
+  const row = (code,name,a,b) => `<tr><td><b>${esc(code)}</b> <i>${esc(name)}</i></td><td class="n">${a}</td>${reg?`<td class="n">${b}</td>`:''}</tr>`;
+  let rows='', total=0, totalTodo=0;
+  for (const g of ['arv','arb']){
+    const list=Object.keys(Z.plantsBy).map(Number).filter(i=>SP[i].g===g).sort((a,b)=>Z.plantsBy[b].n-Z.plantsBy[a].n);
+    if (!list.length) continue;
+    rows+=grp(g==='arv'?'Árvores':'Arbustos');
+    for (const i of list){ const r=Z.plantsBy[i]; rows+=row(SP[i].code, SP[i].name, fmt0(r.n), fmt0(r.todo)); total+=r.n; totalTodo+=r.todo; }
+  }
+  const hl=Object.keys(Z.herbBy).map(Number).sort((a,b)=>Z.herbBy[b].a-Z.herbBy[a].a);
+  if (hl.length){
+    rows+=grp('Herbáceas e subarbustos');
+    for (const i of hl){ const r=Z.herbBy[i], cp=CP[SP[i].id];
+      const n=cp?Math.round(r.a*cp.d):null, nt=cp?Math.round(r.todo*cp.d):null; if (n) { total+=n; totalTodo+=nt; }
+      rows+=row(SP[i].code, SP[i].name, `${fmt1(r.a)} m²${n!=null?`<br><span class="sub">≈ ${fmt0(n)} pl.</span>`:''}`, `${fmt1(r.todo)} m²${nt!=null?`<br><span class="sub">≈ ${fmt0(nt)} pl.</span>`:''}`); }
+  }
+  const ml=Object.keys(Z.modBy).sort();
+  if (ml.length){
+    rows+=grp('Módulos');
+    for (const L of ml){ const r=Z.modBy[L]; rows+=row('Módulo '+L, '', `${fmt1(r.n)}<br><span class="sub">${fmt0(Math.round(r.a))} m²</span>`, fmt1(r.todo)); }
+    rows+=grp('Plantas dos módulos (pelos esquemas)');
+    for (const code of Object.keys(Z.modPlants).sort((a,b)=>Z.modPlants[b].n-Z.modPlants[a].n)){ const r=Z.modPlants[code]; total+=Math.round(r.n); totalTodo+=Math.round(r.todo); rows+=row(code, MODNAMES[code]||'', fmt0(Math.round(r.n)), fmt0(Math.round(r.todo))); }
+  }
+  if (!rows) return `<div class="kind">Zona selecionada</div><h2 class="plain">${fmt0(Math.round(Z.area))} m²</h2><p class="credit">Não há plantas, manchas nem módulos dentro desta zona.</p>`;
+  return `<div class="kind">Zona selecionada</div><h2 class="plain">${fmt0(Math.round(Z.area))} m² · ≈ ${fmt0(total)} plantas</h2>
+    <p class="credit">Herbáceas pelo compasso de cada espécie; módulos pela parte de cada módulo dentro da zona e pelos esquemas.${reg?' «Por plantar» desconta o que já está marcado no registo.':''}</p>
+    <table class="zt"><thead>${th}</thead><tbody>${rows}</tbody></table>
+    ${reg?`<p class="credit">Por plantar: ≈ ${fmt0(totalTodo)} plantas.</p>`:''}
+    <div class="acts"><button class="btn primary" data-zcsv>Exportar lista (CSV)</button><button class="btn" data-zclr>Limpar zona</button></div>`;
+}
+function zoneCSV(){
+  if (inFrame()){ const m=document.createElement('p'); m.className='note'; m.innerHTML=`Nesta pré-visualização não é possível descarregar ficheiros. Exporte no site da obra: ${siteLink()}`; info.appendChild(m); return; }
+  const p=S.meas.pts, Z=zoneSummary(p), num=v=>String(v).replace('.',','), q=v=>{ const s=v==null?'':String(v); return /[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; };
+  const L=[['Parque Ecológico da Ericeira — lista de uma zona', '', '', `${num(Z.area.toFixed(1))} m²`, `exportado a ${fmtDate(todayISO())}`], [],
+    ['Grupo','Código','Espécie','Quantidade','Unidade','Plantas (estimativa)'].concat(Z.reg?['Quantidade por plantar','Plantas por plantar']:[])];
+  for (const i in Z.plantsBy){ const r=Z.plantsBy[i], sp=SP[+i]; L.push([sp.g==='arv'?'Árvore':'Arbusto', sp.code, sp.name, r.n, 'un', r.n].concat(Z.reg?[r.todo, r.todo]:[])); }
+  for (const i in Z.herbBy){ const r=Z.herbBy[i], sp=SP[+i], cp=CP[sp.id]; L.push(['Herbácea/subarbusto', sp.code, sp.name, num(r.a.toFixed(2)), 'm²', cp?Math.round(r.a*cp.d):''].concat(Z.reg?[num(r.todo.toFixed(2)), cp?Math.round(r.todo*cp.d):'']:[])); }
+  for (const Lk in Z.modBy){ const r=Z.modBy[Lk]; L.push(['Módulo', Lk, 'Módulo '+Lk, num(r.n.toFixed(2)), 'módulos', ''].concat(Z.reg?[num(r.todo.toFixed(2)), '']:[])); }
+  for (const c in Z.modPlants){ const r=Z.modPlants[c]; L.push(['Planta de módulo', c, MODNAMES[c]||'', Math.round(r.n), 'un', Math.round(r.n)].concat(Z.reg?[Math.round(r.todo), Math.round(r.todo)]:[])); }
+  L.push([]); L.push(['Cantos da zona (M; P)']); for (const [x,y] of p) L.push([num((y+D.X0).toFixed(2)), num((x+D.Y0).toFixed(2))]);
+  const csv='﻿'+L.map(r=>r.map(q).join(';')).join('\r\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`zona-plantacao-ericeira-${todayISO()}.csv`; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
 
 // ---------- modo sol (mais contraste para ler ao sol; a escolha fica guardada neste aparelho)
 const sunbtn=document.getElementById('sunbtn');
@@ -1801,7 +1966,7 @@ if (REG.cfg) regSync();
 (function(){
   const el=document.getElementById('offl');
   if (!document.querySelector('link[rel="manifest"]') || !('serviceWorker' in navigator) || !window.caches) return;
-  const BUILD='28/10/2026 16:43';
+  const BUILD='28/10/2026 16:51';
   const urls=[...new Set(Object.values(FLORA).flatMap(F=>F.ph.map(p=>p.f).filter(Boolean)))];
   const set=(h,k)=>{ el.hidden=false; el.className='offl'+(k?' '+k:''); el.innerHTML=h; };
   const ios=/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
