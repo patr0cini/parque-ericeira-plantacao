@@ -37,6 +37,11 @@
   --ink:#e6e9de; --muted:#a6ab9c; --verde:#a7c65a; --verde-ink:#b8d56f; --map-bg:#1b1e18;
   --chip:#21251c; --warn:#f0b04a; --warn-bg:#2d2414; --shadow:0 6px 24px rgba(0,0,0,.45);
   --base-line:rgba(215,220,205,.5); --topo:#c9cdbf; color-scheme:dark }
+html:root.sun{
+  --paper:#ffffff; --surface:#ffffff; --erva:#e4edcc; --line:#8f9882; --line-strong:#4b5242;
+  --ink:#000000; --muted:#262826; --verde-ink:#344a0c; --map-bg:#ffffff;
+  --chip:#edf2e1; --warn:#6b3d00; --warn-bg:#ffeccc; --shadow:0 2px 10px rgba(0,0,0,.28);
+  --base-line:rgba(0,0,0,.8); --topo:#111310; color-scheme:light }
 html,body{height:100%}
 body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45;display:flex;flex-direction:column}
 button{font:inherit;color:inherit}
@@ -52,6 +57,22 @@ button{font:inherit;color:inherit}
 .sheet{display:flex;gap:6px;flex-wrap:wrap}
 .sheet span{font-size:12px;border:1px solid var(--line-strong);border-radius:3px;padding:2px 7px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
 .sheet span b{color:var(--ink);font-weight:600}
+.sunbtn{flex:none;display:flex;align-items:center;gap:6px;border:1px solid var(--line-strong);background:var(--surface);border-radius:999px;padding:6px 13px 6px 10px;cursor:pointer;font-size:13.5px;font-weight:600;white-space:nowrap;line-height:1.2}
+.sunbtn svg{width:18px;height:18px;flex:none}
+.sunbtn:hover{background:var(--erva)}
+.sunbtn[aria-pressed="true"]{background:#ffd23f;border:2px solid #000;color:#000}
+.sun .panel,.sun .info,.sun .tlstack,.sun .layers,.sun .hl-chip{zoom:1.15}
+.sun .ctl{gap:7px}
+.sun .ctl button{width:44px;height:44px;border:2px solid #000;font-size:24px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.sun .ctl svg{width:23px;height:23px;stroke-width:2.6}
+.sun .ctl button[aria-pressed="true"]{background:#ffd23f;border-color:#000;color:#000}
+.sun .north{border:2px solid #000;background:#fff}
+.sun .scalebar{border:2px solid #000;background:#fff;font-size:13.5px;font-weight:700}
+.sun .scalebar i{border-width:2.5px}
+.sun .gps,.sun .meas,.sun .info,.sun .layers,.sun .hl-chip{border:2px solid #000}
+.sun .ttl h1{font-weight:600}
+.sun .cpbox b{white-space:nowrap}
+@media (min-width: 861px){ .sun .info{right:60px} }
 
 .app{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 392px}
 .mapwrap{position:relative;min-width:0;min-height:0;background:var(--map-bg);overflow:hidden;touch-action:none}
@@ -119,6 +140,9 @@ button{font:inherit;color:inherit}
 .gps-dot{flex:none;width:12px;height:12px;border-radius:50%;background:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.22);margin-top:3px}
 .gps-dot.weak{background:#d97706;box-shadow:0 0 0 3px rgba(217,119,6,.22)}
 .gps-dot.err,.gps-dot.far{background:var(--muted);box-shadow:none}
+.guide{border-color:#6d28d9;align-items:center}
+.guide .gps-t > b{font-size:16px}
+.garrow{flex:none;width:32px;height:32px;transition:transform .15s linear}
 .gps-dot.rot{background:var(--verde);box-shadow:0 0 0 3px rgba(145,176,62,.25)}
 .north svg{transition:transform .08s linear}
 .gps-t{flex:1;min-width:0}
@@ -245,6 +269,7 @@ button{font:inherit;color:inherit}
 .cswatch{display:inline-flex;gap:3px;vertical-align:-3px;margin-right:2px}
 .cswatch i{width:12px;height:12px;border-radius:2px;border:1px solid rgba(0,0,0,.3);display:inline-block}
 
+@media (max-width: 600px){ .sunbtn span{display:none} .sunbtn{padding:8px} .sunbtn svg{width:20px;height:20px} }
 @media (max-width: 860px){
   html,body{height:auto}
   .app{display:block}
@@ -278,6 +303,7 @@ button{font:inherit;color:inherit}
     <span>Escala original <b>1/2000</b></span>
     <span>CM Mafra · <b>30/05/2025</b></span>
   </div>
+  <button class="sunbtn" id="sunbtn" aria-pressed="false" title="Modo sol: mais contraste, linhas e letras maiores para ler ao sol"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg><span>Modo sol</span></button>
 </header>
 
 <main class="app">
@@ -307,6 +333,7 @@ button{font:inherit;color:inherit}
       <label><input type="checkbox" id="L-topo" checked> Toponímia</label>
     </div>
     <div class="tlstack">
+    <div class="gps guide" id="guide" hidden><svg class="garrow" id="guidearrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 19.5 21 12 16.8 4.5 21z" fill="#6d28d9" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/></svg><div class="gps-t" id="guidetxt" aria-live="off"></div><button id="guidex" aria-label="Parar de guiar" title="Parar de guiar">×</button></div>
     <div class="gps" id="gps" hidden role="status" aria-live="polite"><i class="gps-dot" id="gpsdot"></i><div class="gps-t" id="gpstxt"></div><button id="gpsx" aria-label="Desligar localização" title="Desligar localização">×</button></div>
     <div class="gps" id="rotmsg" hidden role="status" aria-live="polite"><i class="gps-dot rot" id="rotdot"></i><div class="gps-t" id="rottxt"></div><button id="rotx" aria-label="Fechar" title="Fechar">×</button></div>
     <div class="meas" id="meas" hidden>
@@ -432,14 +459,14 @@ const patches = D.patches.map(([s,id,a,polys,lp,ol]) => {
       if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
     p.closePath();
   }
-  return {s,id,a,path:p,lp,ol,bb:[x0,y0,x1,y1],edge:prepEdges(polys[0][0])};
+  return {s,id,a,path:p,lp,ol,bb:[x0,y0,x1,y1],edge:prepEdges(polys[0][0]),rings:polys.flat()};
 });
 const cells = D.cells.map(([m,a,r]) => {
   const p=new Path2D(); let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9, cx=0, cy=0;
   for (let i=0;i<r.length;i+=2){ const x=r[i],y=r[i+1]; if(i===0)p.moveTo(x,y); else p.lineTo(x,y);
     if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; cx+=x; cy+=y; }
   p.closePath(); const n=r.length/2;
-  return {m, mod:m[0], a, path:p, bb:[x0,y0,x1,y1], c:[cx/n,cy/n]};
+  return {m, mod:m[0], a, path:p, bb:[x0,y0,x1,y1], c:[cx/n,cy/n], rings:[r]};
 });
 const plants = {}; // sp index -> Float32Array [x,y,r]
 for (const k in D.plants) plants[k] = D.plants[k];
@@ -474,7 +501,7 @@ for (const c of cells) for (const m of new Set(c.m)) grow(modStat[m].bb,...c.bb)
 const PLANT_BB = (() => { const bb=[1e9,1e9,-1e9,-1e9]; for (const st of stat) if (st.bb[0]<1e9) grow(bb,...st.bb); for (const m in modStat) if (modStat[m].bb[0]<1e9) grow(bb,...modStat[m].bb); return [bb[0]-10,bb[1]-10,bb[2]+10,bb[3]+10]; })();
 // ---------- state
 const S = { scale:1, tx:0, ty:0, vis:SP.map(()=>true), modVis:{A:true,B:true,C:true,D:true,E:true},
-  hl:null, sel:null, meas:null, rot:0, L:{ortho:true,orthoop:.55,codes:true,orig:false,dims:false,tdist:false,paths:true,water:true,base:true,limit:true,topo:true} };
+  hl:null, sel:null, meas:null, rot:0, sun:false, L:{ortho:true,orthoop:.55,codes:true,orig:false,dims:false,tdist:false,paths:true,water:true,base:true,limit:true,topo:true} };
 
 // ---------- canvas
 const wrap = document.getElementById('mapwrap'), cv = document.getElementById('map'), ctx = cv.getContext('2d');
@@ -522,17 +549,20 @@ let raf=0; function req(){ if(!raf) raf=requestAnimationFrame(()=>{raf=0; draw()
 
 const patCache = {};
 function modPattern(m){
-  const key = m+'|'+dpr;
+  const key = m+'|'+dpr+'|'+(S.sun?1:0);
   if (!patCache[key]){
     const n = Math.round(7*dpr), c=document.createElement('canvas'); c.width=c.height=n; const g=c.getContext('2d');
-    g.fillStyle = hexA(MODC[m], .07); g.fillRect(0,0,n,n);
-    g.strokeStyle = hexA(MODC[m], .42); g.lineWidth = 1*dpr;
+    g.fillStyle = hexA(MODC[m], S.sun?.16:.07); g.fillRect(0,0,n,n);
+    g.strokeStyle = hexA(MODC[m], S.sun?.8:.42); g.lineWidth = (S.sun?1.4:1)*dpr;
     g.beginPath(); g.moveTo(0,n); g.lineTo(n,0); g.moveTo(-n/2,n/2); g.lineTo(n/2,-n/2); g.moveTo(n/2,n*1.5); g.lineTo(n*1.5,n/2); g.stroke();
     patCache[key] = ctx.createPattern(c,'repeat');
   }
   const p = patCache[key]; p.setTransform(new DOMMatrix().scaleSelf(1/(S.scale*dpr))); return p;
 }
 
+// Raio mínimo de desenho de uma planta (px de ecrã): maior no modo sol
+// (só com o mapa ampliado; de longe, símbolos maiores juntavam-se em manchas escuras)
+const plantMinPx = g => { const big=S.sun && S.scale>=3; return g==='arb' ? (big?3.6:2.4) : (big?4.4:3); };
 function dimFor(kind, key){
   if (S.hl===null) return 1;
   if (S.hl.t===kind && S.hl.k===key) return 1;
@@ -541,6 +571,7 @@ function dimFor(kind, key){
 
 function draw(){
   const s = S.scale, px = 1/s;
+  const SUN = S.sun, LW = SUN?1.8:1, FZ = SUN?1.3:1, HW = SUN?1.6:1;  // modo sol: linhas, letras e contornos maiores
   ctx.setTransform(1,0,0,1,0,0);
   ctx.fillStyle = COL.bg; ctx.fillRect(0,0,cv.width,cv.height);
   rcs(); ctx.setTransform(dpr*s*_rc,dpr*s*_rs,-dpr*s*_rs,dpr*s*_rc,dpr*S.tx,dpr*S.ty);
@@ -549,16 +580,16 @@ function draw(){
   const inView = bb => !(bb[2]<vx0||bb[0]>vx1||bb[3]<vy0||bb[1]>vy1);
 
   if (S.L.ortho && orthoReady){ ctx.globalAlpha=S.L.orthoop; const o=D.ortho; ctx.imageSmoothingQuality='high'; ctx.drawImage(ortho,o[0],o[1],o[2]-o[0],o[3]-o[1]); ctx.globalAlpha=1; }
-  if (S.L.paths){ ctx.fillStyle='rgba(236,229,210,.92)'; ctx.fill(P_PATHS,'evenodd'); ctx.strokeStyle='rgba(150,135,95,.55)'; ctx.lineWidth=.6*px; ctx.stroke(P_PATHS); }
-  if (S.L.base){ ctx.strokeStyle=COL.base; ctx.lineWidth=.7*px; ctx.stroke(P_BASE); ctx.strokeStyle='rgba(40,90,200,.8)'; ctx.lineWidth=1.2*px; ctx.setLineDash([4*px,2*px]); ctx.stroke(P_LANCIL); ctx.setLineDash([]); }
-  if (S.L.water){ ctx.strokeStyle='rgba(30,120,230,.85)'; ctx.lineWidth=1.1*px; ctx.stroke(P_WATER); }
+  if (S.L.paths){ ctx.fillStyle=SUN?'#eadfbf':'rgba(236,229,210,.92)'; ctx.fill(P_PATHS,'evenodd'); ctx.strokeStyle=SUN?'rgba(80,66,30,.95)':'rgba(150,135,95,.55)'; ctx.lineWidth=.6*LW*px; ctx.stroke(P_PATHS); }
+  if (S.L.base){ ctx.strokeStyle=COL.base; ctx.lineWidth=.7*LW*px; ctx.stroke(P_BASE); ctx.strokeStyle=SUN?'#1f4fc0':'rgba(40,90,200,.8)'; ctx.lineWidth=1.2*LW*px; ctx.setLineDash([4*px,2*px]); ctx.stroke(P_LANCIL); ctx.setLineDash([]); }
+  if (S.L.water){ ctx.strokeStyle=SUN?'#0a5fd0':'rgba(30,120,230,.85)'; ctx.lineWidth=1.1*LW*px; ctx.stroke(P_WATER); }
 
   // modules
   for (const c of cells){
     const vis = c.m.split('').some(m=>S.modVis[m]); if(!vis || !inView(c.bb)) continue;
     const a = c.m.length>1 ? (S.hl&&S.hl.t==='mod'&&c.m.includes(S.hl.k)?1:dimFor('mod',c.mod)) : dimFor('mod',c.mod);
     ctx.globalAlpha=a; ctx.fillStyle=modPattern(c.mod); ctx.fill(c.path);
-    ctx.strokeStyle=hexA(MODC[c.mod],.7); ctx.lineWidth=.9*px; ctx.stroke(c.path);
+    ctx.strokeStyle=hexA(MODC[c.mod],SUN?1:.7); ctx.lineWidth=.9*LW*px; ctx.stroke(c.path);
   }
   ctx.globalAlpha=1;
   // herb patches
@@ -566,21 +597,22 @@ function draw(){
     if (!S.vis[p.s] || !inView(p.bb)) continue;
     ctx.globalAlpha = dimFor('sp',p.s);
     ctx.fillStyle = SP[p.s].color; ctx.fill(p.path,'evenodd');
-    ctx.strokeStyle='rgba(25,28,20,.6)'; ctx.lineWidth=.7*px; ctx.stroke(p.path);
+    ctx.strokeStyle=SUN?'rgba(0,0,0,.9)':'rgba(25,28,20,.6)'; ctx.lineWidth=.7*LW*px; ctx.stroke(p.path);
   }
   ctx.globalAlpha=1;
-  if (S.L.limit){ ctx.strokeStyle='#d01f1f'; ctx.lineWidth=2.2*px; ctx.setLineDash([10*px,4*px,2*px,4*px]); ctx.stroke(P_LIMIT); ctx.setLineDash([]); }
+  if (S.L.limit){ ctx.strokeStyle='#d01f1f'; ctx.lineWidth=2.2*LW*px; ctx.setLineDash([10*px,4*px,2*px,4*px]); ctx.stroke(P_LIMIT); ctx.setLineDash([]); }
   // plants: trees first, then shrubs
   for (const g of ['arv','arb']){
     SP.forEach((sp,i)=>{
       if (sp.g!==g || !S.vis[i] || !plants[i]) return;
       const a=plants[i]; ctx.globalAlpha=dimFor('sp',i);
       ctx.beginPath();
-      const minR = g==='arb' ? 2.4*px : 3*px;
+      const minR = plantMinPx(g)*px;
       for (let j=0;j<a.length;j+=3){ const x=a[j],y=a[j+1],r=Math.max(a[j+2],minR); if(x+r<vx0||x-r>vx1||y+r<vy0||y-r>vy1) continue; ctx.moveTo(x+r,y); ctx.arc(x,y,r,0,Math.PI*2); }
-      if (g==='arv'){ ctx.fillStyle=hexA(sp.color,.22); ctx.fill(); ctx.strokeStyle=sp.color; ctx.lineWidth=1.6*px; ctx.stroke();
-        ctx.beginPath(); for (let j=0;j<a.length;j+=3){ ctx.moveTo(a[j]+1.6*px,a[j+1]); ctx.arc(a[j],a[j+1],1.6*px,0,Math.PI*2);} ctx.fillStyle=sp.color; ctx.fill(); }
-      else { ctx.fillStyle=sp.color; ctx.fill(); ctx.strokeStyle='rgba(255,255,255,.95)'; ctx.lineWidth=.9*px; ctx.stroke(); }
+      const ZS = SUN && s>=3, cd=(ZS?2.3:1.6)*px;
+      if (g==='arv'){ ctx.fillStyle=hexA(sp.color,SUN?.36:.22); ctx.fill(); ctx.strokeStyle=sp.color; ctx.lineWidth=1.6*(ZS?LW:1)*px; ctx.stroke();
+        ctx.beginPath(); for (let j=0;j<a.length;j+=3){ ctx.moveTo(a[j]+cd,a[j+1]); ctx.arc(a[j],a[j+1],cd,0,Math.PI*2);} ctx.fillStyle=sp.color; ctx.fill(); }
+      else { ctx.fillStyle=sp.color; ctx.fill(); if (!SUN || ZS){ ctx.strokeStyle=ZS?'rgba(0,0,0,.85)':'rgba(255,255,255,.95)'; ctx.lineWidth=(ZS?1.1:.9)*px; ctx.stroke(); } }
     });
   }
   ctx.globalAlpha=1;
@@ -589,21 +621,22 @@ function draw(){
   if (S.sel){
     ctx.lineJoin='round';
     const path = S.sel.t==='patch' ? patches[S.sel.i].path : S.sel.t==='cell' ? cells[S.sel.i].path : null;
-    if (path){ ctx.strokeStyle='#fff'; ctx.lineWidth=5*px; ctx.stroke(path); ctx.strokeStyle='#111'; ctx.lineWidth=2.4*px; ctx.stroke(path); }
-    if (S.sel.t==='plant'){ const a=plants[S.sel.s], j=S.sel.j*3, r=Math.max(a[j+2],3*px)+2*px; ctx.beginPath(); ctx.arc(a[j],a[j+1],r,0,Math.PI*2); ctx.strokeStyle='#fff'; ctx.lineWidth=5*px; ctx.stroke(); ctx.strokeStyle='#111'; ctx.lineWidth=2.4*px; ctx.stroke(); }
+    if (path){ ctx.strokeStyle='#fff'; ctx.lineWidth=5*LW*px; ctx.stroke(path); ctx.strokeStyle='#111'; ctx.lineWidth=2.4*LW*px; ctx.stroke(path); }
+    if (S.sel.t==='plant'){ const a=plants[S.sel.s], j=S.sel.j*3, r=Math.max(a[j+2],plantMinPx(SP[S.sel.s].g)*px)+2*LW*px; ctx.beginPath(); ctx.arc(a[j],a[j+1],r,0,Math.PI*2); ctx.strokeStyle='#fff'; ctx.lineWidth=5*LW*px; ctx.stroke(); ctx.strokeStyle='#111'; ctx.lineWidth=2.4*LW*px; ctx.stroke(); }
   }
 
+  if (GUIDE.t==='patch' || GUIDE.t==='cell'){ const gp=(GUIDE.t==='patch'?patches[GUIDE.i]:cells[GUIDE.i]).path; ctx.lineJoin='round'; ctx.strokeStyle='#fff'; ctx.lineWidth=6*LW*px; ctx.stroke(gp); ctx.strokeStyle='#6d28d9'; ctx.lineWidth=3*LW*px; ctx.stroke(gp); }
   // ---------- screen-space labels
   ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.lineJoin='round';
-  const label = (txt,x,y,font,fill,halo='rgba(255,255,255,.9)',hw=3) => { ctx.font=font; ctx.strokeStyle=halo; ctx.lineWidth=hw; ctx.strokeText(txt,x,y); ctx.fillStyle=fill; ctx.fillText(txt,x,y); };
+  const label = (txt,x,y,font,fill,halo='rgba(255,255,255,.9)',hw=3) => { ctx.font=font; ctx.strokeStyle=SUN?'#fff':halo; ctx.lineWidth=hw*HW; ctx.strokeText(txt,x,y); ctx.fillStyle=fill; ctx.fillText(txt,x,y); };
   if (S.L.topo){
     for (const [t,x,y] of topo){ const sx=SX(x,y), sy=SY(x,y); if(sx<-100||sx>W+100||sy<-20||sy>H+20) continue;
-      label(t,sx,sy,'italic 600 12px "Source Sans 3", sans-serif',COL.topo, COL.bg, 3); }
+      label(t,sx,sy,`italic 600 ${12*FZ}px "Source Sans 3", sans-serif`,COL.topo, COL.bg, 3); }
   }
   // module letters
   if (s>2.2){
-    const fs = Math.min(15, Math.max(9, s*2.2));
+    const fs = Math.min(15, Math.max(9, s*2.2))*FZ;
     for (const [m,x,y] of D.modlabels){ if(!S.modVis[m]) continue; const sx=SX(x,y), sy=SY(x,y); if(sx<-10||sx>W+10||sy<-10||sy>H+10) continue;
       ctx.globalAlpha = (S.hl&&!(S.hl.t==='mod'&&S.hl.k===m))?.25:1;
       label(m,sx,sy,`700 ${fs}px "Source Sans 3", sans-serif`,MODC[m]); }
@@ -611,7 +644,7 @@ function draw(){
   }
   // patch codes
   if (S.L.codes){
-    ctx.font='700 11.5px "Source Sans 3", sans-serif';
+    const cf=`700 ${11.5*FZ}px "Source Sans 3", sans-serif`, ch=7*FZ; ctx.font=cf;
     const placed=[];
     const order = patches.map((p,i)=>i).sort((a,b)=>patches[b].a-patches[a].a);
     for (const pi of order){ const p=patches[pi];
@@ -619,19 +652,19 @@ function draw(){
       const bw=(p.bb[2]-p.bb[0])*s, bh=(p.bb[3]-p.bb[1])*s; if (bw<22||bh<12) continue;
       const sx=SX(p.lp[0],p.lp[1]), sy=SY(p.lp[0],p.lp[1]); if(sx<-30||sx>W+30||sy<-10||sy>H+10) continue;
       const code=SP[p.s].code, tw=ctx.measureText(code).width; if (tw+4>bw) continue;
-      const r=[sx-tw/2-2, sy-7, sx+tw/2+2, sy+7];
+      const r=[sx-tw/2-2, sy-ch, sx+tw/2+2, sy+ch];
       if (placed.some(q=>!(r[2]<q[0]||r[0]>q[2]||r[3]<q[1]||r[1]>q[3]))) continue;
       placed.push(r);
-      label(code,sx,sy,'700 11.5px "Source Sans 3", sans-serif','#15170f');
+      label(code,sx,sy,cf,SUN?'#000':'#15170f');
     }
     ctx.globalAlpha=1;
     // plant codes when zoomed in
     if (s>9){
       SP.forEach((sp,i)=>{ if(sp.g==='herb'||!S.vis[i]||!plants[i]) return; const a=plants[i];
         if (S.hl && !(S.hl.t==='sp'&&S.hl.k===i)) return;
-        const f = `700 ${sp.g==='arv'?11:10}px "Source Sans 3", sans-serif`;
+        const f = `700 ${(sp.g==='arv'?11:10)*FZ}px "Source Sans 3", sans-serif`;
         for (let j=0;j<a.length;j+=3){ const sx=SX(a[j],a[j+1]), sy=SY(a[j],a[j+1]); if(sx<-20||sx>W+20||sy<-20||sy>H+20) continue;
-          const dy = sp.g==='arv' ? -9 : -(Math.max(a[j+2]*s,2.4)+7);
+          const dy = sp.g==='arv' ? -9*FZ : -(Math.max(a[j+2]*s,plantMinPx('arb'))+7*FZ);
           label(sp.code, sx, sy+dy, f, sp.color);
         }
       });
@@ -639,23 +672,23 @@ function draw(){
   }
   // medidas dos lados
   const edgeLabels = (p, placed, numbers) => {
-    const v=p.edge.v, n=v.length; ctx.font='700 11.5px "Source Sans 3", sans-serif';
+    const v=p.edge.v, n=v.length; ctx.font=`700 ${11.5*FZ}px "Source Sans 3", sans-serif`;
     for (let i=0;i<n;i++){
       const a=v[i], b=v[(i+1)%n], L=p.edge.e[i];
       const ax=SX(a[0],a[1]), ay=SY(a[0],a[1]), bx=SX(b[0],b[1]), by=SY(b[0],b[1]);
       const sl=Math.hypot(bx-ax,by-ay); const txt=fmt2(L)+' m'; const tw=ctx.measureText(txt).width;
       if (sl < tw+10) continue;
       const mx=(ax+bx)/2, my=(ay+by)/2; if (mx<-40||mx>W+40||my<-20||my>H+20) continue;
-      const dx=(bx-ax)/sl, dy=(by-ay)/sl; const px=mx+dy*10, py=my-dx*10;
-      if (placed){ const r=[px-tw/2-2,py-8,px+tw/2+2,py+8]; if (placed.some(q=>!(r[2]<q[0]||r[0]>q[2]||r[3]<q[1]||r[1]>q[3]))) continue; placed.push(r); }
+      const dx=(bx-ax)/sl, dy=(by-ay)/sl; const px=mx+dy*10*FZ, py=my-dx*10*FZ;
+      if (placed){ const r=[px-tw/2-2,py-8*FZ,px+tw/2+2,py+8*FZ]; if (placed.some(q=>!(r[2]<q[0]||r[0]>q[2]||r[3]<q[1]||r[1]>q[3]))) continue; placed.push(r); }
       let ang=Math.atan2(dy,dx); if (ang>Math.PI/2) ang-=Math.PI; if (ang<-Math.PI/2) ang+=Math.PI;
       ctx.save(); ctx.translate(px,py); ctx.rotate(ang);
-      ctx.strokeStyle='rgba(255,255,255,.95)'; ctx.lineWidth=3.5; ctx.strokeText(txt,0,0); ctx.fillStyle='#10120c'; ctx.fillText(txt,0,0);
+      ctx.strokeStyle='rgba(255,255,255,.95)'; ctx.lineWidth=3.5*HW; ctx.strokeText(txt,0,0); ctx.fillStyle=SUN?'#000':'#10120c'; ctx.fillText(txt,0,0);
       ctx.restore();
     }
     if (numbers){
-      ctx.font='700 10.5px "Source Sans 3", sans-serif';
-      v.forEach((q,i)=>{ const x=SX(q[0],q[1]), y=SY(q[0],q[1]); ctx.beginPath(); ctx.arc(x,y,8,0,Math.PI*2); ctx.fillStyle='#10120c'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke(); ctx.fillStyle='#fff'; ctx.fillText(String(i+1),x,y+.5); });
+      ctx.font=`700 ${10.5*FZ}px "Source Sans 3", sans-serif`;
+      v.forEach((q,i)=>{ const x=SX(q[0],q[1]), y=SY(q[0],q[1]); ctx.beginPath(); ctx.arc(x,y,8*FZ,0,Math.PI*2); ctx.fillStyle='#10120c'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke(); ctx.fillStyle='#fff'; ctx.fillText(String(i+1),x,y+.5); });
     }
   };
   {
@@ -673,15 +706,15 @@ function draw(){
   }
   // distâncias entre plantas
   const distLabel = (ax,ay,bx,by,d,placed,strong) => {
-    const sl=Math.hypot(bx-ax,by-ay); const txt=fmt2(d)+' m'; ctx.font=`700 ${strong?12:11}px "Source Sans 3", sans-serif`; const tw=ctx.measureText(txt).width;
+    const sl=Math.hypot(bx-ax,by-ay); const txt=fmt2(d)+' m'; ctx.font=`700 ${(strong?12:11)*FZ}px "Source Sans 3", sans-serif`; const tw=ctx.measureText(txt).width;
     if (sl < tw+12) return;
     const mx=(ax+bx)/2, my=(ay+by)/2; if (mx<-40||mx>W+40||my<-20||my>H+20) return;
-    if (placed){ const r=[mx-tw/2-2,my-8,mx+tw/2+2,my+8]; if (placed.some(q=>!(r[2]<q[0]||r[0]>q[2]||r[3]<q[1]||r[1]>q[3]))) return; placed.push(r); }
+    if (placed){ const r=[mx-tw/2-2,my-8*FZ,mx+tw/2+2,my+8*FZ]; if (placed.some(q=>!(r[2]<q[0]||r[0]>q[2]||r[3]<q[1]||r[1]>q[3]))) return; placed.push(r); }
     let ang=Math.atan2(by-ay,bx-ax); if (ang>Math.PI/2) ang-=Math.PI; if (ang<-Math.PI/2) ang+=Math.PI;
-    ctx.save(); ctx.translate(mx,my); ctx.rotate(ang); ctx.strokeStyle='rgba(255,255,255,.95)'; ctx.lineWidth=3.5; ctx.strokeText(txt,0,0); ctx.fillStyle=strong?'#7a1c00':'#10120c'; ctx.fillText(txt,0,0); ctx.restore();
+    ctx.save(); ctx.translate(mx,my); ctx.rotate(ang); ctx.strokeStyle='rgba(255,255,255,.95)'; ctx.lineWidth=3.5*HW; ctx.strokeText(txt,0,0); ctx.fillStyle=strong?'#7a1c00':(SUN?'#000':'#10120c'); ctx.fillText(txt,0,0); ctx.restore();
   };
   if (S.L.tdist && s>2.5 && (!S.hl || (S.hl.t==='sp' && SP[S.hl.k].g==='arv'))){
-    const placed=[]; ctx.setLineDash([4,3]); ctx.strokeStyle='rgba(20,22,16,.75)'; ctx.lineWidth=1.2;
+    const placed=[]; ctx.setLineDash([4*LW,3*LW]); ctx.strokeStyle=SUN?'rgba(0,0,0,.95)':'rgba(20,22,16,.75)'; ctx.lineWidth=1.2*LW;
     ctx.beginPath();
     for (const [i,j,d] of TREE_EDGES){ const p=PL.arv[i], q=PL.arv[j]; if (!S.vis[p.s]||!S.vis[q.s]) continue; if (S.hl && (p.s!==S.hl.k||q.s!==S.hl.k)) continue;
       const ax=SX(p.x,p.y), ay=SY(p.x,p.y), bx=SX(q.x,q.y), by=SY(q.x,q.y); if (Math.max(ax,bx)<0||Math.min(ax,bx)>W||Math.max(ay,by)<0||Math.min(ay,by)>H) continue; ctx.moveTo(ax,ay); ctx.lineTo(bx,by); }
@@ -691,29 +724,40 @@ function draw(){
   }
   if (S.sel && S.sel.t==='plant' && S.sel.nb){
     const p=PL[S.sel.g][S.sel.pi]; const ax=SX(p.x,p.y), ay=SY(p.x,p.y); const placed=[];
-    ctx.strokeStyle='#c2410c'; ctx.lineWidth=2;
+    ctx.strokeStyle='#c2410c'; ctx.lineWidth=2*LW;
     for (const nb of S.sel.nb){ const q=PL[S.sel.g][nb.n]; ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(SX(q.x,q.y),SY(q.x,q.y)); ctx.stroke(); }
     for (const nb of S.sel.nb){ const q=PL[S.sel.g][nb.n]; distLabel(ax,ay,SX(q.x,q.y),SY(q.x,q.y),nb.d,placed,true); }
   }
   if (S.meas && S.meas.pts.length){
     const pts=S.meas.pts.map(([x,y])=>[SX(x,y),SY(x,y)]);
-    ctx.strokeStyle='#ffffff'; ctx.lineWidth=5; ctx.beginPath(); pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y)); ctx.stroke();
-    ctx.strokeStyle='#1d4ed8'; ctx.lineWidth=2.5; ctx.beginPath(); pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y)); ctx.stroke();
+    ctx.strokeStyle='#ffffff'; ctx.lineWidth=5*LW; ctx.beginPath(); pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y)); ctx.stroke();
+    ctx.strokeStyle='#1d4ed8'; ctx.lineWidth=2.5*LW; ctx.beginPath(); pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y)); ctx.stroke();
     for (let i=1;i<pts.length;i++){ const a=S.meas.pts[i-1], b=S.meas.pts[i]; distLabel(pts[i-1][0],pts[i-1][1],pts[i][0],pts[i][1],Math.hypot(b[0]-a[0],b[1]-a[1]),null,true); }
-    pts.forEach(([x,y])=>{ ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2); ctx.fillStyle='#1d4ed8'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke(); });
+    pts.forEach(([x,y])=>{ ctx.beginPath(); ctx.arc(x,y,5*FZ,0,Math.PI*2); ctx.fillStyle='#1d4ed8'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke(); });
+  }
+  if (GUIDE.t){
+    const T = S.gps ? guideTarget(S.gps.x,S.gps.y) : (GUIDE.t==='plant' ? {x:GUIDE.x, y:GUIDE.y, inside:false} : null);
+    if (T && !T.inside){
+      const ex=SX(T.x,T.y), ey=SY(T.x,T.y);
+      if (S.gps){ const gx=SX(S.gps.x,S.gps.y), gy=SY(S.gps.x,S.gps.y);
+        ctx.lineCap='round'; ctx.strokeStyle='#fff'; ctx.lineWidth=7*LW; ctx.beginPath(); ctx.moveTo(gx,gy); ctx.lineTo(ex,ey); ctx.stroke();
+        ctx.strokeStyle='#6d28d9'; ctx.lineWidth=3.5*LW; ctx.setLineDash([10*LW,7*LW]); ctx.beginPath(); ctx.moveTo(gx,gy); ctx.lineTo(ex,ey); ctx.stroke(); ctx.setLineDash([]); ctx.lineCap='butt'; }
+      ctx.beginPath(); ctx.arc(ex,ey,11*FZ,0,Math.PI*2); ctx.strokeStyle='#fff'; ctx.lineWidth=6*FZ; ctx.stroke(); ctx.strokeStyle='#6d28d9'; ctx.lineWidth=3*FZ; ctx.stroke();
+      ctx.beginPath(); ctx.arc(ex,ey,3*FZ,0,Math.PI*2); ctx.fillStyle='#6d28d9'; ctx.fill();
+    }
   }
   if (S.gps){
     // posição GPS: círculo de precisão, direção de marcha (quando se anda) e ponto
     const gx=SX(S.gps.x,S.gps.y), gy=SY(S.gps.x,S.gps.y), gr=S.gps.acc*s, gc=S.gps.acc>15?'217,119,6':'37,99,235';
     if (gr>9){ ctx.beginPath(); ctx.arc(gx,gy,gr,0,Math.PI*2); ctx.fillStyle=`rgba(${gc},.12)`; ctx.fill(); ctx.strokeStyle=`rgba(${gc},.5)`; ctx.lineWidth=1.2; ctx.stroke(); }
-    // direção: a da bússola, se o mapa estiver a rodar; senão, a direção de marcha dada pelo GPS
-    const hd = (ROT.on && ROT.h!=null) ? ROT.h : (S.gps.head!=null ? S.gps.head*Math.PI/180 : null);
-    if (hd!=null){ const a=hd+S.rot; ctx.beginPath(); ctx.moveTo(gx+Math.cos(a)*24,gy+Math.sin(a)*24); ctx.lineTo(gx+Math.cos(a+2.4)*11,gy+Math.sin(a+2.4)*11); ctx.lineTo(gx+Math.cos(a-2.4)*11,gy+Math.sin(a-2.4)*11); ctx.closePath(); ctx.fillStyle=`rgb(${gc})`; ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.fill(); ctx.stroke(); }
-    ctx.beginPath(); ctx.arc(gx,gy,9,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.shadowColor='rgba(0,0,0,.35)'; ctx.shadowBlur=4; ctx.fill(); ctx.shadowBlur=0; ctx.shadowColor='transparent';
-    ctx.beginPath(); ctx.arc(gx,gy,6.5,0,Math.PI*2); ctx.fillStyle=`rgb(${gc})`; ctx.fill();
+    // direção: a da bússola, se estiver ligada; senão, a direção de marcha dada pelo GPS
+    const hd = (COMP.h!=null) ? COMP.h : (S.gps.head!=null ? S.gps.head*Math.PI/180 : null);
+    if (hd!=null){ const a=hd+S.rot, L1=24*FZ, L2=11*FZ; ctx.beginPath(); ctx.moveTo(gx+Math.cos(a)*L1,gy+Math.sin(a)*L1); ctx.lineTo(gx+Math.cos(a+2.4)*L2,gy+Math.sin(a+2.4)*L2); ctx.lineTo(gx+Math.cos(a-2.4)*L2,gy+Math.sin(a-2.4)*L2); ctx.closePath(); ctx.fillStyle=`rgb(${gc})`; ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.fill(); ctx.stroke(); }
+    ctx.beginPath(); ctx.arc(gx,gy,9*FZ,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.shadowColor='rgba(0,0,0,.35)'; ctx.shadowBlur=4; ctx.fill(); ctx.shadowBlur=0; ctx.shadowColor='transparent';
+    ctx.beginPath(); ctx.arc(gx,gy,6.5*FZ,0,Math.PI*2); ctx.fillStyle=`rgb(${gc})`; ctx.fill();
   }
   if (S.L.orig && s>2.5){
-    const fs=Math.min(12,Math.max(8,s*0.9));
+    const fs=Math.min(12,Math.max(8,s*0.9))*FZ;
     for (const [t,x,y] of D.plabels){ const sx=SX(x,y), sy=SY(x,y); if(sx<-30||sx>W+30||sy<-10||sy>H+10) continue;
       label(t,sx,sy,`600 ${fs}px "Source Sans 3", sans-serif`,'#111'); }
   }
@@ -734,7 +778,7 @@ function pick(sx,sy){
   let best=null, bd=1e9;
   for (const g of ['arb','arv']){
     SP.forEach((sp,i)=>{ if(sp.g!==g||!S.vis[i]||!plants[i]) return; if (S.hl && S.hl.t==='sp' && S.hl.k!==i) return;
-      const a=plants[i]; const minR = g==='arb' ? 2.4/S.scale : 3/S.scale;
+      const a=plants[i]; const minR = plantMinPx(g)/S.scale;
       for (let j=0;j<a.length;j+=3){ const r=Math.max(a[j+2],minR), d=Math.hypot(a[j]-x,a[j+1]-y); if (d<=r+tol && d/r<bd){ bd=d/r; best={t:'plant',s:i,j:j/3}; } } });
     if (best) break;
   }
@@ -825,7 +869,7 @@ function showInfo(o, at){
       <ol class="nbl">${o.nb.map(nb=>{ const q=PL[o.g][nb.n]; return `<li><i class="sw ${D.sp[q.s].g==='arv'?'tree':'shrub'}" style="${D.sp[q.s].g==='arv'?`border-color:${SP[q.s].color};background:${hexA(SP[q.s].color,.22)}`:`background:${SP[q.s].color}`}"></i><span>${esc(SP[q.s].name)}</span><b>${fmt2(nb.d)} m</b></li>`; }).join('')}</ol></div>` : ''}
     ${galleryHTML(sp.id)}
     ${sp.note?`<div class="note">${esc(sp.note)}</div>`:''}
-    <div class="acts"><button class="btn primary" data-hl="${o.s}">Destacar ${esc(sp.code)}</button>${o.under!==undefined?`<button class="btn" data-under="${o.under}">Ver a mancha por baixo (${esc(SP[patches[o.under].s].code)})</button>`:''}</div>`;
+    <div class="acts"><button class="btn primary" data-hl="${o.s}">Destacar ${esc(sp.code)}</button><button class="btn" data-guide>Guiar até aqui</button>${o.under!==undefined?`<button class="btn" data-under="${o.under}">Ver a mancha por baixo (${esc(SP[patches[o.under].s].code)})</button>`:''}</div>`;
   } else if (o.t==='patch'){
     const p=patches[o.i], sp=SP[p.s], st=stat[p.s];
     const ol = p.ol && p.ol.length ? p.ol.map(t=>'«'+esc(t)+'»').join(', ') : 'sem etiqueta';
@@ -841,7 +885,7 @@ function showInfo(o, at){
     ${galleryHTML(sp.id)}
     ${cp&&cp.obs?`<div class="note">${esc(cp.obs)}</div>`:''}
     ${sp.note?`<div class="note">${esc(sp.note)}</div>`:''}
-    <div class="acts"><button class="btn primary" data-hl="${p.s}">Destacar ${esc(sp.code)}</button></div>`;
+    <div class="acts"><button class="btn primary" data-hl="${p.s}">Destacar ${esc(sp.code)}</button><button class="btn" data-guide>Guiar até aqui</button></div>`;
   } else {
     const c=cells[o.i];
     if (c.m.length>1){
@@ -850,14 +894,14 @@ function showInfo(o, at){
       <dl><dt>Sequência</dt><dd><b>${c.m.split('').join(' · ')}</b></dd><dt>Módulos</dt><dd>${nA} A + ${nB} B</dd><dt>Área da faixa</dt><dd>${fmt1(c.a)} m²</dd>
       <dt>Coordenadas</dt><dd class="coord">${coordTxt(wx,wy)}</dd></dl>
       <div class="note">No desenho esta faixa não está dividida: as letras alternam ao longo dela.</div>
-      <div class="acts"><button class="btn" data-mod="A">Ver Módulo A</button><button class="btn" data-mod="B">Ver Módulo B</button></div>`;
+      <div class="acts"><button class="btn" data-mod="A">Ver Módulo A</button><button class="btn" data-mod="B">Ver Módulo B</button><button class="btn" data-guide>Guiar até aqui</button></div>`;
     } else {
       const M=D.modules[c.mod];
       h = `<div class="kind">Módulo de plantação</div><h2 class="plain"><i class="sw mod" style="background:${MODC[c.mod]}"></i>Módulo ${c.mod}</h2>
       <dl><dt>Esta célula</dt><dd>${fmt1(c.a)} m²</dd><dt>Esquema</dt><dd>${M.dim}</dd>
       <dt>Espécies</dt><dd>${M.list.map(([cd,n])=>`<b>${esc(cd)}</b> <i>${esc(n)}</i>`).join('<br>')}</dd>
       <dt>Coordenadas</dt><dd class="coord">${coordTxt(wx,wy)}</dd></dl>
-      <div class="acts"><button class="btn primary" data-hlmod="${c.mod}">Destacar Módulo ${c.mod}</button><button class="btn" data-mod="${c.mod}">Ver esquema</button></div>`;
+      <div class="acts"><button class="btn primary" data-hlmod="${c.mod}">Destacar Módulo ${c.mod}</button><button class="btn" data-mod="${c.mod}">Ver esquema</button><button class="btn" data-guide>Guiar até aqui</button></div>`;
     }
   }
   info.innerHTML = `<button class="x" aria-label="Fechar">×</button>` + h; info.hidden=false; info.scrollTop=0;
@@ -884,6 +928,7 @@ info.addEventListener('click', e => {
   const b = e.target.closest('button'); if(!b) return;
   if (b.classList.contains('x')) return showInfo(null);
   if (b.classList.contains('ph')) return openLB(b.dataset.key, +b.dataset.j);
+  if (b.dataset.guide!==undefined){ if (S.sel) guideStart(S.sel); return; }
   if (b.dataset.under!==undefined){ const i=+b.dataset.under; const p=patches[i]; showInfo({t:'patch',i}, p.lp); return; }
   if (b.dataset.go!==undefined){ const i=+b.dataset.go; S.vis[i]=true; if(!(S.hl&&S.hl.t==='sp'&&S.hl.k===i)) setHL({t:'sp',k:i}); fit(stat[i].bb,50); return; }
   if (b.dataset.hl!==undefined){ const i=+b.dataset.hl; setHL({t:'sp',k:i}); if (info.querySelector('.fotos') && !S.sel) showInfo(S.hl?{t:'species',s:i}:null); return; }
@@ -1153,6 +1198,22 @@ document.getElementById('measx').onclick=()=>setMeasure(false);
 document.getElementById('measundo').onclick=()=>{ if(S.meas){ S.meas.pts.pop(); updMeas(); req(); } };
 document.getElementById('measclr').onclick=()=>{ if(S.meas){ S.meas.pts=[]; updMeas(); req(); } };
 
+// ---------- modo sol (mais contraste para ler ao sol; a escolha fica guardada neste aparelho)
+const sunbtn=document.getElementById('sunbtn');
+let sunPrev=null;
+function setSun(on, save=true){
+  if (on===S.sun) return;
+  const root=document.documentElement; S.sun=on;
+  if (on){ sunPrev={ortho:S.L.ortho, theme:root.getAttribute('data-theme')}; S.L.ortho=false; root.classList.add('sun'); root.setAttribute('data-theme','light'); }
+  else { root.classList.remove('sun'); const pv=sunPrev||{ortho:true, theme:null}; S.L.ortho=pv.ortho; if (pv.theme==null) root.removeAttribute('data-theme'); else root.setAttribute('data-theme',pv.theme); sunPrev=null; }
+  document.getElementById('L-ortho').checked=S.L.ortho;
+  sunbtn.setAttribute('aria-pressed',String(on));
+  if (save){ try{ localStorage.setItem('wg-ericeira-sol', on?'1':'0'); }catch(_){} }
+  readColors(); req();
+}
+sunbtn.onclick=()=>setSun(!S.sun);
+try{ if (localStorage.getItem('wg-ericeira-sol')==='1') setSun(true,false); }catch(_){}
+
 // ---------- onde estou (GPS do telemóvel)
 // ETRS89 / PT-TM06 (EPSG:3763) a partir de latitude/longitude — série de Krüger, elipsoide GRS80.
 // As coordenadas do desenho estão neste sistema (M, P); no mapa, X = P − Y0 e Y = M − X0.
@@ -1177,7 +1238,7 @@ S.gps=null;
 function gpsMsg(html, kind){ gpsEl.hidden=false; gpsTxt.innerHTML=html; gpsDot.className='gps-dot'+(kind?' '+kind:''); }
 function gpsSetBtn(){ gpsbtn.setAttribute('aria-pressed', String(G.watch!==null)); gpsbtn.classList.toggle('follow', G.watch!==null && G.follow); }
 function gpsUnfollow(){ if (G.follow){ G.follow=false; gpsSetBtn(); } }
-function gpsStop(){ if (G.watch!==null && navigator.geolocation) navigator.geolocation.clearWatch(G.watch); G.watch=null; G.follow=false; S.gps=null; gpsEl.hidden=true; gpsSetBtn(); req(); }
+function gpsStop(){ if (GUIDE.t) guideStop(); if (G.watch!==null && navigator.geolocation) navigator.geolocation.clearWatch(G.watch); G.watch=null; G.follow=false; S.gps=null; gpsEl.hidden=true; gpsSetBtn(); req(); }
 function gpsCentre(){ if (!S.gps) return; if (S.scale<4) S.scale=Math.min(maxScale,4); centreOn(S.gps.x,S.gps.y); }
 function whereTxt(x,y){
   hit.setTransform(1,0,0,1,0,0);
@@ -1202,6 +1263,7 @@ function gpsFix(pos){
   S.gps={x,y,acc,head};
   const w=whereTxt(x,y), weak=acc>15;
   gpsMsg(`<b>Está aqui</b> · precisão ± ${Math.max(1,Math.round(acc))} m${weak?' (sinal fraco)':''}${w?`<small>${w}</small>`:''}`, weak?'weak':'');
+  if (GUIDE.t){ gpsEl.hidden=true; guideUpdate(true); }   // a guiar: o quadro do guia mostra o que interessa
   if (G.follow) gpsCentre(); else req();
 }
 function gpsErr(e){
@@ -1234,12 +1296,9 @@ gpsbtn.onclick=()=>{
 };
 document.getElementById('gpsx').onclick=gpsStop;
 
-// ---------- rodar o mapa com a direção do telemóvel (opção; por defeito o mapa fica como o desenho, norte à direita)
-const rotbtn=document.getElementById('rotbtn'), rotEl=document.getElementById('rotmsg'), rotTxt=document.getElementById('rottxt'), rotDot=document.getElementById('rotdot');
-const ROT={on:false, h:null, vx:0, vy:0, ev:null, wait:0, hide:0, anim:0};
+// ---------- bússola do telemóvel (partilhada por «Rodar o mapa» e «Guiar até aqui»)
+const COMP={ev:null, h:null, vx:0, vy:0, users:new Set()};
 const wrapA = d => Math.atan2(Math.sin(d), Math.cos(d));
-function rotMsg(html, kind, ms){ clearTimeout(ROT.hide); rotEl.hidden=false; rotTxt.innerHTML=html; rotDot.className='gps-dot '+(kind||'rot'); if (ms) ROT.hide=setTimeout(()=>{ rotEl.hidden=true; }, ms); }
-function rotSetBtn(){ rotbtn.setAttribute('aria-pressed', String(ROT.on)); }
 function screenAngle(){
   const a = (screen.orientation && typeof screen.orientation.angle==='number') ? screen.orientation.angle : (typeof window.orientation==='number' ? window.orientation : 0);
   return ((Math.round(a/90)*90)%360+360)%360;
@@ -1255,50 +1314,63 @@ function headingFromEuler(a,b,g,ang){
   if (Math.hypot(E,N)<1e-3) return null;
   return (Math.atan2(E,N)/R+360)%360;
 }
-function setRotKeep(r){ const [x,y]=toWorld(W/2,H/2); S.rot=r; centreOn(x,y); }
+// iPhone: a autorização tem de ser pedida dentro do toque
+async function compassPermission(){
+  try{
+    if (typeof DeviceOrientationEvent!=='undefined' && typeof DeviceOrientationEvent.requestPermission==='function')
+      return (await DeviceOrientationEvent.requestPermission())==='granted';
+    return true;
+  }catch(_){ return false; }
+}
+function compassOn(user){ COMP.users.add(user); if (COMP.ev) return; COMP.h=null; COMP.ev=('ondeviceorientationabsolute' in window)?'deviceorientationabsolute':'deviceorientation'; addEventListener(COMP.ev, onOri); }
+function compassOff(user){ COMP.users.delete(user); if (COMP.users.size || !COMP.ev) return; removeEventListener(COMP.ev, onOri); COMP.ev=null; COMP.h=null; req(); }
 function onOri(e){
-  if (!ROT.on) return;
   let h=null;
   if (typeof e.webkitCompassHeading==='number' && isFinite(e.webkitCompassHeading) && e.webkitCompassHeading>=0) h=(e.webkitCompassHeading+screenAngle())%360; // iPhone
   else if ((e.absolute===true || e.type==='deviceorientationabsolute') && e.alpha!=null) h=headingFromEuler(e.alpha, e.beta||0, e.gamma||0, screenAngle());
   if (h==null) return;
   const r=h*Math.PI/180;
-  if (ROT.h==null){ ROT.vx=Math.cos(r); ROT.vy=Math.sin(r); clearTimeout(ROT.wait); }
-  else { const k=.2; ROT.vx=ROT.vx*(1-k)+Math.cos(r)*k; ROT.vy=ROT.vy*(1-k)+Math.sin(r)*k; } // suaviza a agulha
-  ROT.h=Math.atan2(ROT.vy, ROT.vx);
-  // No mapa, o norte é +X e o este +Y; para a direção em que se está virado ficar para cima: rot = −90° − rumo
-  const d=wrapA(-Math.PI/2-ROT.h-S.rot);
-  if (Math.abs(d)>0.004) setRotKeep(S.rot+d); else if (S.gps) req();
+  if (COMP.h==null){ COMP.vx=Math.cos(r); COMP.vy=Math.sin(r); }
+  else { const k=.2; COMP.vx=COMP.vx*(1-k)+Math.cos(r)*k; COMP.vy=COMP.vy*(1-k)+Math.sin(r)*k; } // suaviza a agulha
+  COMP.h=Math.atan2(COMP.vy, COMP.vx);
+  if (ROT.on){
+    // No mapa, o norte é +X e o este +Y; para a direção em que se está virado ficar para cima: rot = −90° − rumo
+    const d=wrapA(-Math.PI/2-COMP.h-S.rot);
+    if (Math.abs(d)>0.004) setRotKeep(S.rot+d);
+  }
+  if (GUIDE.t) guideUpdate(); else if (S.gps) req();
 }
-function rotInFrame(){ try{ return window.self!==window.top; }catch(_){ return true; } }
-const rotSiteMsg = () => `A bússola não responde nesta pré-visualização.<small>Abra o mapa no telemóvel, no site da obra: <a href="${SITE_URL}" target="_blank" rel="noopener">${SITE_URL.replace('https://','').replace(/\/$/,'')}</a></small>`;
+function inFrame(){ try{ return window.self!==window.top; }catch(_){ return true; } }
+const siteLink = () => `<a href="${SITE_URL}" target="_blank" rel="noopener">${SITE_URL.replace('https://','').replace(/\/$/,'')}</a>`;
+
+// ---------- rodar o mapa com a direção do telemóvel (opção; por defeito o mapa fica como o desenho, norte à direita)
+const rotbtn=document.getElementById('rotbtn'), rotEl=document.getElementById('rotmsg'), rotTxt=document.getElementById('rottxt'), rotDot=document.getElementById('rotdot');
+const ROT={on:false, wait:0, hide:0, anim:0};
+function rotMsg(html, kind, ms){ clearTimeout(ROT.hide); rotEl.hidden=false; rotTxt.innerHTML=html; rotDot.className='gps-dot '+(kind||'rot'); if (ms) ROT.hide=setTimeout(()=>{ rotEl.hidden=true; }, ms); }
+function rotSetBtn(){ rotbtn.setAttribute('aria-pressed', String(ROT.on)); }
+function setRotKeep(r){ const [x,y]=toWorld(W/2,H/2); S.rot=r; centreOn(x,y); }
 function rotDenied(){
   const ios=/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
-  rotMsg(rotInFrame() ? rotSiteMsg()
+  rotMsg(inFrame() ? `A bússola não responde nesta pré-visualização.<small>Abra o mapa no telemóvel, no site da obra: ${siteLink()}</small>`
     : ios ? 'Sem autorização para usar a bússola.<small>Toque de novo no botão e escolha «Permitir». Se não aparecer o pedido, feche o separador e abra o mapa outra vez.</small>'
     : 'Sem autorização para usar a bússola.<small>Permita os sensores de movimento para este site nas definições do browser e toque de novo no botão.</small>', 'err');
 }
 async function rotStart(){
-  try{
-    if (typeof DeviceOrientationEvent!=='undefined' && typeof DeviceOrientationEvent.requestPermission==='function'){
-      const r=await DeviceOrientationEvent.requestPermission(); // iPhone: tem de ser pedido no toque
-      if (r!=='granted'){ rotDenied(); return; }
-    }
-  }catch(_){ rotDenied(); return; }
+  if (!(await compassPermission())){ rotDenied(); return; }
   cancelAnimationFrame(ROT.anim);
-  ROT.on=true; ROT.h=null; rotSetBtn();
-  ROT.ev = ('ondeviceorientationabsolute' in window) ? 'deviceorientationabsolute' : 'deviceorientation';
-  addEventListener(ROT.ev, onOri);
+  ROT.on=true; rotSetBtn(); compassOn('rot');
+  if (COMP.h!=null) setRotKeep(S.rot+wrapA(-Math.PI/2-COMP.h-S.rot));
   rotMsg('O mapa roda conforme a direção para onde aponta o telemóvel.<small>Segure-o à sua frente. Perto de carros ou de ferro, a bússola pode desviar-se.</small>','rot',7000);
+  clearTimeout(ROT.wait);
   ROT.wait=setTimeout(()=>{
-    if (!ROT.on || ROT.h!=null) return;
+    if (!ROT.on || COMP.h!=null) return;
     rotStop(true);
-    rotMsg(rotInFrame() ? rotSiteMsg()
+    rotMsg(inFrame() ? `A bússola não responde nesta pré-visualização.<small>Abra o mapa no telemóvel, no site da obra: ${siteLink()}</small>`
       : 'Este aparelho não tem bússola ou não a dá ao browser.<small>No computador esta opção não funciona; use-a no telemóvel.</small>', 'err');
   }, 3500);
 }
 function rotStop(keepMsg){
-  ROT.on=false; ROT.h=null; if (ROT.ev) removeEventListener(ROT.ev, onOri); ROT.ev=null; clearTimeout(ROT.wait); rotSetBtn();
+  ROT.on=false; clearTimeout(ROT.wait); rotSetBtn(); compassOff('rot');
   if (!keepMsg){ clearTimeout(ROT.hide); rotEl.hidden=true; }
   // volta à orientação do desenho (norte à direita), com uma pequena animação
   const from=S.rot, d=wrapA(-from), t0=performance.now();
@@ -1310,11 +1382,93 @@ function rotStop(keepMsg){
 rotbtn.onclick=()=>{ if (ROT.on) rotStop(); else rotStart(); };
 document.getElementById('rotx').onclick=()=>{ clearTimeout(ROT.hide); rotEl.hidden=true; };
 
+// ---------- guiar até uma planta, mancha ou módulo (precisa do «Onde estou»)
+const guideEl=document.getElementById('guide'), guideTxt=document.getElementById('guidetxt'), guideArrow=document.getElementById('guidearrow');
+const GUIDE={t:null, last:0, fit:false, tm:0};
+function nearestOnRing(px,py,r,best){
+  const n=r.length/2;
+  for (let i=0;i<n;i++){
+    const ax=r[2*i], ay=r[2*i+1], bx=r[(2*i+2)%r.length], by=r[(2*i+3)%r.length];
+    const vx=bx-ax, vy=by-ay, L=vx*vx+vy*vy; let t=L?((px-ax)*vx+(py-ay)*vy)/L:0; t=Math.max(0,Math.min(1,t));
+    const qx=ax+t*vx, qy=ay+t*vy, d=Math.hypot(px-qx,py-qy);
+    if (!best || d<best.d) best={x:qx,y:qy,d};
+  }
+  return best;
+}
+// Ponto de chegada a partir da posição (x,y): o centro da planta, ou o ponto mais próximo do contorno da mancha/módulo
+function guideTarget(x,y){
+  const G2=GUIDE;
+  if (G2.t==='plant') return {x:G2.x, y:G2.y, inside:false};
+  const shape = G2.t==='patch' ? patches[G2.i] : cells[G2.i];
+  if (x==null) return {x:shape.c?shape.c[0]:shape.lp[0], y:shape.c?shape.c[1]:shape.lp[1], inside:false};
+  hit.setTransform(1,0,0,1,0,0);
+  if (hit.isPointInPath(shape.path,x,y,'evenodd')) return {x,y,inside:true};
+  let best=null; for (const r of shape.rings) best=nearestOnRing(x,y,r,best);
+  return {x:best.x, y:best.y, inside:false};
+}
+function sideWords(rel){ // rel em graus, positivo = para a direita
+  const a=Math.abs(rel), lado = rel>0 ? 'à direita' : 'à esquerda';
+  if (a<=20) return 'em frente';
+  if (a<=65) return 'em frente, '+lado;
+  if (a<=115) return lado;
+  if (a<=160) return 'atrás, '+lado;
+  return 'para trás';
+}
+const CARD=['norte','nordeste','este','sudeste','sul','sudoeste','oeste','noroeste'];
+const fmtDist = d => d>=1000 ? fmt1(d/1000)+' km' : d<10 ? fmt1(d)+' m' : Math.round(d)+' m';
+function guideMsg(html, arrowDeg){ guideEl.hidden=false; guideTxt.innerHTML=html; guideArrow.style.visibility = arrowDeg==null?'hidden':'visible'; if (arrowDeg!=null) guideArrow.style.transform=`rotate(${arrowDeg}deg)`; }
+function guideUpdate(force){
+  if (!GUIDE.t) return;
+  req();
+  const now=performance.now();
+  if (!force && now-GUIDE.last<180){ if (!GUIDE.tm) GUIDE.tm=setTimeout(()=>{ GUIDE.tm=0; guideUpdate(true); }, 200); return; }
+  GUIDE.last=now; clearTimeout(GUIDE.tm); GUIDE.tm=0;
+  const name=GUIDE.name;
+  if (!S.gps){ guideMsg(`<b>À espera da sua posição…</b><small>Até ${name}</small>`, null); return; }
+  const g=S.gps, T=guideTarget(g.x,g.y);
+  if (GUIDE.fit){ // primeira posição: enquadrar a pessoa e o destino (pelo menos 30 m à volta)
+    GUIDE.fit=false; G.follow=false; gpsSetBtn();
+    const cx=(g.x+T.x)/2, cy=(g.y+T.y)/2, hx=Math.max(Math.abs(g.x-T.x)/2,15), hy=Math.max(Math.abs(g.y-T.y)/2,15);
+    fit([cx-hx,cy-hy,cx+hx,cy+hy], 70);
+  }
+  if (T.inside){ guideMsg(`<b>Está dentro ${GUIDE.t==='patch'?'da mancha':'do módulo'}</b><small>${name} · precisão do GPS ± ${Math.max(1,Math.round(g.acc))} m</small>`, null); return; }
+  const dx=T.x-g.x, dy=T.y-g.y, d=Math.hypot(dx,dy), brg=Math.atan2(dy,dx); // rumo a partir do norte (+X), para o este (+Y)
+  const face = COMP.h!=null ? COMP.h : (g.head!=null ? g.head*Math.PI/180 : null);
+  if (d <= Math.max(3, Math.min(g.acc||0, 10))){
+    guideMsg(`<b>Chegou</b> · a ${fmtDist(d)}<small>${name}. Está dentro da margem de erro do GPS (± ${Math.max(1,Math.round(g.acc))} m)${GUIDE.t==='plant'?'; acerte o sítio com a fita, a partir das plantas vizinhas':''}.</small>`, null);
+    return;
+  }
+  if (face!=null){
+    const rel=wrapA(brg-face)*180/Math.PI;
+    guideMsg(`<b>${fmtDist(d)}</b> · ${sideWords(rel)}<small>Até ${name}</small>`, rel);
+  } else {
+    const deg=((brg*180/Math.PI)%360+360)%360;
+    guideMsg(`<b>${fmtDist(d)}</b> · para ${CARD[Math.round(deg/45)%8]}<small>Até ${name}. Siga a linha no mapa; ao andar, passa a dizer o lado.</small>`, (brg+S.rot)*180/Math.PI+90);
+  }
+}
+async function guideStart(o){
+  let t;
+  if (o.t==='plant'){ const sp=SP[o.s], a=plants[o.s], j=o.j*3; t={t:'plant', x:a[j], y:a[j+1], name:`<i>${esc(sp.name)}</i> (${esc(sp.code)})`}; }
+  else if (o.t==='patch'){ const sp=SP[patches[o.i].s]; t={t:'patch', i:o.i, name:`mancha <b>${esc(sp.code)}</b> · <i>${esc(sp.name)}</i>`}; }
+  else if (o.t==='cell'){ const c=cells[o.i]; t={t:'cell', i:o.i, name: c.m.length>1 ? 'faixa de módulos A/B' : 'módulo '+c.mod}; }
+  else return;
+  Object.assign(GUIDE, t, {last:0, fit:true});
+  showInfo(null);
+  if (narrowMQ.matches) wrap.scrollIntoView({behavior:'smooth', block:'start'});
+  if (G.watch===null) gpsbtn.click();          // liga o «Onde estou»
+  else if (S.gps) gpsEl.hidden=true;
+  guideUpdate(true);
+  if (await compassPermission()) compassOn('guide');  // para dizer «à esquerda / à direita»
+  guideUpdate(true);
+}
+function guideStop(){ GUIDE.t=null; guideEl.hidden=true; compassOff('guide'); if (S.gps && G.watch!==null) gpsEl.hidden=false; req(); }
+document.getElementById('guidex').onclick=guideStop;
+
 // ---------- sem rede (só no site publicado, que tem manifesto e service worker)
 (function(){
   const el=document.getElementById('offl');
   if (!document.querySelector('link[rel="manifest"]') || !('serviceWorker' in navigator) || !window.caches) return;
-  const BUILD='27/10/2026 23:39';
+  const BUILD='28/10/2026 09:55';
   const urls=[...new Set(Object.values(FLORA).flatMap(F=>F.ph.map(p=>p.f).filter(Boolean)))];
   const set=(h,k)=>{ el.hidden=false; el.className='offl'+(k?' '+k:''); el.innerHTML=h; };
   const ios=/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
