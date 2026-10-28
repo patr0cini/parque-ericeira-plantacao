@@ -141,7 +141,14 @@ button{font:inherit;color:inherit}
 .gps-dot.weak{background:#d97706;box-shadow:0 0 0 3px rgba(217,119,6,.22)}
 .gps-dot.err,.gps-dot.far{background:var(--muted);box-shadow:none}
 .guide{border-color:#6d28d9;align-items:center}
-.guide .gps-t > b{font-size:16px}
+.guide #guidetxt > b{font-size:16px}
+.gnav{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap}
+.gnav[hidden]{display:none}
+.gnav .btn{padding:4px 10px;font-size:12.5px}
+.vgo{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:10px}
+.vgo span{font-size:12.5px;font-weight:600;margin-right:4px;flex-basis:100%}
+.vbtn{width:32px;height:32px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #10120c;background:#10120c;color:#fff;font-weight:700;font-size:13px;cursor:pointer;padding:0}
+.vbtn:hover{background:#6d28d9;box-shadow:0 0 0 1px #6d28d9}
 .garrow{flex:none;width:32px;height:32px;transition:transform .15s linear}
 .gps-dot.rot{background:var(--verde);box-shadow:0 0 0 3px rgba(145,176,62,.25)}
 .north svg{transition:transform .08s linear}
@@ -333,7 +340,7 @@ button{font:inherit;color:inherit}
       <label><input type="checkbox" id="L-topo" checked> Toponímia</label>
     </div>
     <div class="tlstack">
-    <div class="gps guide" id="guide" hidden><svg class="garrow" id="guidearrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 19.5 21 12 16.8 4.5 21z" fill="#6d28d9" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/></svg><div class="gps-t" id="guidetxt" aria-live="off"></div><button id="guidex" aria-label="Parar de guiar" title="Parar de guiar">×</button></div>
+    <div class="gps guide" id="guide" hidden><svg class="garrow" id="guidearrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 19.5 21 12 16.8 4.5 21z" fill="#6d28d9" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/></svg><div class="gps-t"><div id="guidetxt" aria-live="off"></div><div class="gnav" id="guidenav" hidden></div></div><button id="guidex" aria-label="Parar de guiar" title="Parar de guiar">×</button></div>
     <div class="gps" id="gps" hidden role="status" aria-live="polite"><i class="gps-dot" id="gpsdot"></i><div class="gps-t" id="gpstxt"></div><button id="gpsx" aria-label="Desligar localização" title="Desligar localização">×</button></div>
     <div class="gps" id="rotmsg" hidden role="status" aria-live="polite"><i class="gps-dot rot" id="rotdot"></i><div class="gps-t" id="rottxt"></div><button id="rotx" aria-label="Fechar" title="Fechar">×</button></div>
     <div class="meas" id="meas" hidden>
@@ -526,13 +533,14 @@ function resize(){
   if (firstFit) fit(PLANT_BB, 14); else { S.tx += (W-oldW)/2; S.ty += (H-oldH)/2; }
   req();
 }
-function fit(bb, pad=24){
+function fit(bb, pad=24, top=0){
   bb = bb || [0,0,D.W,D.H];
   const bw = Math.max(bb[2]-bb[0], 8), bh = Math.max(bb[3]-bb[1], 8);
   rcs(); const rw=bw*Math.abs(_rc)+bh*Math.abs(_rs), rh=bw*Math.abs(_rs)+bh*Math.abs(_rc);
-  const s = Math.min((W-pad*2)/rw, (H-pad*2)/rh, maxScale);
+  const s = Math.min((W-pad*2)/rw, (H-pad*2-top)/rh, maxScale);
   S.scale = Math.max(s, minScale);
   centreOn(bb[0]+bw/2, bb[1]+bh/2);
+  if (top) S.ty += top/2;   // deixa livre a faixa de cima (quadros sobre o mapa)
 }
 // Mundo (metros do desenho) ↔ ecrã, com a rotação opcional do mapa (S.rot, em radianos; 0 = norte à direita, como no desenho)
 let _rr=NaN, _rc=1, _rs=0;
@@ -620,12 +628,12 @@ function draw(){
   // selection outline
   if (S.sel){
     ctx.lineJoin='round';
-    const path = S.sel.t==='patch' ? patches[S.sel.i].path : S.sel.t==='cell' ? cells[S.sel.i].path : null;
+    const path = (S.sel.t==='patch'||S.sel.t==='vertex') ? patches[S.sel.i].path : S.sel.t==='cell' ? cells[S.sel.i].path : null;
     if (path){ ctx.strokeStyle='#fff'; ctx.lineWidth=5*LW*px; ctx.stroke(path); ctx.strokeStyle='#111'; ctx.lineWidth=2.4*LW*px; ctx.stroke(path); }
     if (S.sel.t==='plant'){ const a=plants[S.sel.s], j=S.sel.j*3, r=Math.max(a[j+2],plantMinPx(SP[S.sel.s].g)*px)+2*LW*px; ctx.beginPath(); ctx.arc(a[j],a[j+1],r,0,Math.PI*2); ctx.strokeStyle='#fff'; ctx.lineWidth=5*LW*px; ctx.stroke(); ctx.strokeStyle='#111'; ctx.lineWidth=2.4*LW*px; ctx.stroke(); }
   }
 
-  if (GUIDE.t==='patch' || GUIDE.t==='cell'){ const gp=(GUIDE.t==='patch'?patches[GUIDE.i]:cells[GUIDE.i]).path; ctx.lineJoin='round'; ctx.strokeStyle='#fff'; ctx.lineWidth=6*LW*px; ctx.stroke(gp); ctx.strokeStyle='#6d28d9'; ctx.lineWidth=3*LW*px; ctx.stroke(gp); }
+  if (GUIDE.t==='patch' || GUIDE.t==='cell' || GUIDE.t==='vertex'){ const gp=(GUIDE.t==='cell'?cells[GUIDE.i]:patches[GUIDE.i]).path; ctx.lineJoin='round'; ctx.strokeStyle='#fff'; ctx.lineWidth=6*LW*px; ctx.stroke(gp); ctx.strokeStyle='#6d28d9'; ctx.lineWidth=3*LW*px; ctx.stroke(gp); }
   // ---------- screen-space labels
   ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.lineJoin='round';
@@ -671,7 +679,7 @@ function draw(){
     }
   }
   // medidas dos lados
-  const edgeLabels = (p, placed, numbers) => {
+  const edgeLabels = (p, placed, numbers, hk=-1) => {
     const v=p.edge.v, n=v.length; ctx.font=`700 ${11.5*FZ}px "Source Sans 3", sans-serif`;
     for (let i=0;i<n;i++){
       const a=v[i], b=v[(i+1)%n], L=p.edge.e[i];
@@ -688,15 +696,17 @@ function draw(){
     }
     if (numbers){
       ctx.font=`700 ${10.5*FZ}px "Source Sans 3", sans-serif`;
-      v.forEach((q,i)=>{ const x=SX(q[0],q[1]), y=SY(q[0],q[1]); ctx.beginPath(); ctx.arc(x,y,8*FZ,0,Math.PI*2); ctx.fillStyle='#10120c'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke(); ctx.fillStyle='#fff'; ctx.fillText(String(i+1),x,y+.5); });
+      v.forEach((q,i)=>{ const x=SX(q[0],q[1]), y=SY(q[0],q[1]), on=i===hk; ctx.beginPath(); ctx.arc(x,y,(on?10.5:8)*FZ,0,Math.PI*2); ctx.fillStyle=on?'#6d28d9':'#10120c'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=on?2.5:1.5; ctx.stroke(); ctx.fillStyle='#fff'; ctx.fillText(String(i+1),x,y+.5); });
     }
   };
   {
     const placed=[];
-    if (S.sel && S.sel.t==='patch') edgeLabels(patches[S.sel.i], placed, true);
+    const vp = S.sel && (S.sel.t==='patch'||S.sel.t==='vertex') ? S.sel.i : (GUIDE.t==='vertex' ? GUIDE.i : null);
+    const vk = S.sel && S.sel.t==='vertex' ? S.sel.k : (GUIDE.t==='vertex' && GUIDE.i===vp ? GUIDE.k : -1);
+    if (vp!=null) edgeLabels(patches[vp], placed, true, vk);
     if ((S.hl && S.hl.t==='sp' && s>2.5) || (S.L.dims && s>3)){
       for (const p of patches){
-        if (!S.vis[p.s] || (S.sel&&S.sel.t==='patch'&&patches[S.sel.i]===p)) continue;
+        if (!S.vis[p.s] || (vp!=null && patches[vp]===p)) continue;
         if (S.hl ? !(S.hl.t==='sp'&&S.hl.k===p.s) : false) continue;
         if (!(S.hl && S.hl.t==='sp') && !S.L.dims) continue;
         if (!inView(p.bb)) continue;
@@ -736,7 +746,7 @@ function draw(){
     pts.forEach(([x,y])=>{ ctx.beginPath(); ctx.arc(x,y,5*FZ,0,Math.PI*2); ctx.fillStyle='#1d4ed8'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke(); });
   }
   if (GUIDE.t){
-    const T = S.gps ? guideTarget(S.gps.x,S.gps.y) : (GUIDE.t==='plant' ? {x:GUIDE.x, y:GUIDE.y, inside:false} : null);
+    const T = S.gps ? guideTarget(S.gps.x,S.gps.y) : ((GUIDE.t==='plant'||GUIDE.t==='vertex') ? {x:GUIDE.x, y:GUIDE.y, inside:false} : null);
     if (T && !T.inside){
       const ex=SX(T.x,T.y), ey=SY(T.x,T.y);
       if (S.gps){ const gx=SX(S.gps.x,S.gps.y), gy=SY(S.gps.x,S.gps.y);
@@ -820,11 +830,28 @@ function galleryHTML(key){
   h += `<a class="fo" href="${F.url}" target="_blank" rel="noopener">Ver ficha no Flora-On ↗</a>`;
   return `<div class="fotos">${h}</div>`;
 }
+// Ângulo interno (graus) no vértice k de um contorno (vértices em ordem com área positiva)
+function vertexAngle(E,k){
+  const v=E.v, n=v.length, a=v[(k-1+n)%n], b=v[k], c=v[(k+1)%n];
+  const ux=a[0]-b[0], uy=a[1]-b[1], wx=c[0]-b[0], wy=c[1]-b[1];
+  const ang=Math.atan2(Math.abs(ux*wy-uy*wx), ux*wx+uy*wy)*180/Math.PI;
+  const turn=(b[0]-a[0])*(c[1]-b[1])-(b[1]-a[1])*(c[0]-b[0]);
+  return turn>0 ? ang : 360-ang;
+}
+// Vértice numerado da mancha selecionada (ou a ser guiada) debaixo de um toque
+function vertexAt(sx,sy){
+  const i = S.sel && (S.sel.t==='patch'||S.sel.t==='vertex') ? S.sel.i : (GUIDE.t==='vertex' ? GUIDE.i : null);
+  if (i==null) return null;
+  const v=patches[i].edge.v, tol=(S.sun?13*1.3:13); let best=null, bd=tol;
+  v.forEach((q,k)=>{ const d=Math.hypot(SX(q[0],q[1])-sx, SY(q[0],q[1])-sy); if (d<=bd){ bd=d; best={t:'vertex', i, k}; } });
+  return best;
+}
 function sidesHTML(p){
   const v=p.edge.v, n=v.length;
   return `<div class="sides"><div class="sides-h"><b>Lados da mancha</b><span>${n} lados · perímetro ${fmt2(p.edge.per)} m</span></div>
     <ol class="sl">${p.edge.e.map((L,i)=>`<li><span>${i+1} → ${(i+1)%n+1}</span><b>${fmt2(L)} m</b></li>`).join('')}</ol>
-    <p class="credit">Os números são os vértices marcados no mapa. O 1 é o mais próximo do canto superior esquerdo e a contagem segue o sentido dos ponteiros do relógio.</p>
+    <div class="vgo"><span>Guiar até um vértice</span>${v.map((_,i)=>`<button class="vbtn" data-gv="${i}" aria-label="Guiar até ao vértice ${i+1}">${i+1}</button>`).join('')}</div>
+    <p class="credit">Os números são os vértices marcados no mapa; tocar num deles no mapa abre a ficha desse vértice. O 1 é o mais próximo do canto superior esquerdo e a contagem segue o sentido dos ponteiros do relógio.</p>
     <details><summary>Coordenadas dos vértices (M, P)</summary><table class="vt">${v.map((q,i)=>`<tr><td>${i+1}</td><td>${fmt2(q[1]+D.X0)}</td><td>${fmt2(q[0]+D.Y0)}</td></tr>`).join('')}</table></details></div>`;
 }
 function cpBox(cp){ return cp?`<div class="cpbox"><span>Compasso (c.p.)</span><b>${cp.cp}</b><em>${fmtD(cp.d)} ${plt(cp.d)}/m²</em></div>`:''; }
@@ -886,6 +913,15 @@ function showInfo(o, at){
     ${cp&&cp.obs?`<div class="note">${esc(cp.obs)}</div>`:''}
     ${sp.note?`<div class="note">${esc(sp.note)}</div>`:''}
     <div class="acts"><button class="btn primary" data-hl="${p.s}">Destacar ${esc(sp.code)}</button><button class="btn" data-guide>Guiar até aqui</button></div>`;
+  } else if (o.t==='vertex'){
+    const p=patches[o.i], sp=SP[p.s], E=p.edge, n=E.v.length, k=o.k, pr=(k-1+n)%n, nx=(k+1)%n, q=E.v[k];
+    h = `<div class="kind">Vértice de mancha</div><h2 class="plain">${swHTML(p.s)}Vértice ${k+1}</h2>
+    <dl><dt>Mancha</dt><dd><b>${esc(sp.code)}</b> · <i>${esc(sp.name)}</i> · n.º ${p.id}</dd>
+    <dt>Lado anterior</dt><dd>${pr+1} → ${k+1} · <b>${fmt2(E.e[pr])} m</b></dd>
+    <dt>Lado seguinte</dt><dd>${k+1} → ${nx+1} · <b>${fmt2(E.e[k])} m</b></dd>
+    <dt>Ângulo interno</dt><dd>${Math.round(vertexAngle(E,k))}°</dd>
+    <dt>Coordenadas</dt><dd class="coord">${coordTxt(q[0],q[1])}</dd></dl>
+    <div class="acts"><button class="btn primary" data-guide>Guiar até aqui</button><button class="btn" data-backpatch="${o.i}">Ver a mancha</button></div>`;
   } else {
     const c=cells[o.i];
     if (c.m.length>1){
@@ -905,7 +941,7 @@ function showInfo(o, at){
     }
   }
   info.innerHTML = `<button class="x" aria-label="Fechar">×</button>` + h; info.hidden=false; info.scrollTop=0;
-  if (o.t==='patch') keepVisible(patches[o.i].bb);
+  if (o.t==='patch' || o.t==='vertex') keepVisible(patches[o.i].bb);
   if (narrowMQ.matches) setTimeout(()=>info.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
 }
 // No telemóvel a ficha fica por baixo do mapa; no computador flutua sobre o mapa.
@@ -929,6 +965,8 @@ info.addEventListener('click', e => {
   if (b.classList.contains('x')) return showInfo(null);
   if (b.classList.contains('ph')) return openLB(b.dataset.key, +b.dataset.j);
   if (b.dataset.guide!==undefined){ if (S.sel) guideStart(S.sel); return; }
+  if (b.dataset.gv!==undefined){ if (S.sel && (S.sel.t==='patch'||S.sel.t==='vertex')) guideStart({t:'vertex', i:S.sel.i, k:+b.dataset.gv}); return; }
+  if (b.dataset.backpatch!==undefined){ const i=+b.dataset.backpatch; showInfo({t:'patch',i}, patches[i].lp); return; }
   if (b.dataset.under!==undefined){ const i=+b.dataset.under; const p=patches[i]; showInfo({t:'patch',i}, p.lp); return; }
   if (b.dataset.go!==undefined){ const i=+b.dataset.go; S.vis[i]=true; if(!(S.hl&&S.hl.t==='sp'&&S.hl.k===i)) setHL({t:'sp',k:i}); fit(stat[i].bb,50); return; }
   if (b.dataset.hl!==undefined){ const i=+b.dataset.hl; setHL({t:'sp',k:i}); if (info.querySelector('.fotos') && !S.sel) showInfo(S.hl?{t:'species',s:i}:null); return; }
@@ -988,7 +1026,7 @@ const endPtr = e => {
   if (ptrs.size===0){
     if (!moved && downAt && e.type==='pointerup'){
       if (S.meas){ addMeasPoint(e.offsetX,e.offsetY); }
-      else { const o=pick(e.offsetX,e.offsetY); showInfo(o, toWorld(e.offsetX,e.offsetY)); }
+      else { const vx=vertexAt(e.offsetX,e.offsetY); if (vx) showInfo(vx); else { const o=pick(e.offsetX,e.offsetY); showInfo(o, toWorld(e.offsetX,e.offsetY)); } }
     }
     drag=null;
   } else if (ptrs.size===1){ const [p]=[...ptrs.values()]; drag={x:p.x,y:p.y,tx:S.tx,ty:S.ty}; }
@@ -1383,7 +1421,8 @@ rotbtn.onclick=()=>{ if (ROT.on) rotStop(); else rotStart(); };
 document.getElementById('rotx').onclick=()=>{ clearTimeout(ROT.hide); rotEl.hidden=true; };
 
 // ---------- guiar até uma planta, mancha ou módulo (precisa do «Onde estou»)
-const guideEl=document.getElementById('guide'), guideTxt=document.getElementById('guidetxt'), guideArrow=document.getElementById('guidearrow');
+const guideEl=document.getElementById('guide'), guideTxt=document.getElementById('guidetxt'), guideArrow=document.getElementById('guidearrow'), guideNav=document.getElementById('guidenav');
+guideNav.addEventListener('click', e=>{ const b=e.target.closest('button[data-gv]'); if (b && GUIDE.t==='vertex') guideStart({t:'vertex', i:GUIDE.i, k:+b.dataset.gv}); });
 const GUIDE={t:null, last:0, fit:false, tm:0};
 function nearestOnRing(px,py,r,best){
   const n=r.length/2;
@@ -1398,7 +1437,7 @@ function nearestOnRing(px,py,r,best){
 // Ponto de chegada a partir da posição (x,y): o centro da planta, ou o ponto mais próximo do contorno da mancha/módulo
 function guideTarget(x,y){
   const G2=GUIDE;
-  if (G2.t==='plant') return {x:G2.x, y:G2.y, inside:false};
+  if (G2.t==='plant' || G2.t==='vertex') return {x:G2.x, y:G2.y, inside:false};
   const shape = G2.t==='patch' ? patches[G2.i] : cells[G2.i];
   if (x==null) return {x:shape.c?shape.c[0]:shape.lp[0], y:shape.c?shape.c[1]:shape.lp[1], inside:false};
   hit.setTransform(1,0,0,1,0,0);
@@ -1429,13 +1468,17 @@ function guideUpdate(force){
   if (GUIDE.fit){ // primeira posição: enquadrar a pessoa e o destino (pelo menos 30 m à volta)
     GUIDE.fit=false; G.follow=false; gpsSetBtn();
     const cx=(g.x+T.x)/2, cy=(g.y+T.y)/2, hx=Math.max(Math.abs(g.x-T.x)/2,15), hy=Math.max(Math.abs(g.y-T.y)/2,15);
-    fit([cx-hx,cy-hy,cx+hx,cy+hy], 70);
+    fit([cx-hx,cy-hy,cx+hx,cy+hy], 50, guideEl.offsetHeight+16);
   }
   if (T.inside){ guideMsg(`<b>Está dentro ${GUIDE.t==='patch'?'da mancha':'do módulo'}</b><small>${name} · precisão do GPS ± ${Math.max(1,Math.round(g.acc))} m</small>`, null); return; }
   const dx=T.x-g.x, dy=T.y-g.y, d=Math.hypot(dx,dy), brg=Math.atan2(dy,dx); // rumo a partir do norte (+X), para o este (+Y)
   const face = COMP.h!=null ? COMP.h : (g.head!=null ? g.head*Math.PI/180 : null);
   if (d <= Math.max(3, Math.min(g.acc||0, 10))){
-    guideMsg(`<b>Chegou</b> · a ${fmtDist(d)}<small>${name}. Está dentro da margem de erro do GPS (± ${Math.max(1,Math.round(g.acc))} m)${GUIDE.t==='plant'?'; acerte o sítio com a fita, a partir das plantas vizinhas':''}.</small>`, null);
+    let extra='';
+    if (GUIDE.t==='plant') extra='; acerte o sítio com a fita, a partir das plantas vizinhas';
+    else if (GUIDE.t==='vertex'){ const E=patches[GUIDE.i].edge, n=E.v.length, k=GUIDE.k, pr=(k-1+n)%n, nx=(k+1)%n;
+      extra=`; acerte o vértice com a fita: lado ${pr+1}→${k+1} ${fmt2(E.e[pr])} m, lado ${k+1}→${nx+1} ${fmt2(E.e[k])} m`; }
+    guideMsg(`<b>Chegou</b> · a ${fmtDist(d)}<small>${name}. Está dentro da margem de erro do GPS (± ${Math.max(1,Math.round(g.acc))} m)${extra}.</small>`, null);
     return;
   }
   if (face!=null){
@@ -1451,8 +1494,13 @@ async function guideStart(o){
   if (o.t==='plant'){ const sp=SP[o.s], a=plants[o.s], j=o.j*3; t={t:'plant', x:a[j], y:a[j+1], name:`<i>${esc(sp.name)}</i> (${esc(sp.code)})`}; }
   else if (o.t==='patch'){ const sp=SP[patches[o.i].s]; t={t:'patch', i:o.i, name:`mancha <b>${esc(sp.code)}</b> · <i>${esc(sp.name)}</i>`}; }
   else if (o.t==='cell'){ const c=cells[o.i]; t={t:'cell', i:o.i, name: c.m.length>1 ? 'faixa de módulos A/B' : 'módulo '+c.mod}; }
+  else if (o.t==='vertex'){ const p=patches[o.i], sp=SP[p.s], q=p.edge.v[o.k]; t={t:'vertex', i:o.i, k:o.k, x:q[0], y:q[1], name:`vértice ${o.k+1} da mancha <b>${esc(sp.code)}</b> · <i>${esc(sp.name)}</i>`}; }
   else return;
   Object.assign(GUIDE, t, {last:0, fit:true});
+  // vértices: botões para passar ao anterior / seguinte do contorno
+  if (GUIDE.t==='vertex'){ const n=patches[GUIDE.i].edge.v.length, pr=(GUIDE.k-1+n)%n, nx=(GUIDE.k+1)%n;
+    guideNav.innerHTML=`<button class="btn" data-gv="${pr}">‹ Vértice ${pr+1}</button><button class="btn" data-gv="${nx}">Vértice ${nx+1} ›</button>`; guideNav.hidden=false; }
+  else { guideNav.hidden=true; guideNav.innerHTML=''; }
   showInfo(null);
   if (narrowMQ.matches) wrap.scrollIntoView({behavior:'smooth', block:'start'});
   if (G.watch===null) gpsbtn.click();          // liga o «Onde estou»
@@ -1468,7 +1516,7 @@ document.getElementById('guidex').onclick=guideStop;
 (function(){
   const el=document.getElementById('offl');
   if (!document.querySelector('link[rel="manifest"]') || !('serviceWorker' in navigator) || !window.caches) return;
-  const BUILD='28/10/2026 09:55';
+  const BUILD='28/10/2026 16:23';
   const urls=[...new Set(Object.values(FLORA).flatMap(F=>F.ph.map(p=>p.f).filter(Boolean)))];
   const set=(h,k)=>{ el.hidden=false; el.className='offl'+(k?' '+k:''); el.innerHTML=h; };
   const ios=/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);

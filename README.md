@@ -10,6 +10,6 @@ Mapa interativo de trabalho da We Garden para a obra do Parque Ecológico da Eri
 
 - **Onde estou**: o botão com a mira mostra a posição do telemóvel no mapa (GPS, ± alguns metros), em que mancha ou módulo está e a árvore mais próxima. As coordenadas do desenho estão em ETRS89 / PT-TM06.
 - **Rodar o mapa**: o botão com a bússola (desligado por defeito) roda o mapa conforme a direção para onde aponta o telemóvel; ao desligar, o mapa volta à orientação do desenho (norte à direita).
-- **Guiar até aqui**: na ficha de uma árvore, arbusto, mancha ou módulo; mostra a linha desde a posição GPS até lá, a distância e o lado para onde ir (com a bússola do telemóvel).
+- **Guiar até aqui**: na ficha de uma árvore, arbusto, mancha, vértice de mancha ou módulo (nos vértices, com botões para passar ao anterior/seguinte); mostra a linha desde a posição GPS até lá, a distância e o lado para onde ir (com a bússola do telemóvel).
 - **Modo sol**: botão no cabeçalho; tira o ortofotomapa e engrossa linhas, letras e botões para ler ao sol. A escolha fica guardada no aparelho.
 - **Sem rede**: na primeira visita com rede, a página, as fotos (cerca de 20 MB) e os tipos de letra ficam guardados no aparelho. Depois o mapa abre sem cobertura. No iPhone, convém adicionar ao ecrã principal (Partilhar → Adicionar ao ecrã principal).
