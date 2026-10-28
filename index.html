@@ -210,6 +210,15 @@ button{font:inherit;color:inherit}
 .zt .n{text-align:right;white-space:nowrap}
 .zt tr.zg td{font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding-top:12px;border-bottom:1px solid var(--line)}
 .zt .sub{font-size:11.5px;color:var(--muted)}
+.zt .zc{width:24px;padding-right:2px}
+.zt input[type=checkbox]{width:17px;height:17px;margin:1px 0 0;accent-color:var(--verde-ink);cursor:pointer}
+.zt tr.zoff td:not(.zc){opacity:.45}
+.zsel-h{margin-top:12px}
+.zt .zok{font-size:11.5px;color:var(--verde-ink);font-weight:600}
+.zt tr.zdone td{color:var(--muted)}
+.zt tr.zdone td b,.zt tr.zdone td i{color:var(--muted)}
+.zprog{margin:10px 0 4px;padding:9px 11px;border-radius:7px;background:var(--erva);font-size:13.5px;display:grid;gap:4px}
+.zprog .pbar{margin:2px 0}
 .sides{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
 .sides-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
 .sides-h b{font-size:13.5px}
@@ -950,7 +959,7 @@ function showInfo(o, at){
   if (!o){ info.hidden=true; return; }
   let h='';
   const [wx,wy] = at || [0,0];
-  if (o.t==='zone'){ S.sel=null; req(); info.innerHTML = `<button class="x" aria-label="Fechar">×</button>` + zoneCard(); info.hidden=false; info.dataset.zone='1'; return; }
+  if (o.t==='zone'){ S.sel=null; req(); const st=info.scrollTop; info.innerHTML = `<button class="x" aria-label="Fechar">×</button>` + zoneCard(); info.hidden=false; info.dataset.zone='1'; info.scrollTop=st; zoneSyncChecks(); return; }
   if (o.t==='species'){ S.sel=null; req(); info.innerHTML = `<button class="x" aria-label="Fechar">×</button>` + speciesCard(o.s); info.hidden=false; info.scrollTop=0; return; }
   if (o.t==='mspecies'){ S.sel=null; req(); info.innerHTML = `<button class="x" aria-label="Fechar">×</button>` + modSpeciesCard(o.key,o.code,o.mod); info.hidden=false; info.scrollTop=0; if (narrowMQ.matches) setTimeout(()=>info.scrollIntoView({behavior:'smooth',block:'nearest'}),50); return; }
   if (o.t==='plant'){
@@ -1036,7 +1045,8 @@ info.addEventListener('click', e => {
   const b = e.target.closest('button'); if(!b) return;
   if (b.classList.contains('x')){ if (info.dataset.zone) info.dataset.zoneClosed='1'; return showInfo(null); }
   if (b.dataset.zcsv!==undefined) return zoneCSV();
-  if (b.dataset.zclr!==undefined){ if (S.meas){ S.meas.pts=[]; delete info.dataset.zoneClosed; showInfo(null); updMeas(); req(); } return; }
+  if (b.dataset.openava!==undefined){ openTab('ava'); document.getElementById('p-ava').scrollIntoView({behavior:'smooth',block:'start'}); return; }
+  if (b.dataset.zclr!==undefined){ if (S.meas){ S.meas.pts=[]; ZOFF.clear(); delete info.dataset.zoneClosed; showInfo(null); updMeas(); req(); } return; }
   if (b.classList.contains('ph')) return openLB(b.dataset.key, +b.dataset.j);
   if (b.dataset.guide!==undefined){ if (S.sel) guideStart(S.sel); return; }
   if (b.dataset.reg!==undefined){ if (S.sel){ regSet(S.sel, b.dataset.reg==='1'); const box=b.closest('.regbox'); if (box) box.outerHTML=regBox(S.sel); } return; }
@@ -1295,12 +1305,13 @@ const measEl=document.getElementById('meas'), rulerbtn=document.getElementById('
 let measMode='dist';
 function setMeasure(on){
   if (on && REG.mode) regMode(false);
+  ZOFF.clear();
   delete info.dataset.zoneClosed;
   S.meas = on ? {pts:[], mode:measMode} : null; measEl.hidden=!on; rulerbtn.setAttribute('aria-pressed',String(on));
   cv.classList.toggle('measuring',on); showInfo(null); updMeas(); req();
 }
 function setMeasMode(m){
-  measMode=m; delete info.dataset.zoneClosed; if (S.meas){ S.meas.mode=m; S.meas.pts=[]; }
+  measMode=m; delete info.dataset.zoneClosed; ZOFF.clear(); if (S.meas){ S.meas.mode=m; S.meas.pts=[]; }
   document.getElementById('mz-d').setAttribute('aria-pressed', String(m==='dist'));
   document.getElementById('mz-z').setAttribute('aria-pressed', String(m==='zona'));
   showInfo(null); updMeas(); req();
@@ -1330,7 +1341,7 @@ function updMeas(){
 rulerbtn.onclick=()=>setMeasure(!S.meas);
 document.getElementById('measx').onclick=()=>setMeasure(false);
 document.getElementById('measundo').onclick=()=>{ if(S.meas){ S.meas.pts.pop(); updMeas(); req(); } };
-document.getElementById('measclr').onclick=()=>{ if(S.meas){ S.meas.pts=[]; delete info.dataset.zoneClosed; showInfo(null); updMeas(); req(); } };
+document.getElementById('measclr').onclick=()=>{ if(S.meas){ S.meas.pts=[]; ZOFF.clear(); delete info.dataset.zoneClosed; showInfo(null); updMeas(); req(); } };
 document.getElementById('mz-d').onclick=()=>setMeasMode('dist');
 document.getElementById('mz-z').onclick=()=>setMeasMode('zona');
 document.getElementById('measlist').onclick=()=>zoneShow(true);
@@ -1405,50 +1416,82 @@ function zoneShow(force){
   if (!force && info.hidden && info.dataset.zoneClosed) return;   // a pessoa fechou a lista: não voltar a abrir sozinha
   showInfo({t:'zone'});
 }
+// o que vai para a exportação: tudo por defeito; guardam-se as linhas desligadas (p:espécie, h:espécie, m:módulo, mp:código)
+const ZOFF = new Set(); let ZGROUPS = {};
 function zoneCard(){
   const p=S.meas.pts;
   if (selfCross(p)) return `<div class="kind">Zona selecionada</div><h2 class="plain">As linhas da zona cruzam-se</h2><div class="note">Toque nos cantos pela ordem do contorno. Use «Desfazer» no quadro de cima para tirar o último ponto.</div>`;
   const Z=zoneSummary(p), reg=Z.reg, cols=reg?3:2;
-  const th = `<tr><th>Espécie</th><th class="n">Na zona</th>${reg?'<th class="n">Por plantar</th>':''}</tr>`;
-  const grp = t => `<tr class="zg"><td colspan="${cols}">${t}</td></tr>`;
-  const row = (code,name,a,b) => `<tr><td><b>${esc(code)}</b> <i>${esc(name)}</i></td><td class="n">${a}</td>${reg?`<td class="n">${b}</td>`:''}</tr>`;
+  ZGROUPS = {};
+  const th = `<tr><th class="zc"><input type="checkbox" data-zg="all" aria-label="Exportar tudo"></th><th>Espécie</th><th class="n">Na zona</th>${reg?'<th class="n">Por plantar</th>':''}</tr>`;
+  let G='';
+  const grp = (t,g) => { G=g; ZGROUPS[g]=[]; return `<tr class="zg"><td class="zc"><input type="checkbox" data-zg="${g}" aria-label="Exportar ${t}"></td><td colspan="${cols}">${t}</td></tr>`; };
+  // «Por plantar»: o que falta e, por baixo, o que já está marcado como plantado; linha esbatida quando já está tudo plantado
+  const row = (key,code,name,a,b,done,doneTxt) => {
+    const all = reg && done && b===null; ZGROUPS[G].push(key);
+    return `<tr class="${all?'zdone':''}"><td class="zc"><input type="checkbox" data-zk="${key}" ${ZOFF.has(key)?'':'checked'} aria-label="Exportar ${esc(code)}"></td><td><b>${esc(code)}</b> <i>${esc(name)}</i></td><td class="n">${a}</td>${reg?`<td class="n">${all?'<span class="zok">✓ tudo plantado</span>':b}${done&&!all?`<br><span class="zok">✓ ${doneTxt} plantado</span>`:''}</td>`:''}</tr>`; };
+  const left = (todo, txt) => todo>1e-6 ? `<b>${txt}</b>` : null;
   let rows='', total=0, totalTodo=0;
   for (const g of ['arv','arb']){
     const list=Object.keys(Z.plantsBy).map(Number).filter(i=>SP[i].g===g).sort((a,b)=>Z.plantsBy[b].n-Z.plantsBy[a].n);
     if (!list.length) continue;
-    rows+=grp(g==='arv'?'Árvores':'Arbustos');
-    for (const i of list){ const r=Z.plantsBy[i]; rows+=row(SP[i].code, SP[i].name, fmt0(r.n), fmt0(r.todo)); total+=r.n; totalTodo+=r.todo; }
+    rows+=grp(g==='arv'?'Árvores':'Arbustos', g);
+    for (const i of list){ const r=Z.plantsBy[i], d=r.n-r.todo; rows+=row('p:'+i, SP[i].code, SP[i].name, fmt0(r.n), left(r.todo, fmt0(r.todo)), d, fmt0(d)); total+=r.n; totalTodo+=r.todo; }
   }
   const hl=Object.keys(Z.herbBy).map(Number).sort((a,b)=>Z.herbBy[b].a-Z.herbBy[a].a);
   if (hl.length){
-    rows+=grp('Herbáceas e subarbustos');
+    rows+=grp('Herbáceas e subarbustos','herb');
     for (const i of hl){ const r=Z.herbBy[i], cp=CP[SP[i].id];
       const n=cp?Math.round(r.a*cp.d):null, nt=cp?Math.round(r.todo*cp.d):null; if (n) { total+=n; totalTodo+=nt; }
-      rows+=row(SP[i].code, SP[i].name, `${fmt1(r.a)} m²${n!=null?`<br><span class="sub">≈ ${fmt0(n)} pl.</span>`:''}`, `${fmt1(r.todo)} m²${nt!=null?`<br><span class="sub">≈ ${fmt0(nt)} pl.</span>`:''}`); }
+      const da=r.a-r.todo;
+      rows+=row('h:'+i, SP[i].code, SP[i].name, `${fmt1(r.a)} m²${n!=null?`<br><span class="sub">≈ ${fmt0(n)} pl.</span>`:''}`, left(r.todo, `${fmt1(r.todo)} m²`)&&(left(r.todo, `${fmt1(r.todo)} m²`)+(nt!=null?`<br><span class="sub">≈ ${fmt0(nt)} pl.</span>`:'')), da>0.05?da:0, `${fmt1(da)} m²`); }
   }
   const ml=Object.keys(Z.modBy).sort();
   if (ml.length){
-    rows+=grp('Módulos');
-    for (const L of ml){ const r=Z.modBy[L]; rows+=row('Módulo '+L, '', `${fmt1(r.n)}<br><span class="sub">${fmt0(Math.round(r.a))} m²</span>`, fmt1(r.todo)); }
-    rows+=grp('Plantas dos módulos (pelos esquemas)');
-    for (const code of Object.keys(Z.modPlants).sort((a,b)=>Z.modPlants[b].n-Z.modPlants[a].n)){ const r=Z.modPlants[code]; total+=Math.round(r.n); totalTodo+=Math.round(r.todo); rows+=row(code, MODNAMES[code]||'', fmt0(Math.round(r.n)), fmt0(Math.round(r.todo))); }
+    rows+=grp('Módulos','mod');
+    for (const L of ml){ const r=Z.modBy[L], d=r.n-r.todo; rows+=row('m:'+L, 'Módulo '+L, '', `${fmt1(r.n)}<br><span class="sub">${fmt0(Math.round(r.a))} m²</span>`, left(r.todo, fmt1(r.todo)), d>0.005?d:0, fmt1(d)); }
+    rows+=grp('Plantas dos módulos (pelos esquemas)','mp');
+    for (const code of Object.keys(Z.modPlants).sort((a,b)=>Z.modPlants[b].n-Z.modPlants[a].n)){ const r=Z.modPlants[code], d=Math.round(r.n)-Math.round(r.todo); total+=Math.round(r.n); totalTodo+=Math.round(r.todo); rows+=row('mp:'+code, code, MODNAMES[code]||'', fmt0(Math.round(r.n)), left(Math.round(r.todo), fmt0(Math.round(r.todo))), d, fmt0(d)); }
   }
   if (!rows) return `<div class="kind">Zona selecionada</div><h2 class="plain">${fmt0(Math.round(Z.area))} m²</h2><p class="credit">Não há plantas, manchas nem módulos dentro desta zona.</p>`;
+  const done=total-totalTodo;
+  const head = reg
+    ? `<div class="zprog"><div><b>Já plantado:</b> ≈ ${fmt0(done)} plantas · ${pct(done,total)} %</div>${bar(done,total)}<div><b>Por plantar:</b> ≈ ${fmt0(totalTodo)} plantas</div></div>`
+    : `<div class="note">Esta lista ainda não desconta o que já está plantado. Para isso, entre no registo no <button class="lnk" data-openava>separador «Avanço»</button>.</div>`;
   return `<div class="kind">Zona selecionada</div><h2 class="plain">${fmt0(Math.round(Z.area))} m² · ≈ ${fmt0(total)} plantas</h2>
-    <p class="credit">Herbáceas pelo compasso de cada espécie; módulos pela parte de cada módulo dentro da zona e pelos esquemas.${reg?' «Por plantar» desconta o que já está marcado no registo.':''}</p>
+    ${head}
+    <p class="credit">Herbáceas pelo compasso de cada espécie; módulos pela parte de cada módulo dentro da zona e pelos esquemas.${reg?' «Por plantar» desconta o que está marcado como plantado no registo (no mapa, com um visto verde).':''}</p>
+    <p class="credit zsel-h">Escolha nas caixas o que vai para a exportação (por defeito, tudo).</p>
     <table class="zt"><thead>${th}</thead><tbody>${rows}</tbody></table>
-    ${reg?`<p class="credit">Por plantar: ≈ ${fmt0(totalTodo)} plantas.</p>`:''}
-    <div class="acts"><button class="btn primary" data-zcsv>Exportar lista (CSV)</button><button class="btn" data-zclr>Limpar zona</button></div>`;
+    <div class="acts"><button class="btn primary" data-zcsv>Exportar seleção (CSV)</button><button class="btn" data-zclr>Limpar zona</button></div>
+    <p class="credit" id="zselinfo"></p>`;
 }
+function zoneSyncChecks(){
+  const keys=Object.values(ZGROUPS).flat(), on=keys.filter(k=>!ZOFF.has(k)).length;
+  const set=(el,list)=>{ const n=list.filter(k=>!ZOFF.has(k)).length; el.checked = n===list.length && n>0; el.indeterminate = n>0 && n<list.length; };
+  info.querySelectorAll('input[data-zg]').forEach(el=>set(el, el.dataset.zg==='all' ? keys : (ZGROUPS[el.dataset.zg]||[])));
+  info.querySelectorAll('input[data-zk]').forEach(el=>{ el.checked=!ZOFF.has(el.dataset.zk); el.closest('tr').classList.toggle('zoff', ZOFF.has(el.dataset.zk)); });
+  const b=info.querySelector('[data-zcsv]'), t=document.getElementById('zselinfo');
+  if (b) b.disabled = on===0;
+  if (t) t.textContent = on===keys.length ? `Vão ${keys.length} linhas (tudo).` : on ? `Vão ${on} de ${keys.length} linhas.` : 'Nada escolhido para exportar.';
+}
+info.addEventListener('change', e=>{
+  const el=e.target; if (!el.matches || !el.matches('input[type=checkbox]')) return;
+  if (el.dataset.zk){ if (el.checked) ZOFF.delete(el.dataset.zk); else ZOFF.add(el.dataset.zk); }
+  else if (el.dataset.zg){ const list = el.dataset.zg==='all' ? Object.values(ZGROUPS).flat() : (ZGROUPS[el.dataset.zg]||[]); for (const k of list){ if (el.checked) ZOFF.delete(k); else ZOFF.add(k); } }
+  else return;
+  zoneSyncChecks();
+});
 function zoneCSV(){
   if (inFrame()){ const m=document.createElement('p'); m.className='note'; m.innerHTML=`Nesta pré-visualização não é possível descarregar ficheiros. Exporte no site da obra: ${siteLink()}`; info.appendChild(m); return; }
   const p=S.meas.pts, Z=zoneSummary(p), num=v=>String(v).replace('.',','), q=v=>{ const s=v==null?'':String(v); return /[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; };
   const L=[['Parque Ecológico da Ericeira — lista de uma zona', '', '', `${num(Z.area.toFixed(1))} m²`, `exportado a ${fmtDate(todayISO())}`], [],
     ['Grupo','Código','Espécie','Quantidade','Unidade','Plantas (estimativa)'].concat(Z.reg?['Quantidade por plantar','Plantas por plantar']:[])];
-  for (const i in Z.plantsBy){ const r=Z.plantsBy[i], sp=SP[+i]; L.push([sp.g==='arv'?'Árvore':'Arbusto', sp.code, sp.name, r.n, 'un', r.n].concat(Z.reg?[r.todo, r.todo]:[])); }
-  for (const i in Z.herbBy){ const r=Z.herbBy[i], sp=SP[+i], cp=CP[sp.id]; L.push(['Herbácea/subarbusto', sp.code, sp.name, num(r.a.toFixed(2)), 'm²', cp?Math.round(r.a*cp.d):''].concat(Z.reg?[num(r.todo.toFixed(2)), cp?Math.round(r.todo*cp.d):'']:[])); }
-  for (const Lk in Z.modBy){ const r=Z.modBy[Lk]; L.push(['Módulo', Lk, 'Módulo '+Lk, num(r.n.toFixed(2)), 'módulos', ''].concat(Z.reg?[num(r.todo.toFixed(2)), '']:[])); }
-  for (const c in Z.modPlants){ const r=Z.modPlants[c]; L.push(['Planta de módulo', c, MODNAMES[c]||'', Math.round(r.n), 'un', Math.round(r.n)].concat(Z.reg?[Math.round(r.todo), Math.round(r.todo)]:[])); }
+  const on = k => !ZOFF.has(k);
+  for (const i in Z.plantsBy){ if (!on('p:'+i)) continue; const r=Z.plantsBy[i], sp=SP[+i]; L.push([sp.g==='arv'?'Árvore':'Arbusto', sp.code, sp.name, r.n, 'un', r.n].concat(Z.reg?[r.todo, r.todo]:[])); }
+  for (const i in Z.herbBy){ if (!on('h:'+i)) continue; const r=Z.herbBy[i], sp=SP[+i], cp=CP[sp.id]; L.push(['Herbácea/subarbusto', sp.code, sp.name, num(r.a.toFixed(2)), 'm²', cp?Math.round(r.a*cp.d):''].concat(Z.reg?[num(r.todo.toFixed(2)), cp?Math.round(r.todo*cp.d):'']:[])); }
+  for (const Lk in Z.modBy){ if (!on('m:'+Lk)) continue; const r=Z.modBy[Lk]; L.push(['Módulo', Lk, 'Módulo '+Lk, num(r.n.toFixed(2)), 'módulos', ''].concat(Z.reg?[num(r.todo.toFixed(2)), '']:[])); }
+  for (const c in Z.modPlants){ if (!on('mp:'+c)) continue; const r=Z.modPlants[c]; L.push(['Planta de módulo', c, MODNAMES[c]||'', Math.round(r.n), 'un', Math.round(r.n)].concat(Z.reg?[Math.round(r.todo), Math.round(r.todo)]:[])); }
   L.push([]); L.push(['Cantos da zona (M; P)']); for (const [x,y] of p) L.push([num((y+D.X0).toFixed(2)), num((x+D.Y0).toFixed(2))]);
   const csv='﻿'+L.map(r=>r.map(q).join(';')).join('\r\n');
   const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
@@ -1837,6 +1880,7 @@ function regStatusHTML(){
   return pend ? pend.slice(3) : '';
 }
 function regRender(){
+  if (info.dataset.zone && !info.hidden && S.meas && S.meas.mode==='zona') setTimeout(()=>zoneShow(true), 0);   // a lista da zona acompanha o registo
   regbtn.hidden = !REG.cfg;
   regbtn.setAttribute('aria-pressed', String(REG.mode));
   if (REG.mode && REG.cfg) regChipRender(); else regChip.hidden=true;
@@ -1966,7 +2010,7 @@ if (REG.cfg) regSync();
 (function(){
   const el=document.getElementById('offl');
   if (!document.querySelector('link[rel="manifest"]') || !('serviceWorker' in navigator) || !window.caches) return;
-  const BUILD='28/10/2026 16:51';
+  const BUILD='28/10/2026 16:59';
   const urls=[...new Set(Object.values(FLORA).flatMap(F=>F.ph.map(p=>p.f).filter(Boolean)))];
   const set=(h,k)=>{ el.hidden=false; el.className='offl'+(k?' '+k:''); el.innerHTML=h; };
   const ios=/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
