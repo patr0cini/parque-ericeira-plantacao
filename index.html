@@ -1712,7 +1712,7 @@ function regRender(){
     REG.cfg=null; REG.mode=false; regSave(); regRender(); req(); };
   document.getElementById('regmodebtn').onclick=()=>regMode(!REG.mode);
   document.getElementById('regdia').onchange=e=>{ REG.dia=e.target.value||todayISO(); regRender(); };
-  document.getElementById('regcsv').onclick=regCSV;
+  document.getElementById('regcsv').onclick=()=>{ if (inFrame()){ const m=document.createElement('p'); m.className='ava-msg warn'; m.innerHTML=`Nesta pré-visualização não é possível descarregar ficheiros. Exporte no site da obra: ${siteLink()}`; document.getElementById('regcsv').closest('.acts').after(m); return; } regCSV(); };
   document.getElementById('regnow').onclick=regSync;
 }
 async function regLogin(nome, codigo){
@@ -1801,7 +1801,7 @@ if (REG.cfg) regSync();
 (function(){
   const el=document.getElementById('offl');
   if (!document.querySelector('link[rel="manifest"]') || !('serviceWorker' in navigator) || !window.caches) return;
-  const BUILD='28/10/2026 16:40';
+  const BUILD='28/10/2026 16:43';
   const urls=[...new Set(Object.values(FLORA).flatMap(F=>F.ph.map(p=>p.f).filter(Boolean)))];
   const set=(h,k)=>{ el.hidden=false; el.className='offl'+(k?' '+k:''); el.innerHTML=h; };
   const ios=/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
