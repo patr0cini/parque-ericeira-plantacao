@@ -168,7 +168,7 @@ button{font:inherit;color:inherit}
 .ava-ctl{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
 .ava-ctl label{display:grid;gap:3px;font-size:12px;font-weight:600;color:var(--muted)}
 .ava-ctl input{font-size:14px;padding:5px 8px}
-.ava-sum b small{font-size:13px;color:var(--muted);font-weight:400}
+.ava-sum b small{font-size:13px;color:var(--muted);font-weight:400;white-space:nowrap}
 .pbar{display:block;height:6px;border-radius:3px;background:color-mix(in srgb,var(--line) 70%,transparent);overflow:hidden;margin-top:5px}
 .pbar i{display:block;height:100%;background:var(--verde)}
 .ava-t{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px;font-variant-numeric:tabular-nums}
@@ -204,6 +204,20 @@ button{font:inherit;color:inherit}
 .seg button{border:none;background:var(--surface);padding:5px 12px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted)}
 .seg button+button{border-left:1px solid var(--line-strong)}
 .seg button[aria-pressed="true"]{background:var(--verde-ink);color:var(--paper)}
+/* «Mostrar»: tudo / só o que já está plantado / só o que falta plantar */
+.vw{display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap;margin:0 0 12px}
+.vw-l{font-size:13px;font-weight:600;color:var(--muted)}
+.vw .seg button{padding:6px 12px}
+.seg button:disabled{opacity:.45;cursor:not-allowed}
+.vw-hint{flex-basis:100%;margin:0;font-size:12.5px;color:var(--muted)}
+.layers .vw-r{margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.layers .vw-r .vw-hint{margin:4px 0 2px}
+.layers input[type=radio]{accent-color:var(--verde-ink);width:16px;height:16px;margin:0}
+.layers label:has(input:disabled){color:var(--muted);cursor:not-allowed}
+.vw-chip{border:1.5px solid var(--verde-ink);padding-left:9px}
+.vw-chip svg{width:16px;height:16px;flex:none;color:var(--verde-ink)}
+.hl-chip:not([hidden]) ~ .vw-chip{top:56px}
+.vw-empty{font-size:14px;color:var(--muted);margin:8px 0 14px}
 .zt{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;font-variant-numeric:tabular-nums}
 .zt th{text-align:left;font-size:11.5px;color:var(--muted);font-weight:600;padding:4px;border-bottom:1px solid var(--line)}
 .zt td{padding:4px;border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent);vertical-align:top}
@@ -374,6 +388,13 @@ button{font:inherit;color:inherit}
       <button id="lyrbtn" title="Camadas" aria-label="Camadas" aria-pressed="false" aria-controls="layers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 13 9 5 9-5"/></svg></button>
     </div>
     <div class="layers" id="layers" hidden>
+      <h3>Mostrar</h3>
+      <div class="vw-r" role="radiogroup" aria-label="O que mostrar">
+        <label><input type="radio" name="vw" value="all" checked> Tudo</label>
+        <label><input type="radio" name="vw" value="done"> Só o que já está plantado</label>
+        <label><input type="radio" name="vw" value="todo"> Só o que falta plantar</label>
+        <p class="vw-hint" id="vw-hint2" hidden></p>
+      </div>
       <h3>Camadas do mapa</h3>
       <label><input type="checkbox" id="L-ortho" checked> Ortofotomapa</label>
       <div class="range"><span>Opacidade</span><input type="range" id="L-orthoop" min="10" max="100" value="55" aria-label="Opacidade do ortofotomapa"></div>
@@ -402,6 +423,7 @@ button{font:inherit;color:inherit}
     </div>
     </div>
     <div class="hl-chip" id="hlchip" hidden><i class="sw" id="hlsw"></i><span id="hltxt"></span><button id="hlclear">Mostrar tudo</button></div>
+    <div class="hl-chip vw-chip" id="vwchip" hidden role="status"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg><span id="vwtxt"></span><button id="vwall">Ver tudo</button></div>
     <div class="scalebox">
       <div class="north" title="Norte"><svg viewBox="0 0 40 40" aria-label="Norte aponta para a direita"><path d="M36 20 15 13.5 19 20 15 26.5z" fill="var(--ink)"/><text x="9" y="24" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)" font-family="Source Sans 3, sans-serif">N</text></svg></div>
       <div class="scalebar" id="scalebar"><span id="scaletxt">50 m</span><i id="scaleline" style="width:80px"></i></div>
@@ -425,8 +447,10 @@ button{font:inherit;color:inherit}
     </nav>
     <div class="pane" id="p-esp" role="tabpanel">
       <p class="offl" id="offl" hidden role="status" aria-live="polite"></p>
+      <div class="vw" id="vw-esp"><span class="vw-l">Mostrar</span><div class="seg" role="group" aria-label="O que mostrar no mapa e na lista"><button data-vw="all" aria-pressed="true">Tudo</button><button data-vw="done" aria-pressed="false">Já plantado</button><button data-vw="todo" aria-pressed="false">Por plantar</button></div><p class="vw-hint" id="vw-hint" hidden></p></div>
       <div class="sum" id="sum"></div>
       <input class="search" id="q" type="search" placeholder="Procurar espécie ou código (ex.: Cistus, T.m.)" aria-label="Procurar espécie">
+      <p class="vw-empty" id="vw-empty" hidden></p>
       <div id="legend"></div>
       <p class="foot">Toque no nome para destacar a espécie no mapa. A caixa liga e desliga. A seta leva o mapa até onde a espécie está. <span class="warn">●</span> = há um ponto a confirmar em Notas.</p>
     </div>
@@ -562,7 +586,9 @@ for (const c of cells) for (const m of new Set(c.m)) grow(modStat[m].bb,...c.bb)
 const PLANT_BB = (() => { const bb=[1e9,1e9,-1e9,-1e9]; for (const st of stat) if (st.bb[0]<1e9) grow(bb,...st.bb); for (const m in modStat) if (modStat[m].bb[0]<1e9) grow(bb,...modStat[m].bb); return [bb[0]-10,bb[1]-10,bb[2]+10,bb[3]+10]; })();
 // ---------- state
 const S = { scale:1, tx:0, ty:0, vis:SP.map(()=>true), modVis:{A:true,B:true,C:true,D:true,E:true},
-  hl:null, sel:null, meas:null, rot:0, sun:false, L:{ortho:true,orthoop:.55,codes:true,orig:false,dims:false,tdist:false,prog:true,relief:true,mounds:true,paths:true,water:true,base:true,limit:true,topo:true} };
+  hl:null, sel:null, meas:null, rot:0, sun:false, view:'all', L:{ortho:true,orthoop:.55,codes:true,orig:false,dims:false,tdist:false,prog:true,relief:true,mounds:true,paths:true,water:true,base:true,limit:true,topo:true} };
+const VWK = 'wg-ericeira-vista';   // escolha «Mostrar» guardada no aparelho
+try{ const v=localStorage.getItem(VWK); if (v==='done'||v==='todo') S.view=v; }catch(_){}
 
 // ---------- canvas
 const wrap = document.getElementById('mapwrap'), cv = document.getElementById('map'), ctx = cv.getContext('2d');
@@ -668,7 +694,9 @@ function dimFor(kind, key){
 function draw(){
   const s = S.scale, px = 1/s;
   const SUN = S.sun, LW = SUN?1.8:1, FZ = SUN?1.3:1, HW = SUN?1.6:1;  // modo sol: linhas, letras e contornos maiores
-  const PROG = progOn();   // avanço da plantação: o que já está plantado fica esbatido e com um visto
+  const V = viewNow();     // «Mostrar»: tudo, só o já plantado ou só o que falta plantar
+  const PROG = progOn() && V==='all';   // avanço da plantação (em «Tudo»): o que já está plantado fica esbatido e com um visto
+  const faded = k => (PROG && isPlanted(k)) || (V!=='all' && REG.keep.has(k) && isPlanted(k)!==(V==='done'));
   ctx.setTransform(1,0,0,1,0,0);
   ctx.fillStyle = COL.bg; ctx.fillRect(0,0,cv.width,cv.height);
   rcs(); ctx.setTransform(dpr*s*_rc,dpr*s*_rs,-dpr*s*_rs,dpr*s*_rc,dpr*S.tx,dpr*S.ty);
@@ -683,16 +711,16 @@ function draw(){
 
   // modules
   for (const c of cells){
-    const vis = c.m.split('').some(m=>S.modVis[m]); if(!vis || !inView(c.bb)) continue;
+    const vis = c.m.split('').some(m=>S.modVis[m]); if(!vis || !inView(c.bb) || !shownK(c.key)) continue;
     const a = c.m.length>1 ? (S.hl&&S.hl.t==='mod'&&c.m.includes(S.hl.k)?1:dimFor('mod',c.mod)) : dimFor('mod',c.mod);
-    ctx.globalAlpha=a*(PROG && isPlanted(c.key) ? .35 : 1); ctx.fillStyle=modPattern(c.mod); ctx.fill(c.path);
+    ctx.globalAlpha=a*(faded(c.key) ? .35 : 1); ctx.fillStyle=modPattern(c.mod); ctx.fill(c.path);
     ctx.strokeStyle=hexA(MODC[c.mod],SUN?1:.7); ctx.lineWidth=.9*LW*px; ctx.stroke(c.path);
   }
   ctx.globalAlpha=1;
   // herb patches
   for (const p of patches){
-    if (!S.vis[p.s] || !inView(p.bb)) continue;
-    ctx.globalAlpha = dimFor('sp',p.s)*(PROG && isPlanted(p.key) ? .35 : 1);
+    if (!S.vis[p.s] || !inView(p.bb) || !shownK(p.key)) continue;
+    ctx.globalAlpha = dimFor('sp',p.s)*(faded(p.key) ? .35 : 1);
     ctx.fillStyle = SP[p.s].color; ctx.fill(p.path,'evenodd');
     ctx.strokeStyle=SUN?'rgba(0,0,0,.9)':'rgba(25,28,20,.6)'; ctx.lineWidth=.7*LW*px; ctx.stroke(p.path);
   }
@@ -722,9 +750,10 @@ function draw(){
       const a=plants[i], keys=PKEY[i], dimA=dimFor('sp',i);
       const minR = plantMinPx(g)*px, ZS = SUN && s>=3, cd=(ZS?2.3:1.6)*px;
       // com o avanço ligado: o que já está plantado fica esbatido (com um visto); o que falta plantar fica por cima, com a cor toda
-      for (const [want,alpha] of (PROG ? [[true,.35],[false,1]] : [[null,1]])){
+      const passes = V!=='all' ? [['keep',.35],[V==='done',1]] : PROG ? [[true,.35],[false,1]] : [[null,1]];
+      for (const [want,alpha] of passes){
         ctx.globalAlpha=dimA*alpha;
-        const skip = j => want!==null && isPlanted(keys[j/3])!==want;
+        const skip = want==='keep' ? (j => { const k=keys[j/3]; return !(REG.keep.has(k) && isPlanted(k)!==(V==='done')); }) : (j => want!==null && isPlanted(keys[j/3])!==want);
         ctx.beginPath();
         for (let j=0;j<a.length;j+=3){ if (skip(j)) continue; const x=a[j],y=a[j+1],r=Math.max(a[j+2],minR); if(x+r<vx0||x-r>vx1||y+r<vy0||y-r>vy1) continue; ctx.moveTo(x+r,y); ctx.arc(x,y,r,0,Math.PI*2); }
         if (g==='arv'){ ctx.fillStyle=hexA(sp.color,SUN?.36:.22); ctx.fill(); ctx.strokeStyle=sp.color; ctx.lineWidth=1.6*(ZS?LW:1)*px; ctx.stroke();
@@ -771,9 +800,10 @@ function draw(){
   // module letters
   if (s>2.2){
     const fs = Math.min(15, Math.max(9, s*2.2))*FZ;
-    for (const [m,x,y] of D.modlabels){ if(!S.modVis[m]) continue; const sx=SX(x,y), sy=SY(x,y); if(sx<-10||sx>W+10||sy<-10||sy>H+10) continue;
+    const mlc = V!=='all' ? modLabCells() : null;
+    D.modlabels.forEach(([m,x,y],li)=>{ if(!S.modVis[m]) return; if (mlc && mlc[li]>=0 && !shownK(cells[mlc[li]].key)) return; const sx=SX(x,y), sy=SY(x,y); if(sx<-10||sx>W+10||sy<-10||sy>H+10) return;
       ctx.globalAlpha = (S.hl&&!(S.hl.t==='mod'&&S.hl.k===m))?.25:1;
-      label(m,sx,sy,`700 ${fs}px "Source Sans 3", sans-serif`,MODC[m]); }
+      label(m,sx,sy,`700 ${fs}px "Source Sans 3", sans-serif`,MODC[m]); });
     ctx.globalAlpha=1;
   }
   // patch codes
@@ -782,7 +812,7 @@ function draw(){
     const placed=[];
     const order = patches.map((p,i)=>i).sort((a,b)=>patches[b].a-patches[a].a);
     for (const pi of order){ const p=patches[pi];
-      if (!S.vis[p.s]) continue; if (S.hl && !(S.hl.t==='sp'&&S.hl.k===p.s)) continue;
+      if (!S.vis[p.s] || !shownK(p.key)) continue; if (S.hl && !(S.hl.t==='sp'&&S.hl.k===p.s)) continue;
       const bw=(p.bb[2]-p.bb[0])*s, bh=(p.bb[3]-p.bb[1])*s; if (bw<22||bh<12) continue;
       const sx=SX(p.lp[0],p.lp[1]), sy=SY(p.lp[0],p.lp[1]); if(sx<-30||sx>W+30||sy<-10||sy>H+10) continue;
       const code=SP[p.s].code, tw=ctx.measureText(code).width; if (tw+4>bw) continue;
@@ -797,7 +827,7 @@ function draw(){
       SP.forEach((sp,i)=>{ if(sp.g==='herb'||!S.vis[i]||!plants[i]) return; const a=plants[i];
         if (S.hl && !(S.hl.t==='sp'&&S.hl.k===i)) return;
         const f = `700 ${(sp.g==='arv'?11:10)*FZ}px "Source Sans 3", sans-serif`;
-        for (let j=0;j<a.length;j+=3){ const sx=SX(a[j],a[j+1]), sy=SY(a[j],a[j+1]); if(sx<-20||sx>W+20||sy<-20||sy>H+20) continue;
+        for (let j=0;j<a.length;j+=3){ if (V!=='all' && !shownK(PKEY[i][j/3])) continue; const sx=SX(a[j],a[j+1]), sy=SY(a[j],a[j+1]); if(sx<-20||sx>W+20||sy<-20||sy>H+20) continue;
           const dy = sp.g==='arv' ? -9*FZ : -(Math.max(a[j+2]*s,plantMinPx('arb'))+7*FZ);
           label(sp.code, sx, sy+dy, f, sp.color);
         }
@@ -832,7 +862,7 @@ function draw(){
     if (vp!=null) edgeLabels(patches[vp], placed, true, vk);
     if ((S.hl && S.hl.t==='sp' && s>2.5) || (S.L.dims && s>3)){
       for (const p of patches){
-        if (!S.vis[p.s] || (vp!=null && patches[vp]===p)) continue;
+        if (!S.vis[p.s] || !shownK(p.key) || (vp!=null && patches[vp]===p)) continue;
         if (S.hl ? !(S.hl.t==='sp'&&S.hl.k===p.s) : false) continue;
         if (!(S.hl && S.hl.t==='sp') && !S.L.dims) continue;
         if (!inView(p.bb)) continue;
@@ -852,10 +882,10 @@ function draw(){
   if (S.L.tdist && s>2.5 && (!S.hl || (S.hl.t==='sp' && SP[S.hl.k].g==='arv'))){
     const placed=[]; ctx.setLineDash([4*LW,3*LW]); ctx.strokeStyle=SUN?'rgba(0,0,0,.95)':'rgba(20,22,16,.75)'; ctx.lineWidth=1.2*LW;
     ctx.beginPath();
-    for (const [i,j,d] of TREE_EDGES){ const p=PL.arv[i], q=PL.arv[j]; if (!S.vis[p.s]||!S.vis[q.s]) continue; if (S.hl && (p.s!==S.hl.k||q.s!==S.hl.k)) continue;
+    for (const [i,j,d] of TREE_EDGES){ const p=PL.arv[i], q=PL.arv[j]; if (!S.vis[p.s]||!S.vis[q.s]) continue; if (V!=='all' && (!shownK(PKEY[p.s][p.j])||!shownK(PKEY[q.s][q.j]))) continue; if (S.hl && (p.s!==S.hl.k||q.s!==S.hl.k)) continue;
       const ax=SX(p.x,p.y), ay=SY(p.x,p.y), bx=SX(q.x,q.y), by=SY(q.x,q.y); if (Math.max(ax,bx)<0||Math.min(ax,bx)>W||Math.max(ay,by)<0||Math.min(ay,by)>H) continue; ctx.moveTo(ax,ay); ctx.lineTo(bx,by); }
     ctx.stroke(); ctx.setLineDash([]);
-    for (const [i,j,d] of TREE_EDGES){ const p=PL.arv[i], q=PL.arv[j]; if (!S.vis[p.s]||!S.vis[q.s]) continue; if (S.hl && (p.s!==S.hl.k||q.s!==S.hl.k)) continue;
+    for (const [i,j,d] of TREE_EDGES){ const p=PL.arv[i], q=PL.arv[j]; if (!S.vis[p.s]||!S.vis[q.s]) continue; if (V!=='all' && (!shownK(PKEY[p.s][p.j])||!shownK(PKEY[q.s][q.j]))) continue; if (S.hl && (p.s!==S.hl.k||q.s!==S.hl.k)) continue;
       distLabel(SX(p.x,p.y),SY(p.x,p.y),SX(q.x,q.y),SY(q.x,q.y),d,placed,false); }
   }
   if (S.sel && S.sel.t==='plant' && S.sel.nb){
@@ -878,15 +908,15 @@ function draw(){
     for (let i=1;i<pts.length;i++){ const a=S.meas.pts[i-1], b=S.meas.pts[i]; distLabel(pts[i-1][0],pts[i-1][1],pts[i][0],pts[i][1],Math.hypot(b[0]-a[0],b[1]-a[1]),null,true); }
     pts.forEach(([x,y])=>{ ctx.beginPath(); ctx.arc(x,y,5*FZ,0,Math.PI*2); ctx.fillStyle='#1d4ed8'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke(); });
   }
-  if (PROG && s>2.2){
+  if (progOn() && s>2.2){
     // visto verde sobre o que já está plantado (árvores, manchas e módulos)
     const tick=(x,y,r)=>{ ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fillStyle='#2f6d0f'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
       ctx.beginPath(); ctx.moveTo(x-r*.45,y+r*.02); ctx.lineTo(x-r*.1,y+r*.38); ctx.lineTo(x+r*.48,y-r*.35); ctx.strokeStyle='#fff'; ctx.lineWidth=Math.max(1.6,r*.28); ctx.lineCap='round'; ctx.lineJoin='round'; ctx.stroke(); ctx.lineCap='butt'; };
     const tr=(SUN?8:6.5);
     for (const k in PKEY){ const sp=SP[+k]; if (sp.g!=='arv' || !S.vis[+k]) continue; const a=plants[k];
-      PKEY[k].forEach((key,j)=>{ if (!isPlanted(key)) return; const sx=SX(a[j*3],a[j*3+1]), sy=SY(a[j*3],a[j*3+1]); if (sx<-10||sx>W+10||sy<-10||sy>H+10) return; tick(sx+Math.max(a[j*3+2]*s*.55,7),sy-Math.max(a[j*3+2]*s*.55,7),tr); }); }
-    if (s>3) for (const p of patches){ if (!S.vis[p.s] || !isPlanted(p.key)) continue; const sx=SX(p.lp[0],p.lp[1]), sy=SY(p.lp[0],p.lp[1]); if (sx<-10||sx>W+10||sy<-10||sy>H+10) continue; tick(sx, sy+12*FZ, tr); }
-    if (s>4) for (const c of cells){ if (!isPlanted(c.key)) continue; const sx=SX(c.c[0],c.c[1]), sy=SY(c.c[0],c.c[1]); if (sx<-10||sx>W+10||sy<-10||sy>H+10) continue; tick(sx+8, sy-8, tr*.85); }
+      PKEY[k].forEach((key,j)=>{ if (!isPlanted(key) || !shownK(key)) return; const sx=SX(a[j*3],a[j*3+1]), sy=SY(a[j*3],a[j*3+1]); if (sx<-10||sx>W+10||sy<-10||sy>H+10) return; tick(sx+Math.max(a[j*3+2]*s*.55,7),sy-Math.max(a[j*3+2]*s*.55,7),tr); }); }
+    if (s>3) for (const p of patches){ if (!S.vis[p.s] || !isPlanted(p.key) || !shownK(p.key)) continue; const sx=SX(p.lp[0],p.lp[1]), sy=SY(p.lp[0],p.lp[1]); if (sx<-10||sx>W+10||sy<-10||sy>H+10) continue; tick(sx, sy+12*FZ, tr); }
+    if (s>4) for (const c of cells){ if (!isPlanted(c.key) || !shownK(c.key)) continue; const sx=SX(c.c[0],c.c[1]), sy=SY(c.c[0],c.c[1]); if (sx<-10||sx>W+10||sy<-10||sy>H+10) continue; tick(sx+8, sy-8, tr*.85); }
   }
   if (GUIDE.t){
     const T = S.gps ? guideTarget(S.gps.x,S.gps.y) : ((GUIDE.t==='plant'||GUIDE.t==='vertex'||GUIDE.t==='point') ? {x:GUIDE.x, y:GUIDE.y, inside:false} : null);
@@ -927,18 +957,18 @@ function updateScale(){
 
 // ---------- hit test
 function pick(sx,sy){
-  const [x,y] = toWorld(sx,sy), tol = 4/S.scale;
+  const [x,y] = toWorld(sx,sy), tol = 4/S.scale, V = viewNow();
   let best=null, bd=1e9;
   for (const g of ['arb','arv']){
     SP.forEach((sp,i)=>{ if(sp.g!==g||!S.vis[i]||!plants[i]) return; if (S.hl && S.hl.t==='sp' && S.hl.k!==i) return;
       const a=plants[i]; const minR = plantMinPx(g)/S.scale;
-      for (let j=0;j<a.length;j+=3){ const r=Math.max(a[j+2],minR), d=Math.hypot(a[j]-x,a[j+1]-y); if (d<=r+tol && d/r<bd){ bd=d/r; best={t:'plant',s:i,j:j/3}; } } });
+      for (let j=0;j<a.length;j+=3){ if (V!=='all' && !shownK(PKEY[i][j/3])) continue; const r=Math.max(a[j+2],minR), d=Math.hypot(a[j]-x,a[j+1]-y); if (d<=r+tol && d/r<bd){ bd=d/r; best={t:'plant',s:i,j:j/3}; } } });
     if (best) break;
   }
   hit.setTransform(1,0,0,1,0,0);
-  if (best){ for (let i=patches.length-1;i>=0;i--){ const p=patches[i]; if(!S.vis[p.s]) continue; const b=p.bb; if(x<b[0]||x>b[2]||y<b[1]||y>b[3]) continue; if (hit.isPointInPath(p.path,x,y,'evenodd')){ best.under=i; break; } } return best; }
-  for (let i=patches.length-1;i>=0;i--){ const p=patches[i]; if(!S.vis[p.s]) continue; if (S.hl && !(S.hl.t==='sp'&&S.hl.k===p.s)) continue; const b=p.bb; if(x<b[0]||x>b[2]||y<b[1]||y>b[3]) continue; if (hit.isPointInPath(p.path,x,y,'evenodd')) return {t:'patch',i}; }
-  for (let i=cells.length-1;i>=0;i--){ const c=cells[i]; if(!c.m.split('').some(m=>S.modVis[m])) continue; if (S.hl && !(S.hl.t==='mod'&&c.m.includes(S.hl.k))) continue; const b=c.bb; if(x<b[0]||x>b[2]||y<b[1]||y>b[3]) continue; if (hit.isPointInPath(c.path,x,y)) return {t:'cell',i}; }
+  if (best){ for (let i=patches.length-1;i>=0;i--){ const p=patches[i]; if(!S.vis[p.s] || !shownK(p.key)) continue; const b=p.bb; if(x<b[0]||x>b[2]||y<b[1]||y>b[3]) continue; if (hit.isPointInPath(p.path,x,y,'evenodd')){ best.under=i; break; } } return best; }
+  for (let i=patches.length-1;i>=0;i--){ const p=patches[i]; if(!S.vis[p.s] || !shownK(p.key)) continue; if (S.hl && !(S.hl.t==='sp'&&S.hl.k===p.s)) continue; const b=p.bb; if(x<b[0]||x>b[2]||y<b[1]||y>b[3]) continue; if (hit.isPointInPath(p.path,x,y,'evenodd')) return {t:'patch',i}; }
+  for (let i=cells.length-1;i>=0;i--){ const c=cells[i]; if(!c.m.split('').some(m=>S.modVis[m]) || !shownK(c.key)) continue; if (S.hl && !(S.hl.t==='mod'&&c.m.includes(S.hl.k))) continue; const b=c.bb; if(x<b[0]||x>b[2]||y<b[1]||y>b[3]) continue; if (hit.isPointInPath(c.path,x,y)) return {t:'cell',i}; }
   return null;
 }
 function nameOf(o){
@@ -1282,25 +1312,47 @@ legend.addEventListener('click', e => {
   if (b.dataset.go!==undefined){ const i=+b.dataset.go; S.vis[i]=true; if(!(S.hl&&S.hl.t==='sp'&&S.hl.k===i)) setHL({t:'sp',k:i}); fit(stat[i].bb, 50); if (matchMedia('(max-width:860px)').matches) wrap.scrollIntoView({behavior:'smooth'}); }
   if (b.dataset.gom){ const m=b.dataset.gom; S.modVis[m]=true; if(!(S.hl&&S.hl.t==='mod'&&S.hl.k===m)) setHL({t:'mod',k:m}); fit(modStat[m].bb, 50); }
 });
-document.getElementById('q').addEventListener('input', e => {
-  const q=e.target.value.trim().toLowerCase();
-  legend.querySelectorAll('.row').forEach(r=>{ r.hidden = q && !r.dataset.q.includes(q); });
-  legend.querySelectorAll('.grp').forEach(g=>{ g.hidden = q && ![...g.querySelectorAll('.row')].some(r=>!r.hidden); });
-});
+// a lista esconde as linhas que não batem com a pesquisa e, com «Já plantado» ou «Por plantar», as espécies sem nada a mostrar
+function legendFilter(){
+  const q=document.getElementById('q').value.trim().toLowerCase();
+  legend.querySelectorAll('.row').forEach(r=>{ r.hidden = (q && !r.dataset.q.includes(q)) || r.dataset.vwout==='1'; });
+  let any=false;
+  legend.querySelectorAll('.grp').forEach(g=>{ g.hidden = ![...g.querySelectorAll('.row')].some(r=>!r.hidden); if (!g.hidden) any=true; });
+  const em=document.getElementById('vw-empty'), v=legend.dataset.vw||'all';
+  em.hidden = any || q!=='' || v==='all';
+  if (!em.hidden) em.textContent = v==='done' ? 'Ainda não há nada registado como plantado.' : 'Já está tudo registado como plantado.';
+}
+document.getElementById('q').addEventListener('input', legendFilter);
 
-// summary
-(function(){
+// summary (em «Já plantado» e «Por plantar» mostra o que está feito ou o que falta)
+function sumRender(v, C){
   const herbA = SP.reduce((a,s,i)=>a+(s.g==='herb'?stat[i].a:0),0);
   const nHerb = SP.filter(s=>s.g==='herb').length;
   const shrubs = SP.reduce((a,s,i)=>a+(s.g==='arb'?stat[i].count:0),0);
   const trees = SP.reduce((a,s,i)=>a+(s.g==='arv'?stat[i].count:0),0);
   const nmod = Object.values(D.modules).reduce((a,m)=>a+(m.n||0),0);
-  document.getElementById('sum').innerHTML =
+  const el=document.getElementById('sum');
+  if (v==='all' || !C){
+    el.classList.remove('ava-sum');
+    el.innerHTML =
    `<div><b>${fmt0(trees)}</b><span>árvores · 2 espécies</span></div>
     <div><b>${fmt0(shrubs)}</b><span>arbustos · 5 espécies</span></div>
     <div><b>${fmt0(herbA)} m²</b><span>manchas · ${nHerb} espécies · ${patches.length} manchas</span></div>
     <div><b>${fmt0(nmod)}</b><span>módulos A–E</span></div>`;
-})();
+    return;
+  }
+  const d = v==='done', val=(done,tot)=>d?done:tot-done;
+  const nSp = g => SP.filter((sp,i)=>sp.g===g && (g==='herb' ? val(C.per[i].a,stat[i].a)>=.5 : val(C.per[i].n,stat[i].count)>=1)).length;
+  const esp = n => `${n} ${n===1?'espécie':'espécies'}`;
+  const nPat = patches.filter(p=>isPlanted(p.key)===d).length;
+  el.classList.add('ava-sum');
+  el.innerHTML =
+   `<div><b>${fmt0(val(C.arv,C.arvT))} <small>/ ${fmt0(C.arvT)}</small></b><span>árvores ${d?'plantadas':'por plantar'} · ${esp(nSp('arv'))}</span></div>
+    <div><b>${fmt0(val(C.arb,C.arbT))} <small>/ ${fmt0(C.arbT)}</small></b><span>arbustos ${d?'plantados':'por plantar'} · ${esp(nSp('arb'))}</span></div>
+    <div><b>${fmt0(Math.round(val(C.area,C.areaT)))} m² <small>/ ${fmt0(Math.round(C.areaT))}</small></b><span>${nPat} ${nPat===1?'mancha':'manchas'} ${d?(nPat===1?'plantada':'plantadas'):'por plantar'} · ${esp(nSp('herb'))}</span></div>
+    <div><b>${fmt0(val(C.mods,C.modsTot))} <small>/ ${fmt0(C.modsTot)}</small></b><span>módulos ${d?'plantados':'por plantar'}</span></div>`;
+}
+sumRender('all', null);
 
 // ---------- modules tab
 (function(){
@@ -1861,12 +1913,78 @@ const PKEY = {};   // índice da espécie -> chaves das plantas (arv:pinpin:12)
 for (const k in plants){ const sp=SP[+k]; if (sp.g==='herb') continue; PKEY[k]=Array.from({length:plants[k].length/3}, (_,j)=>`${sp.g}:${sp.id}:${j}`); }
 const todayISO = () => { const d=new Date(); return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10); };
 const fmtDate = s => s ? s.slice(8,10)+'/'+s.slice(5,7)+'/'+s.slice(0,4) : '';
-const REG = { cfg:null, map:new Map(), queue:[], last:null, dia:todayISO(), mode:false, busy:false, state:'', err:'', syncAt:null, undo:[], here:false, flash:0 };
+const REG = { cfg:null, map:new Map(), queue:[], last:null, dia:todayISO(), mode:false, busy:false, state:'', err:'', syncAt:null, undo:[], here:false, flash:0, keep:new Set() };
 const LSK = 'wg-ericeira-registo';
 function regSave(){ try{ localStorage.setItem(LSK, JSON.stringify({cfg:REG.cfg, map:[...REG.map], queue:REG.queue, last:REG.last})); }catch(_){} }
 (function regLoad(){ try{ const o=JSON.parse(localStorage.getItem(LSK)||'null'); if (!o) return; REG.cfg=o.cfg||null; REG.map=new Map(o.map||[]); REG.queue=o.queue||[]; REG.last=o.last||null; }catch(_){} })();
 const isPlanted = k => { const m=REG.map.get(k); return !!(m && m.p); };
 const progOn = () => !!(REG.cfg && S.L.prog);
+
+// ---------- «Mostrar»: tudo / só o que já está plantado / só o que falta plantar
+// Precisa do registo (separador «Avanço»); sem ele, mostra sempre tudo.
+function viewNow(){ return REG.cfg ? S.view : 'all'; }
+// o que se marca ou desmarca com «Já plantado» ou «Por plantar» fica à vista (esbatido) até se mudar de vista ou sair do modo registo,
+// para um segundo toque no mesmo sítio desfazer em vez de apanhar a mancha que está por baixo
+function shownK(k){ const v=viewNow(); return v==='all' || !k || isPlanted(k)===(v==='done') || REG.keep.has(k); }
+let MODLAB=null;   // célula onde fica cada letra de módulo (para a esconder com a célula)
+function modLabCells(){
+  if (MODLAB) return MODLAB; hit.setTransform(1,0,0,1,0,0);
+  MODLAB = D.modlabels.map(([m,x,y])=>cells.findIndex(c=>c.m.includes(m)&&x>=c.bb[0]&&x<=c.bb[2]&&y>=c.bb[1]&&y<=c.bb[3]&&hit.isPointInPath(c.path,x,y)));
+  return MODLAB;
+}
+const vwchip=document.getElementById('vwchip'), vwtxt=document.getElementById('vwtxt');
+const vwQ0=new Map();   // quantidades originais da lista (para voltar a «Tudo»)
+function setView(v){
+  if (!['all','done','todo'].includes(v)) v='all';
+  if (v!=='all' && !REG.cfg){ viewApply(); return; }
+  S.view=v; REG.keep.clear(); try{ localStorage.setItem(VWK, v); }catch(_){}
+  // a ficha aberta fecha se o elemento deixar de se ver
+  if (S.sel && ['plant','patch','cell','vertex'].includes(S.sel.t)){ const k = S.sel.t==='vertex' ? patches[S.sel.i].key : elemKey(S.sel); if (k && !shownK(k)) showInfo(null); }
+  viewApply(); req();
+}
+function viewApply(){
+  const v=viewNow(), C = (REG.cfg && v!=='all') ? regCounts() : null;
+  legend.dataset.vw=v;
+  document.querySelectorAll('#vw-esp [data-vw]').forEach(b=>{ b.setAttribute('aria-pressed', String(b.dataset.vw===v)); b.disabled = b.dataset.vw!=='all' && !REG.cfg; });
+  document.querySelectorAll('#layers input[name=vw]').forEach(r=>{ r.checked = r.value===v; r.disabled = r.value!=='all' && !REG.cfg; });
+  const hint = REG.cfg ? '' : 'Para ver só o que já está plantado ou só o que falta, entre no separador <button class="lnk" data-openava>Avanço</button> com o nome e o código da obra.';
+  for (const id of ['vw-hint','vw-hint2']){ const el=document.getElementById(id); el.innerHTML=hint; el.hidden=!hint; }
+  vwchip.hidden = v==='all';
+  if (v!=='all') vwtxt.textContent = v==='done' ? 'Só já plantado' : 'Só por plantar';
+  sumRender(v, C);
+  // quantidades da lista: o que está plantado ou o que falta, «de» o total do plano
+  const small = t => `<br><span style="font-size:11px">${t}</span>`;
+  legend.querySelectorAll('.row').forEach(r=>{
+    const qEl=r.querySelector('.q'); if (!vwQ0.has(r)) vwQ0.set(r, qEl.innerHTML);
+    let out=false;
+    if (v==='all') qEl.innerHTML=vwQ0.get(r);
+    else if (r.dataset.i!==undefined){
+      const i=+r.dataset.i, herb=SP[i].g==='herb', tot=herb?stat[i].a:stat[i].count, done=herb?C.per[i].a:C.per[i].n, x=v==='done'?done:tot-done;
+      out = herb ? x<.5 : x<1;
+      qEl.innerHTML = herb ? `${fmt0(Math.round(x))} m²${small('de '+fmt0(Math.round(tot))+' m²')}` : `${fmt0(x)}${small('de '+fmt0(tot))}`;
+    } else {
+      const L=C.modL[r.dataset.m], x=v==='done'?L[0]:L[1]-L[0];
+      out = x<1; qEl.innerHTML = `${fmt0(x)}${small('de '+fmt0(L[1]))}`;
+    }
+    r.dataset.vwout = out?'1':'';
+  });
+  legend.querySelectorAll('.grp').forEach(g=>{
+    const t=g.querySelector('.grp-h .tot'); if (!vwQ0.has(t)) vwQ0.set(t, t.textContent);
+    if (v==='all'){ t.textContent=vwQ0.get(t); return; }
+    const gg=g.dataset.g, d=v==='done'; let x=0;
+    if (gg==='mod'){ for (const m of 'ABCDE'){ const L=C.modL[m]; x += d?L[0]:L[1]-L[0]; } t.textContent=`${fmt0(x)} ${d?'plantados':'por plantar'}`; return; }
+    SP.forEach((sp,i)=>{ if (sp.g!==gg) return; const herb=gg==='herb', tot=herb?stat[i].a:stat[i].count, done=herb?C.per[i].a:C.per[i].n; x += d?done:tot-done; });
+    t.textContent = gg==='herb' ? `${fmt0(Math.round(x))} m² ${d?'plantados':'por plantar'}` : `${fmt0(x)} ${d?(gg==='arv'?'plantadas':'plantados'):'por plantar'}`;
+  });
+  legendFilter();
+}
+document.getElementById('vw-esp').addEventListener('click', e=>{
+  if (e.target.closest('[data-openava]')){ openTab('ava'); return; }
+  const b=e.target.closest('[data-vw]'); if (b && !b.disabled) setView(b.dataset.vw);
+});
+document.getElementById('layers').addEventListener('change', e=>{ if (e.target.name==='vw') setView(e.target.value); });
+document.getElementById('layers').addEventListener('click', e=>{ if (e.target.closest('[data-openava]')){ openTab('ava'); if (narrowMQ.matches) document.querySelector('.panel').scrollIntoView({behavior:'smooth'}); } });
+document.getElementById('vwall').onclick=()=>setView('all');
 
 function elemKey(o){
   if (!o) return null;
@@ -1891,6 +2009,7 @@ function regSet(o, plantado, noUndo){
   if (!noUndo) REG.undo.push({o, was:isPlanted(k)});
   if (REG.undo.length>50) REG.undo.shift();
   const it=regItem(o, plantado);
+  if (viewNow()!=='all') REG.keep.add(k);
   REG.map.set(k, {p:plantado, dia:it.dia, por:it.por, pend:true});
   REG.queue=REG.queue.filter(q=>q.elem!==k); REG.queue.push(it);
   regSave(); regRender(); req(); regSyncSoon();
@@ -1958,6 +2077,7 @@ function regStatusHTML(){
   return pend ? pend.slice(3) : '';
 }
 function regRender(){
+  viewApply();   // a lista, o resumo e o aviso «Mostrar» acompanham o registo
   if (info.dataset.zone && !info.hidden && S.meas && S.meas.mode==='zona') setTimeout(()=>zoneShow(true), 0);   // a lista da zona acompanha o registo
   regbtn.hidden = !REG.cfg;
   regbtn.setAttribute('aria-pressed', String(REG.mode));
@@ -1989,7 +2109,7 @@ function regRender(){
   avaEl.innerHTML = `<div class="ava-top"><div>A registar como <b>${esc(REG.cfg.nome)}</b> · <button class="lnk" id="regsair">mudar</button></div><div class="ava-sync">${regStatusHTML()}</div></div>
     <div class="ava-ctl"><button class="btn ${REG.mode?'':'primary'}" id="regmodebtn">${REG.mode?'Desligar modo registo':'Ligar modo registo'}</button>
       <label>Data a registar <input type="date" id="regdia" value="${REG.dia}" max="${todayISO()}"></label></div>
-    <p class="ava-p">Com o modo registo ligado, cada toque numa planta, mancha ou módulo marca-o como plantado (outro toque desmarca). Também se marca na ficha de cada elemento. No mapa, o que já está plantado fica esbatido e com um visto verde.</p>
+    <p class="ava-p">Com o modo registo ligado, cada toque numa planta, mancha ou módulo marca-o como plantado (outro toque desmarca). Também se marca na ficha de cada elemento. No mapa, o que já está plantado fica esbatido e com um visto verde. Em «Mostrar» (separador Espécies ou botão das camadas) pode ver só o que já está plantado ou só o que falta plantar.</p>
     ${sum}
     <table class="ava-t"><thead><tr><th>Espécie</th><th class="n">Plantado</th><th></th></tr></thead><tbody>${rowsSp}${rowsMod}</tbody></table>
     <div class="acts"><button class="btn" id="regcsv">Exportar para Excel (CSV)</button><button class="btn" id="regnow">Sincronizar agora</button></div>
@@ -2016,7 +2136,7 @@ async function regLogin(nome, codigo){
   }
 }
 function regMode(on){
-  REG.mode=!!on && !!REG.cfg;
+  REG.mode=!!on && !!REG.cfg; REG.keep.clear();
   if (REG.mode){ if (S.meas) setMeasure(false); showInfo(null); }
   regRender(); req();
 }
@@ -2088,7 +2208,7 @@ if (REG.cfg) regSync();
 (function(){
   const el=document.getElementById('offl');
   if (!document.querySelector('link[rel="manifest"]') || !('serviceWorker' in navigator) || !window.caches) return;
-  const BUILD='28/10/2026 17:28';
+  const BUILD='29/10/2026 13:32';
   const urls=[...new Set(Object.values(FLORA).flatMap(F=>F.ph.map(p=>p.f).filter(Boolean)))];
   const set=(h,k)=>{ el.hidden=false; el.className='offl'+(k?' '+k:''); el.innerHTML=h; };
   const ios=/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
@@ -2142,7 +2262,7 @@ function openTab(k){
 }
 for (const t of ['esp','mod','not','ava']) document.getElementById('t-'+t).onclick=()=>openTab(t);
 
-buildLegend(); syncLegend(); resize();
+buildLegend(); syncLegend(); viewApply(); resize();
 })();
 </script>
 
