@@ -222,6 +222,7 @@ button{font:inherit;color:inherit}
 .cbadge{display:inline-grid;place-items:center;min-width:28px;height:28px;padding:0 4px;border-radius:999px;border:2px solid var(--ink);background:var(--surface);font-family:var(--f-body);font-weight:700;font-size:14px;font-style:normal;line-height:1;flex:none;font-variant-numeric:tabular-nums}
 .info h2 .cbadge{background:var(--ink);color:var(--paper)}
 .cdesc{margin:6px 0 0;font-size:13.5px;color:var(--muted)}
+.note.subst{background:var(--warn-bg);border-left:3px solid var(--warn);margin:8px 0 4px}
 .clist{display:flex;flex-direction:column;gap:2px;margin-top:6px}
 .crow{display:flex;align-items:center;gap:11px;width:100%;text-align:left;border:none;background:none;border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent);padding:8px 4px;cursor:pointer;border-radius:5px}
 .crow:hover{background:var(--chip)}
@@ -598,9 +599,20 @@ const normT = t => t.toLowerCase().replace(/[^a-z0-9]/g,'');
 const topo = (() => { const out=[]; for (const t of D.topo){ if (out.some(o => Math.hypot(o[1]-t[1],o[2]-t[2])<120 && (normT(o[0])===normT(t[0]) || normT(o[0]).slice(0,8)===normT(t[0]).slice(0,8)))) continue; out.push(t);} return out; })();
 
 // species stats
-const stat = SP.map(()=>({n:0,a:0,count:0,bb:[1e9,1e9,-1e9,-1e9]}));
+// Substituições de espécies decididas em obra: o mapa mostra a espécie que se planta; a ficha diz o que estava no projeto.
+const SUBST = [{de:'coralb', para:'helita', dia:'29/10/2026'}];
+for (const sb of SUBST){
+  const a=SP.findIndex(x=>x.id===sb.de), b=SP.findIndex(x=>x.id===sb.para); if (a<0 || b<0) continue;
+  SP[a].repl=b; SP[a].replDia=sb.dia;
+  for (const pt of patches) if (pt.s===a){ pt.s=b; pt.was=a; }
+  // na lista de compassos a área das duas espécies soma-se (o compasso é o da espécie nova)
+  if (CP[sb.de] && CP[sb.para]){ const o=CP[sb.para]; CP[sb.para]={...o, a0:o.a, aSub:CP[sb.de].a, a:o.a+CP[sb.de].a, subOf:a}; }
+}
+const isGone = i => SP[i].repl!=null;   // espécie que já não se planta (substituída)
+const drawnOrig = i => patches.reduce((t,pt)=>t+(((pt.was!=null)?pt.was:pt.s)===i?pt.a:0),0);   // área desenhada no projeto
+const stat = SP.map(()=>({n:0,a:0,count:0,bb:[1e9,1e9,-1e9,-1e9],aSub:0,nSub:0}));
 const grow = (bb,x0,y0,x1,y1)=>{ if(x0<bb[0])bb[0]=x0; if(y0<bb[1])bb[1]=y0; if(x1>bb[2])bb[2]=x1; if(y1>bb[3])bb[3]=y1; };
-for (const p of patches){ const st=stat[p.s]; st.n++; st.a+=p.a; grow(st.bb,...p.bb); }
+for (const p of patches){ const st=stat[p.s]; st.n++; st.a+=p.a; grow(st.bb,...p.bb); if (p.was!=null){ st.aSub+=p.a; st.nSub++; } }
 for (const k in plants){ const a=plants[k], st=stat[k]; for(let i=0;i<a.length;i+=3){ st.count++; grow(st.bb,a[i]-a[i+2],a[i+1]-a[i+2],a[i]+a[i+2],a[i+1]+a[i+2]); } }
 const modStat = {}; for (const m of 'ABCDE') modStat[m]={bb:[1e9,1e9,-1e9,-1e9]};
 for (const c of cells) for (const m of new Set(c.m)) grow(modStat[m].bb,...c.bb);
@@ -1111,9 +1123,9 @@ function speciesCard(i){
   const drawn = sp.g==='herb' ? `${st.n} ${st.n===1?'mancha':'manchas'} · ${fmt1(st.a)} m²${cp?` · ≈ ${fmt0(Math.round(st.a*cp.d))} plantas`:''}` : `${fmt0(st.count)} plantas`;
   return `<div class="kind">${KIND[sp.g]}</div><h2>${swHTML(i)}${esc(sp.name)}</h2>${cpBox(cp)}
     <dl><dt>Código</dt><dd><b>${esc(sp.code)}</b>${sp.lcode!==sp.code?` · no desenho «${esc(sp.lcode)}»`:''}</dd>
-    <dt>No desenho</dt><dd>${drawn}</dd>
+    <dt>No desenho</dt><dd>${drawn}${st.nSub?`<br><span class="sub">inclui ${st.nSub} ${st.nSub===1?'mancha':'manchas'} (${fmt1(st.aSub)} m²) que no projeto ${st.nSub===1?'era':'eram'} ${SP.filter(x=>x.repl===i).map(x=>'<i>'+esc(x.name)+'</i>').join(' / ')}, substituída por esta espécie em obra</span>`:''}</dd>
     ${REG.cfg ? (()=>{ const C=regCounts(); const herb=sp.g==='herb'; const done=herb?C.per[i].a:C.per[i].n, tot=herb?st.a:st.count; return tot?`<dt>Plantado</dt><dd>${herb?fmt0(Math.round(done))+' de '+fmt0(Math.round(tot))+' m²':fmt0(done)+' de '+fmt0(tot)} · ${pct(done,tot)} %</dd>`:''; })() : ''}
-    ${cp?`<dt>Área na lista</dt><dd>${fmt2(cp.a)} m² · ≈ ${fmt0(Math.round(cp.a*cp.d))} plantas${Math.abs(dif)>1?`<br><span class="diff">${dif>0?'+':'−'}${fmt1(Math.abs(dif))} m² em relação ao desenho</span>`:''}</dd>`:''}</dl>
+    ${cp?`<dt>Área na lista</dt><dd>${fmt2(cp.a)} m² · ≈ ${fmt0(Math.round(cp.a*cp.d))} plantas${cp.a0!=null?`<br><span class="sub">${fmt2(cp.a0)} m² desta espécie + ${fmt2(cp.aSub)} m² de <i>${esc(SP[cp.subOf].name)}</i></span>`:''}${Math.abs(dif)>1?`<br><span class="diff">${dif>0?'+':'−'}${fmt1(Math.abs(dif))} m² em relação ao desenho</span>`:''}</dd>`:''}</dl>
     ${sp.g==='herb'?`<p class="credit">As medidas dos lados aparecem no mapa à medida que se aproxima. Toque numa mancha para ver os vértices numerados e a lista de lados.</p>`:''}
     ${galleryHTML(sp.id)}
     ${cp&&cp.obs?`<div class="note">${esc(cp.obs)}</div>`:''}${sp.note?`<div class="note">${esc(sp.note)}</div>`:''}
@@ -1162,12 +1174,14 @@ function showInfo(o, at){
     const p=patches[o.i], sp=SP[p.s], st=stat[p.s];
     const ol = p.ol && p.ol.length ? p.ol.map(t=>'«'+esc(t)+'»').join(', ') : 'sem etiqueta';
     const cp = CP[sp.id], dif = cp ? cp.a - st.a : 0;
+    const was = p.was!=null ? SP[p.was] : null;
     h = `<div class="kind">${KIND.herb}</div><h2>${swHTML(p.s)}${esc(sp.name)}</h2>
+    ${was?`<div class="note subst"><b>Espécie substituída em obra.</b> No projeto esta mancha era <i>${esc(was.name)}</i> («${esc(was.code)}» no desenho). Planta-se <i>${esc(sp.name)}</i> (indicação de ${esc(was.replDia)}).</div>`:''}
     ${cp?`<div class="cpbox"><span>Compasso (c.p.)</span><b>${cp.cp}</b><em>${fmtD(cp.d)} ${plt(cp.d)}/m²</em></div>`:''}
-    <dl>${cantDT(cantOf(o))}<dt>Código</dt><dd><b>${esc(sp.code)}</b></dd>
+    <dl>${cantDT(cantOf(o))}<dt>Código</dt><dd><b>${esc(sp.code)}</b>${was?` · no desenho «${esc(was.code)}»`:''}</dd>
     <dt>Esta mancha</dt><dd>n.º ${p.id} · <b>${fmt1(p.a)} m²</b>${cp?` · ≈ ${fmt0(Math.round(p.a*cp.d))} ${plt(Math.round(p.a*cp.d))}`:''}</dd>
     <dt>Total desenhado</dt><dd>${st.n} ${st.n===1?'mancha':'manchas'} · ${fmt1(st.a)} m²${cp?` · ≈ ${fmt0(Math.round(st.a*cp.d))} plantas`:''}</dd>
-    ${cp?`<dt>Área na lista</dt><dd>${fmt2(cp.a)} m² · ≈ ${fmt0(Math.round(cp.a*cp.d))} plantas${Math.abs(dif)>1?`<br><span class="diff">${dif>0?'+':'−'}${fmt1(Math.abs(dif))} m² em relação ao desenho</span>`:''}</dd>`:''}
+    ${cp?`<dt>Área na lista</dt><dd>${fmt2(cp.a)} m² · ≈ ${fmt0(Math.round(cp.a*cp.d))} plantas${cp.a0!=null?`<br><span class="sub">${fmt2(cp.a0)} m² desta espécie + ${fmt2(cp.aSub)} m² de <i>${esc(SP[cp.subOf].name)}</i></span>`:''}${Math.abs(dif)>1?`<br><span class="diff">${dif>0?'+':'−'}${fmt1(Math.abs(dif))} m² em relação ao desenho</span>`:''}</dd>`:''}
     <dt>Etiqueta no desenho</dt><dd>${ol}</dd>${terrainHTML(at?wx:p.lp[0], at?wy:p.lp[1])}</dl>
     ${regBox(o)}
     ${sidesHTML(p)}
@@ -1346,7 +1360,7 @@ const goSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 function buildLegend(){
   let h='';
   for (const G of GROUPS){
-    const idxs = SP.map((s,i)=>i).filter(i=>SP[i].g===G.g);
+    const idxs = SP.map((s,i)=>i).filter(i=>SP[i].g===G.g && !isGone(i));
     const tot = G.g==='herb' ? fmt0(idxs.reduce((a,i)=>a+stat[i].a,0))+' m²' : fmt0(idxs.reduce((a,i)=>a+stat[i].count,0))+' plantas';
     h += `<section class="grp" data-g="${G.g}"><div class="grp-h"><input type="checkbox" id="g-${G.g}" aria-label="Mostrar ou ocultar ${esc(G.title)}"><h3>${esc(G.title)}</h3><span class="tot">${tot}</span></div>`;
     const sorted = idxs.slice().sort((a,b)=> SP[a].name.localeCompare(SP[b].name));
@@ -1354,7 +1368,8 @@ function buildLegend(){
       const sp=SP[i], st=stat[i];
       const cp = CP[sp.id];
       const q = sp.g==='herb' ? `${fmt0(st.a)} m²<br><span style="font-size:11px">${cp?'c.p. '+cp.cp:st.n+' manchas'}</span>` : `${fmt0(st.count)}`;
-      h += `<div class="row" data-i="${i}" data-q="${esc((sp.name+' '+sp.code+' '+sp.pcode+' '+sp.lcode).toLowerCase())}">
+      const olds = SP.filter(x=>x.repl===i).map(x=>' '+x.name).join('');
+      h += `<div class="row" data-i="${i}" data-q="${esc((sp.name+' '+sp.code+' '+sp.pcode+' '+sp.lcode+olds).toLowerCase())}">
         <input type="checkbox" id="v-${i}" aria-label="Mostrar ${esc(sp.name)}">
         ${swHTML(i)}
         <button class="nm" data-i="${i}" title="Destacar no mapa"><span class="cd">${esc(sp.code)}</span><span class="sn">${esc(sp.name)}</span>${flagHTML(sp)}</button>
@@ -1382,7 +1397,7 @@ function syncLegend(){
     if (r.dataset.i!==undefined){ const i=+r.dataset.i; r.querySelector('input').checked=S.vis[i]; r.classList.toggle('on', !!(S.hl&&S.hl.t==='sp'&&S.hl.k===i)); }
     else { const m=r.dataset.m; r.querySelector('input').checked=S.modVis[m]; r.classList.toggle('on', !!(S.hl&&S.hl.t==='mod'&&S.hl.k===m)); }
   });
-  for (const G of GROUPS){ const idxs=SP.map((s,i)=>i).filter(i=>SP[i].g===G.g); const n=idxs.filter(i=>S.vis[i]).length; const cb=document.getElementById('g-'+G.g); cb.checked=n===idxs.length; cb.indeterminate=n>0&&n<idxs.length; }
+  for (const G of GROUPS){ const idxs=SP.map((s,i)=>i).filter(i=>SP[i].g===G.g && !isGone(i)); const n=idxs.filter(i=>S.vis[i]).length; const cb=document.getElementById('g-'+G.g); cb.checked=n===idxs.length; cb.indeterminate=n>0&&n<idxs.length; }
   const nm=Object.values(S.modVis).filter(Boolean).length, cbm=document.getElementById('g-mod'); cbm.checked=nm===5; cbm.indeterminate=nm>0&&nm<5;
 }
 legend.addEventListener('change', e => {
@@ -1418,7 +1433,7 @@ document.getElementById('q').addEventListener('input', legendFilter);
 // summary (em «Já plantado» e «Por plantar» mostra o que está feito ou o que falta)
 function sumRender(v, C){
   const herbA = SP.reduce((a,s,i)=>a+(s.g==='herb'?stat[i].a:0),0);
-  const nHerb = SP.filter(s=>s.g==='herb').length;
+  const nHerb = SP.filter((s,i)=>s.g==='herb' && !isGone(i)).length;
   const shrubs = SP.reduce((a,s,i)=>a+(s.g==='arb'?stat[i].count:0),0);
   const trees = SP.reduce((a,s,i)=>a+(s.g==='arv'?stat[i].count:0),0);
   const nmod = Object.values(D.modules).reduce((a,m)=>a+(m.n||0),0);
@@ -1477,7 +1492,10 @@ sumRender('all', null);
   const sw = ids => `<span class="cswatch">${ids.map(id=>`<i style="background:${c(id).color}"></i>`).join('')}</span>`;
   const it = id => `<i>${esc(c(id).name)}</i>`;
   const cnt = id => fmt0(stat[SP.indexOf(c(id))].count);
-  const CMP = SP.map((sp,i)=>({sp,i,cp:CP[sp.id]})).filter(r=>r.cp && r.sp.id!=='rosoff').map(r=>({...r, dif: Math.abs(r.cp.a-stat[r.i].a)>1}));
+  // comparação com os documentos do projeto: valores originais (antes das substituições em obra)
+  const listA = r => r.cp.a0!=null ? r.cp.a0 : r.cp.a;
+  const CMP = SP.map((sp,i)=>({sp,i,cp:CP[sp.id]})).filter(r=>r.cp && r.sp.id!=='rosoff').map(r=>({...r, dif: Math.abs(listA(r)-drawnOrig(r.i))>1}));
+  const SUBS = SP.map((sp,i)=>({sp,i})).filter(r=>isGone(r.i));
   const issues = [
     `<b>Cores repetidas no desenho original.</b> Estas espécies têm a mesma cor no desenho 07 e só se distinguem pelo tracejado: ${it('sanros')}, ${it('halhal')} e ${it('onoram')}; ${it('cissal')} e ${it('cislad')}; ${it('lavvir')} e ${it('eupcha')}; ${it('lavmul')} e ${it('thypul')}; ${it('helita')} e ${it('brapho')}. Aqui cada uma tem cor própria.`,
     `<b>O mesmo código para espécies diferentes na legenda.</b> <code>P.p.</code> é ${it('pinpin')} e ${it('phlpur')}; <code>C.m.</code> é ${it('cramon')} e ${it('crimar')}; <code>E.c.</code> é ${it('erici')} e ${it('eupcha')}; <code>T.c.</code> é ${it('thycar')} e ${it('thycam')}. Neste mapa usamos <code>P.pu.</code>, <code>C.ma.</code>, <code>E.ci.</code>, <code>T.car.</code> e <code>T.cam.</code> para as separar.`,
@@ -1486,7 +1504,7 @@ sumRender('all', null);
     `<b>Código desconhecido «H.o.».</b> Aparece em 2 manchas: uma de ${it('halhal')} e uma de ${it('phlpur')}. Não existe na legenda. Neste mapa a espécie vem da layer do DWG.`,
     `<b>Armeria.</b> A legenda diz <i>Armeria pseudoarmeria</i>; a layer no DWG chama-se «Armeria pungens».`,
     `<b>Módulo A.</b> O esquema inclui <code>M.c.</code> (1 por módulo) e <code>C.g.</code> (1 por módulo), que não constam da lista do Módulo A. <code>C.g.</code> não aparece em nenhuma legenda.`,
-    `<b>Códigos com dois significados nos módulos.</b> <code>C.a.</code> é ${it('coralb')} nas herbáceas e <i>Cistus albidus</i> no Módulo C. <code>A.m.</code> é ${it('achmil')} nas herbáceas e <i>Asteriscus maritimus</i> no Módulo D.`,
+    `<b>Códigos com dois significados nos módulos.</b> No desenho, <code>C.a.</code> é ${it('coralb')} nas herbáceas e <i>Cistus albidus</i> no Módulo C (a ${it('coralb')} foi entretanto substituída: ver «Alterações em obra»). <code>A.m.</code> é ${it('achmil')} nas herbáceas e <i>Asteriscus maritimus</i> no Módulo D.`,
     `<b>Áreas da lista de compassos diferentes do desenho.</b> Em ${CMP.filter(r=>r.dif).length} espécies, a área da lista de compassos não coincide com a soma das manchas desenhadas no DWG. Nas outras, a diferença é inferior a 1 m². Em ${it('thycar')}, os 288,4 m² da lista correspondem exatamente a 10 das 12 manchas iguais de 28,84 m² junto à EN 247. Ver o quadro «Compassos e áreas», mais abaixo.`,
     `<b>Módulos na lista de compassos.</b> Módulo C: a lista dá ${it('rosoff')} a 1 planta/m² em 16 506 m², o que corresponde, aproximadamente, aos módulos C mais a mancha de R.o.; o esquema do Módulo C tem 4 R.o. e 13 <i>Cistus albidus</i> por módulo, e <i>Cistus albidus</i> não está na lista. Módulo D: a lista dá <i>Frankenia laevis</i> a 1 planta/m² em 100 m² (≈ 100 plantas); o esquema tem 6 por módulo (24 nos 4 módulos). Módulo E: a lista dá 582 m² de <i>Erica umbellata</i>; no desenho há 35 módulos E (875 m²).`,
     `<b>Altura dos montes (modelação do terreno).</b> O DWG tem os ${MOUNDS.length} montes da modelação («ilhas» da layer PAI04) com as suas curvas de nível propostas, mas as curvas não têm o valor da cota e a folha de modelação e os cortes não vêm nos PDFs. A altura de cada monte («▲ ≈ +2,5 m») foi estimada contando as curvas, a 0,5 m entre elas, a mesma equidistância do levantamento. Confirmar com a projetista, ou nos cortes PAI04, antes de usar estas alturas em obra. As cotas do terreno à volta vêm do levantamento topográfico (folha PAI.03_IMPLA).`,
@@ -1507,13 +1525,16 @@ sumRender('all', null);
       <li>Ao tocar num elemento aparecem as coordenadas do DWG (M, P), que parecem estar em PT-TM06/ETRS89. Confirme o sistema antes de as usar para implantação.</li>
       <li>«Etiquetas originais do desenho» (em Camadas) mostra os textos do projeto tal como estão, com as linhas de chamada.</li>
     </ul>
+    ${SUBS.length?`<h3>Alterações em obra</h3>
+    <ul>${SUBS.map(r=>{ const b=SP[r.sp.repl], n=patches.filter(p=>p.was===r.i), a=n.reduce((t,p)=>t+p.a,0);
+      return `<li><b>${esc(r.sp.replDia)}:</b> <i>${esc(r.sp.name)}</i> (${esc(r.sp.code)}) substituída por <i>${esc(b.name)}</i> (${esc(b.code)}). No mapa, ${n.length===1?'a mancha':'as '+n.length+' manchas'} de ${fmt1(a)} m² ${n.length===1?'passa':'passam'} a ${esc(b.code)}; a ficha da mancha diz o que estava no projeto. Compasso: o de <i>${esc(b.name)}</i> (${CP[b.id]?CP[b.id].cp:'—'}).</li>`; }).join('')}</ul>`:''}
     <h3>Pontos a confirmar com a projetista</h3>
     <ol>${issues.map(x=>`<li>${x}</li>`).join('')}</ol>
     <h3>Compassos e áreas</h3>
-    <p>Valores da lista de compassos, comparados com a soma das manchas desenhadas. As linhas assinaladas diferem mais de 1 m².</p>
+    <p>Valores da lista de compassos, comparados com a soma das manchas desenhadas no projeto (antes das alterações em obra). As linhas assinaladas diferem mais de 1 m².</p>
     <div class="qtw"><table class="qt"><thead><tr><th>Espécie</th><th>c.p.</th><th class="n">Lista m²</th><th class="n">Desenho m²</th></tr></thead><tbody>
-    ${SP.map((sp,i)=>({sp,i,cp:CP[sp.id]})).filter(r=>r.cp).sort((a,b)=>a.sp.name.localeCompare(b.sp.name)).map(r=>{ const d=r.cp.a-stat[r.i].a, bad=Math.abs(d)>1;
-      return `<tr class="${bad?'bad':''}"><td><b>${esc(r.sp.code)}</b> <i>${esc(r.sp.name)}</i></td><td>${r.cp.cp}<br><span class="sub">${fmtD(r.cp.d)}/m²</span></td><td class="n">${fmt2(r.cp.a)}</td><td class="n">${fmt2(stat[r.i].a)}${bad?`<br><span class="sub">${d>0?'+':'−'}${fmt1(Math.abs(d))} na lista</span>`:''}</td></tr>`; }).join('')}
+    ${SP.map((sp,i)=>({sp,i,cp:CP[sp.id]})).filter(r=>r.cp).sort((a,b)=>a.sp.name.localeCompare(b.sp.name)).map(r=>{ const la=listA(r), da=drawnOrig(r.i), d=la-da, bad=Math.abs(d)>1;
+      return `<tr class="${bad?'bad':''}"><td><b>${esc(r.sp.code)}</b> <i>${esc(r.sp.name)}</i>${isGone(r.i)?`<br><span class="sub">substituída por ${esc(SP[r.sp.repl].code)} em obra</span>`:''}</td><td>${r.cp.cp}<br><span class="sub">${fmtD(r.cp.d)}/m²</span></td><td class="n">${fmt2(la)}</td><td class="n">${fmt2(da)}${bad?`<br><span class="sub">${d>0?'+':'−'}${fmt1(Math.abs(d))} na lista</span>`:''}</td></tr>`; }).join('')}
     </tbody></table></div>
     <p class="foot">Na lista, ${it('rosoff')} inclui a área dos módulos C. As espécies só dos módulos (<i>Erica umbellata</i>, <i>Frankenia laevis</i>, <i>Limonium ovalifolium</i>) estão no separador Módulos.</p>
     <h3>O que ficou de fora</h3>
@@ -2394,7 +2415,7 @@ if (REG.cfg) regSync();
 (function(){
   const el=document.getElementById('offl');
   if (!document.querySelector('link[rel="manifest"]') || !('serviceWorker' in navigator) || !window.caches) return;
-  const BUILD='29/10/2026 14:00';
+  const BUILD='29/10/2026 14:04';
   const urls=[...new Set(Object.values(FLORA).flatMap(F=>F.ph.map(p=>p.f).filter(Boolean)))];
   const set=(h,k)=>{ el.hidden=false; el.className='offl'+(k?' '+k:''); el.innerHTML=h; };
   const ios=/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
