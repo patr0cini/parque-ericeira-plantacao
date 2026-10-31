@@ -13,6 +13,11 @@ Mapa interativo de trabalho da We Garden para a obra do Parque Ecológico da Eri
 - **Fichas por cima do mapa**: ao tocar numa planta, mancha, módulo ou canteiro, a ficha abre em baixo, com o essencial e os botões («Destacar», «Guiar até aqui»); o resto (árvores mais próximas, lados e vértices, coordenadas, cota, fotografias) está em «Mais detalhes». A página não se mexe e o que se tocou fica à vista.
 - **Avisos numa linha** (registo, posição GPS, destaque, vista): tocar no texto mostra o pormenor.
 
+## No computador
+
+- **Cabeçalho numa linha**: a origem do desenho (folha 07, escala, data) está em Notas.
+- **Ficha na coluna da direita**: ao tocar num elemento do mapa ou da lista, a ficha abre no lugar da lista, com tudo à vista, e o mapa fica livre. «← Voltar à lista» (ou outro separador) regressa à lista. No tablet deitado é igual.
+
 ## No terreno
 
 - **Canteiros numerados (1 a 27)**: o parque está dividido em canteiros que se reconhecem no terreno (cada grupo de manchas rodeado por caminhos, as faixas da EN 247, os blocos de módulos, os grupos de árvores e arbustos), com o número numa etiqueta verde e o contorno tracejado no mapa. Servem para dizer onde se está («estou no canteiro 12»). São números e não letras porque as letras A–E já são os módulos de plantação. Separador «Canteiros» com a lista; a ficha de cada canteiro tem o que leva (e o que falta plantar, com o registo), «Guiar até aqui», exportação (CSV) e «Partilhar», que dá uma ligação que abre o mapa no canteiro (…/#c12). O «Onde estou» e as fichas das plantas, manchas e módulos dizem o canteiro.

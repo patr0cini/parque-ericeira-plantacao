@@ -72,6 +72,17 @@ button{font:inherit;color:inherit}
 .sun .gps,.sun .meas,.sun .info,.sun .layers,.sun .hl-chip{border:2px solid #000}
 .sun .ttl h1{font-weight:600}
 .sun .cpbox b{white-space:nowrap}
+/* Computador: cabeçalho numa linha (a origem do desenho está em Notas) e ficha na coluna da direita, no lugar da lista */
+@media (min-width: 861px){
+  .top{padding-block:8px;gap:14px}
+  .ttl p,.sheet,.brand small{display:none}
+  .ttl h1{font-size:18px}
+  .panel > .info{position:relative;inset:auto;width:auto;max-width:none;max-height:none;flex:1;min-height:0;margin:4px 16px 16px;box-shadow:none;border-radius:8px;z-index:auto}
+  .panel:has(> .info:not([hidden])) > .pane{display:none}
+  .infoback{display:none;margin:12px 16px 4px;align-self:flex-start;border:none;background:none;padding:4px 0;font:inherit;font-size:14px;font-weight:600;color:var(--verde-ink);cursor:pointer}
+  .infoback:hover{text-decoration:underline}
+  .panel:has(> .info:not([hidden])) > .infoback{display:block}
+}
 @media (min-width: 861px){ .mapwrap > .info{right:60px} .info details.more>summary{display:none} .info details.more{border-top:none;padding-top:0;margin-top:0} }   /* a ficha fica à esquerda da coluna de botões; no computador abre tudo */
 
 .app{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 392px}
@@ -538,6 +549,7 @@ article.mod{border:1px solid var(--line);border-radius:8px;padding:12px;margin-b
       <button role="tab" id="t-not" aria-selected="false" aria-controls="p-not">Notas<span class="n" id="nnotes"></span></button>
       <button role="tab" id="t-ava" aria-selected="false" aria-controls="p-ava">Avanço</button>
     </nav>
+    <button class="infoback" id="infoback" type="button">← Voltar à lista</button>
     <div class="pane" id="p-esp" role="tabpanel">
       <p class="offl" id="offl" hidden role="status" aria-live="polite"></p>
       <div class="vw" id="vw-esp"><span class="vw-l">Mostrar</span><div class="seg" role="group" aria-label="O que mostrar no mapa e na lista"><button data-vw="all" aria-pressed="true">Tudo</button><button data-vw="done" aria-pressed="false">Já plantado</button><button data-vw="todo" aria-pressed="false">Por plantar</button></div><p class="vw-hint" id="vw-hint" hidden></p></div>
@@ -1346,6 +1358,15 @@ function showInfo(o, at){
 const narrowMQ = matchMedia('(max-width: 860px)');
 const sheetMQ = barMQ;
 narrowMQ.addEventListener?.('change', ()=>{ if (!narrowMQ.matches) info.querySelectorAll('details.more').forEach(d=>d.open=true); });
+// No computador a ficha abre na coluna da direita (no lugar da lista); no telemóvel e no tablet, por cima do mapa.
+const panelEl = document.querySelector('.panel'), infoBack = document.getElementById('infoback');
+function placeInfo(){
+  if (!narrowMQ.matches){ if (info.parentNode!==panelEl) panelEl.insertBefore(info, infoBack.nextSibling); }
+  else if (info.parentNode!==wrap) wrap.appendChild(info);
+}
+narrowMQ.addEventListener?.('change', placeInfo); placeInfo();
+infoBack.onclick=()=>{ if (info.dataset.zone) info.dataset.zoneClosed='1'; showInfo(null); };
+const inPanel = () => info.parentNode===panelEl;
 function cardShown(){
   info.hidden=false; info.scrollTop=0;
   if (!narrowMQ.matches) info.querySelectorAll('details.more').forEach(d=>d.open=true);
@@ -1373,7 +1394,7 @@ function keepVisible(bb){
     if (y0 < top || y1 > bot) dy = (top+bot)/2 - (y0+y1)/2;
     if (x0 < 8 || x1 > W-8) dx = W/2 - (x0+x1)/2;
   } else {
-    const cw = info.offsetWidth + 72; const free = W - cw;
+    const cw = inPanel() ? 60 : info.offsetWidth + 72; const free = W - cw;
     if (x1 > free - 16) dx = Math.max((free - 16) - x1, 16 - x0);
     if (x0 + dx < 16) dx = 16 - x0;
     if (y0 < 70) dy = 70 - y0; else if (y1 > H - 16) dy = Math.max(H - 16 - y1, 70 - y0);
@@ -2576,7 +2597,7 @@ if (REG.cfg) regSync();
 (function(){
   const el=document.getElementById('offl');
   if (!document.querySelector('link[rel="manifest"]') || !('serviceWorker' in navigator) || !window.caches) return;
-  const BUILD='31/10/2026 17:46';
+  const BUILD='31/10/2026 17:58';
   const urls=[...new Set(Object.values(FLORA).flatMap(F=>F.ph.map(p=>p.f).filter(Boolean)))];
   const set=(h,k)=>{ el.hidden=false; el.className='offl'+(k?' '+k:''); el.innerHTML=h; };
   const ios=/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
@@ -2625,6 +2646,7 @@ document.addEventListener('keydown',e=>{ if(lb.hidden) return; if(e.key==='Escap
 
 // ---------- tabs
 function openTab(k){
+  if (inPanel() && !info.hidden){ if (info.dataset.zone) info.dataset.zoneClosed='1'; showInfo(null); }   // a ficha estava no lugar da lista
   for (const [t,p] of [['esp','p-esp'],['can','p-can'],['mod','p-mod'],['not','p-not'],['ava','p-ava']]){
     document.getElementById('t-'+t).setAttribute('aria-selected', String(t===k)); document.getElementById(p).hidden = t!==k; }
 }
