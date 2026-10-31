@@ -1,5 +1,5 @@
 // Service worker do mapa de plantação — guarda a página, as fotos e os tipos de letra para usar sem rede.
-const VERSAO = '291020261404';
+const VERSAO = '311020261746';
 const PAGINA = 'pagina-' + VERSAO, FOTOS = 'fotos-v1', FONTES = 'fontes-v1';
 const FONT_CSS = 'https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap';
 const BASE = ['./', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];

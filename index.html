@@ -72,7 +72,7 @@ button{font:inherit;color:inherit}
 .sun .gps,.sun .meas,.sun .info,.sun .layers,.sun .hl-chip{border:2px solid #000}
 .sun .ttl h1{font-weight:600}
 .sun .cpbox b{white-space:nowrap}
-@media (min-width: 861px){ .mapwrap > .info{right:60px} }   /* a ficha fica à esquerda da coluna de botões */
+@media (min-width: 861px){ .mapwrap > .info{right:60px} .info details.more>summary{display:none} .info details.more{border-top:none;padding-top:0;margin-top:0} }   /* a ficha fica à esquerda da coluna de botões; no computador abre tudo */
 
 .app{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 392px}
 .mapwrap{position:relative;min-width:0;min-height:0;background:var(--map-bg);overflow:hidden;touch-action:none}
@@ -85,8 +85,14 @@ button{font:inherit;color:inherit}
 .ctl button:hover{background:var(--erva)}
 .ctl button[aria-pressed="true"]{background:var(--erva);border-color:var(--verde-ink)}
 .ctl svg{width:18px;height:18px}
-.layers{position:absolute;top:12px;right:56px;z-index:4;background:var(--surface);border:1px solid var(--line-strong);border-radius:8px;box-shadow:var(--shadow);padding:12px 14px;width:250px;max-width:calc(100% - 80px)}
-.layers h3{margin:0 0 8px;font-family:var(--f-display);font-weight:500;font-size:14px}
+.layers{position:absolute;top:12px;right:56px;z-index:4;background:var(--surface);border:1px solid var(--line-strong);border-radius:8px;box-shadow:var(--shadow);padding:10px 14px 12px;width:260px;max-width:calc(100% - 80px);max-height:calc(100% - 24px);overflow:auto;overscroll-behavior:contain;box-sizing:border-box}
+.layers h3{margin:0;font-family:var(--f-display);font-weight:500;font-size:15px}
+.lyr-h{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.lyr-x{border:none;background:none;font-size:22px;line-height:1;width:34px;height:34px;border-radius:6px;cursor:pointer;color:var(--muted);flex:none}
+.lyr-x:hover{background:var(--chip)}
+.lyr-g{margin:10px 0 2px;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lyr-more{margin-top:10px;border-top:1px solid var(--line);padding-top:4px}
+.lyr-more>summary{cursor:pointer;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:6px 0}
 .layers label{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:14px;cursor:pointer}
 .layers .range{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);padding:4px 0 2px 24px}
 .layers input[type=range]{flex:1;accent-color:var(--verde-ink)}
@@ -115,6 +121,13 @@ button{font:inherit;color:inherit}
 .info dd{margin:0;font-variant-numeric:tabular-nums;min-width:0}
 .info .note{margin-top:10px;font-size:13px;background:var(--warn-bg);color:var(--ink);border-left:3px solid var(--warn);padding:6px 9px;border-radius:0 4px 4px 0}
 .info .acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+/* «Mais detalhes»: no telemóvel a ficha mostra o essencial; no computador abre tudo */
+.info details.more{margin-top:10px;border-top:1px solid var(--line);padding-top:4px}
+.info details.more>summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--verde-ink);list-style:none;padding:8px 0 4px}
+.info details.more>summary::-webkit-details-marker{display:none}
+.info details.more>summary::after{content:' ▾'}
+.info details.more[open]>summary::after{content:' ▴'}
+.info details.more>dl:first-of-type{margin-top:4px}
 .btn{border:1px solid var(--line-strong);background:var(--surface);border-radius:6px;padding:6px 11px;font-size:13px;font-weight:600;cursor:pointer}
 .btn:hover{background:var(--erva)}
 .btn.primary{background:var(--verde-ink);border-color:var(--verde-ink);color:var(--paper)}
@@ -126,7 +139,7 @@ button{font:inherit;color:inherit}
 .cpbox em{font-style:normal;font-size:13px;color:var(--ink);margin-left:auto;font-variant-numeric:tabular-nums}
 .diff{color:var(--warn);font-weight:600;font-size:12.5px}
 .info{max-height:calc(100% - 24px);overflow:auto;box-sizing:border-box}
-.info.docked{position:relative;inset:auto;width:auto;max-width:none;max-height:none;margin:12px max(16px, env(safe-area-inset-left, 0px)) 4px max(16px, env(safe-area-inset-right, 0px));box-shadow:none;border-color:var(--line-strong)}
+
 .fotos{margin-top:12px}
 .nbl{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:4px;font-variant-numeric:tabular-nums}
 .nbl li{display:flex;align-items:center;gap:8px;font-size:13px;border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent);padding:2px 0}
@@ -151,7 +164,10 @@ button{font:inherit;color:inherit}
 .vbtn:hover{background:#6d28d9;box-shadow:0 0 0 1px #6d28d9}
 .garrow{flex:none;width:32px;height:32px;transition:transform .15s linear}
 .ctl button[hidden]{display:none}
-.reg{border-color:var(--verde-ink)}
+.reg{border-color:var(--verde-ink);flex-wrap:wrap}
+.reg .gnav{order:3;flex-basis:100%;margin:2px 0 0 21px}
+.btn.ic{display:inline-flex;align-items:center;gap:5px}
+.btn.ic svg{width:16px;height:16px;flex:none}
 .reg button:disabled{opacity:.45;cursor:default}
 .regbox{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0 0;padding:9px 11px;border-radius:7px;background:var(--chip);border:1px solid var(--line);font-size:13.5px}
 .regbox.ok{background:var(--erva);border-color:var(--verde)}
@@ -188,6 +204,7 @@ button{font:inherit;color:inherit}
 .offl{margin:0 0 12px;font-size:12.5px;line-height:1.35;color:var(--muted);background:var(--chip);border-radius:6px;padding:7px 10px}
 .offl b{color:var(--ink);font-weight:600}
 .offl.ok b{color:var(--verde-ink)}
+.offl.ok{padding:5px 10px}
 .offl.warn{background:var(--warn-bg);color:var(--warn)}
 .offl.warn b{color:var(--warn)}
 .offl small{display:block;font-size:12px;margin-top:2px}
@@ -219,8 +236,8 @@ button{font:inherit;color:inherit}
 .hl-chip:not([hidden]) ~ .vw-chip{top:56px}
 .vw-empty{font-size:14px;color:var(--muted);margin:8px 0 14px}
 /* canteiros numerados */
-.cbadge{display:inline-grid;place-items:center;min-width:28px;height:28px;padding:0 4px;border-radius:999px;border:2px solid var(--ink);background:var(--surface);font-family:var(--f-body);font-weight:700;font-size:14px;font-style:normal;line-height:1;flex:none;font-variant-numeric:tabular-nums}
-.info h2 .cbadge{background:var(--ink);color:var(--paper)}
+/* número do canteiro: etiqueta verde-escura, igual à do mapa (os vértices são círculos pretos) */
+.cbadge{display:inline-grid;place-items:center;box-sizing:border-box;min-width:28px;height:26px;padding:0 6px;border-radius:6px;border:1.5px solid #fff;box-shadow:0 0 0 1px #2c430b;background:#3d5c12;color:#fff;font-family:var(--f-body);font-weight:700;font-size:14px;font-style:normal;line-height:1;flex:none;font-variant-numeric:tabular-nums}
 .cdesc{margin:6px 0 0;font-size:13.5px;color:var(--muted)}
 .note.subst{background:var(--warn-bg);border-left:3px solid var(--warn);margin:8px 0 4px}
 .clist{display:flex;flex-direction:column;gap:2px;margin-top:6px}
@@ -229,7 +246,7 @@ button{font:inherit;color:inherit}
 .crow .cn{flex:1;min-width:0;display:flex;flex-direction:column}
 .crow .cn b{font-weight:600;font-size:14.5px}
 .crow .cn small{font-size:12.5px;color:var(--muted)}
-.crow .cn .cs{font-size:14px}
+.crow .cn small:only-child{color:var(--ink)}
 .crow .cq{font-size:12.5px;color:var(--muted);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;min-width:64px}
 .crow .cq .pbar{width:64px;margin-left:auto}
 .cshare{font-size:13px;margin:8px 0 0;word-break:break-all}
@@ -312,28 +329,38 @@ button{font:inherit;color:inherit}
 .sum div{background:var(--erva);border-radius:6px;padding:8px 10px;min-width:0}
 .sum b{display:block;font-family:var(--f-display);font-size:19px;font-weight:500;font-variant-numeric:tabular-nums;line-height:1.1}
 .sum span{font-size:12px;color:var(--muted)}
+/* resumo do separador Espécies: quatro números numa fila */
+#sum{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+#sum div{padding:7px 8px}
+#sum b{font-size:17px;white-space:nowrap}
+#sum span{display:block;font-size:11.5px;line-height:1.25}
 .search{width:100%;box-sizing:border-box;border:1px solid var(--line-strong);background:var(--surface);border-radius:6px;padding:8px 10px;font:inherit;font-size:14px;color:var(--ink);margin-bottom:6px}
 .grp{margin-top:14px}
 .grp-h{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);position:sticky;top:-14px;background:var(--paper);z-index:1}
 .grp-h h3{margin:0;font-family:var(--f-display);font-size:15px;font-weight:500;flex:1}
 .grp-h .tot{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
-.grp-h input,.row input{accent-color:var(--verde-ink);width:16px;height:16px;margin:0;flex:none}
+.grp-h input{accent-color:var(--muted);width:15px;height:15px;margin:0 4px 0 2px;flex:none;opacity:.8}
 .grp-h .hint{font-size:12px;color:var(--muted)}
-.row{display:flex;align-items:center;gap:9px;padding:5px 4px;border-radius:5px;border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent)}
+.row{display:flex;align-items:center;gap:4px;min-height:44px;padding:0 2px;border-radius:5px;border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent)}
 .row:hover{background:var(--chip)}
 .row.on{background:var(--erva)}
-.row .nm{flex:1;min-width:0;cursor:pointer;background:none;border:none;text-align:left;padding:0;display:flex;align-items:baseline;gap:7px}
+/* a amostra de cor liga e desliga a espécie no mapa */
+.row .swb{flex:none;width:38px;height:44px;display:grid;place-items:center;border:none;background:none;padding:0;border-radius:6px;cursor:pointer}
+.row .swb:hover{background:var(--line)}
+.row.off .sw{opacity:.22}
+.row.off .nm{opacity:.45}
+.row .nm{flex:1;min-width:0;align-self:stretch;min-height:44px;cursor:pointer;background:none;border:none;text-align:left;padding:0;display:flex;align-items:center;gap:7px}
 .row .cd{font-weight:700;font-size:12.5px;min-width:42px;font-variant-numeric:tabular-nums}
 .row .sn{font-style:italic;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .row .warn{color:var(--warn);font-style:normal;font-weight:700;font-size:13px}
-.row .q{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
-.row .go{border:none;background:none;cursor:pointer;color:var(--muted);width:26px;height:26px;border-radius:5px;display:grid;place-items:center;flex:none}
+.row .q{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;margin-left:auto;padding-left:8px;line-height:1.25}
+.row .go{border:none;background:none;cursor:pointer;color:var(--muted);width:44px;height:44px;border-radius:6px;display:grid;place-items:center;flex:none}
 .row .go:hover{background:var(--line);color:var(--ink)}
 .row .go svg{width:15px;height:15px}
 .foot{font-size:12px;color:var(--muted);margin-top:10px}
 .warn{color:var(--warn);font-weight:700}
 
-.mod{border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:12px;background:var(--surface)}
+article.mod{border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:12px;background:var(--surface)}
 .mod-h{display:flex;align-items:center;gap:10px}
 .mod-h .L{width:34px;height:34px;border-radius:6px;display:grid;place-items:center;font-family:var(--f-display);font-weight:600;font-size:18px;color:#fff;flex:none}
 .mod-h h3{margin:0;font-family:var(--f-display);font-weight:500;font-size:16px}
@@ -358,19 +385,66 @@ button{font:inherit;color:inherit}
 .cswatch i{width:12px;height:12px;border-radius:2px;border:1px solid rgba(0,0,0,.3);display:inline-block}
 
 @media (max-width: 600px){ .sunbtn span{display:none} .sunbtn{padding:8px} .sunbtn svg{width:20px;height:20px} }
+/* Telemóvel e tablet (até 860 px): cabeçalho numa linha e o mapa até à barra dos separadores; a lista continua por baixo. */
 @media (max-width: 860px){
   html,body{height:auto}
   .app{display:block}
-  .mapwrap{height:clamp(360px, 58svh, 520px)}
+  .mapwrap{height:max(300px, calc(100vh - var(--hdr,50px) - var(--tabs,43px)));height:max(300px, calc(100svh - var(--hdr,50px) - var(--tabs,43px)))}
   .panel{border-left:none;border-top:1px solid var(--line)}
   .pane{overflow:visible;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
   .grp-h{top:0}
-  .info{left:12px;right:12px;width:auto;bottom:12px}
   .sheet{display:none}
-  .ttl h1{font-size:17px}
-  .ttl p,.brand small{display:none}
-  .top{gap:12px}
+  .top{gap:10px;padding-block:6px}
+  .ttl h1{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ttl p,.brand small,.brand>div,.t-long{display:none}
+  .sunbtn{padding:7px}
+  /* avisos sobre o mapa: um por linha, empilhados; o pormenor abre ao tocar */
+  .tlstack{left:8px;right:8px;width:auto;max-width:none;gap:6px}
+  .hl-chip.in-stack{position:static;transform:none;max-width:none;align-self:flex-start;box-shadow:0 2px 10px rgba(35,38,30,.16)}
+  .gps{align-items:center;padding:5px 4px 5px 10px}
+  .gps .gps-dot{margin-top:0}
+  .gps .gps-t small{display:none}
+  .gps.open .gps-t small{display:block}
+  .gps .gps-t{cursor:pointer}
+  .gps>button{margin-top:0}
+  .reg{flex-wrap:nowrap}
+  .reg .gnav{order:0;flex-basis:auto;margin:0;flex-wrap:nowrap;gap:4px}
+  .reg .gnav .btn{padding:5px 7px}
+  .reg .gnav .btn span{display:none}
+  .guide .garrow{width:28px;height:28px}
 }
+/* Ecrã de pé: botões numa barra em baixo, norte e escala no canto de cima, ficha e camadas por cima do mapa, em baixo. */
+@media (max-width: 860px) and (min-height: 521px){
+  .ctl{top:auto;bottom:10px;left:10px;right:10px;flex-direction:row;justify-content:space-between;gap:6px}
+  .ctl button{width:48px;height:48px;border-radius:12px}
+  .ctl svg{width:22px;height:22px}
+  .sun .ctl button{width:52px;height:52px}
+  .scalebox{top:10px;bottom:auto;left:10px;gap:8px}
+  .north{width:34px;height:34px}
+  .north svg{width:26px;height:26px}
+  .scalebar{font-size:10.5px;padding:2px 6px}
+  .tlstack{top:52px}
+  .layers{left:8px;right:8px;top:auto;bottom:70px;width:auto;max-width:none;max-height:calc(100% - 132px)}
+  .info{left:8px;right:8px;top:auto;bottom:70px;width:auto;max-width:none;max-height:min(62%, calc(100% - 180px));border-radius:14px;padding-top:18px}
+  .info::before{content:'';position:absolute;top:7px;left:50%;width:36px;height:4px;margin-left:-18px;border-radius:2px;background:var(--line-strong)}
+  .sun .info,.sun .tlstack,.sun .layers,.sun .hl-chip{zoom:1}
+  /* modo sol: letra maior na ficha e nos avisos (sem aumentar a caixa toda, que ficaria fora do ecrã) */
+  .sun .info dl{font-size:15px}
+  .sun .info h2{font-size:21px}
+  .sun .info .btn{font-size:14.5px;padding:8px 12px}
+  .sun .gps,.sun .hl-chip{font-size:14.5px}
+  .sun .layers label{font-size:15px}
+}
+/* Telemóvel deitado: o mapa ocupa a altura do ecrã; botões em coluna à direita; a ficha abre à direita. */
+@media (max-width: 860px) and (max-height: 520px){
+  .mapwrap{height:max(260px, calc(100vh - var(--hdr,50px)));height:max(260px, calc(100svh - var(--hdr,50px)))}
+  .ctl{top:8px;right:8px;gap:5px}
+  .ctl button{width:42px;height:42px}
+  .info{left:auto;right:58px;top:8px;bottom:8px;width:min(340px, calc(100% - 74px));max-height:none}
+  .layers{right:58px;top:8px;max-height:calc(100% - 16px)}
+  .tlstack{right:58px}
+}
+@media (max-width: 860px) and (pointer: coarse){ #zin,#zout{display:none} }
 @media (prefers-reduced-motion: no-preference){ .row,.btn,.ctl button{transition:background-color .12s} .gps-dot.wait{animation:gpspulse 1.1s ease-in-out infinite} }
 @keyframes gpspulse{50%{opacity:.3}}
 </style>
@@ -383,7 +457,7 @@ button{font:inherit;color:inherit}
     <div>We Garden<small>Obra · Ericeira</small></div>
   </div>
   <div class="ttl">
-    <h1>Parque Ecológico da Ericeira · Plano de plantação</h1>
+    <h1><span class="t-long">Parque Ecológico da </span>Ericeira · Plano de plantação</h1>
     <p>Árvores, arbustos, herbáceas e módulos, com uma cor por espécie. Fiel ao desenho 07 do projeto de execução.</p>
   </div>
   <div class="sheet" aria-label="Origem">
@@ -408,33 +482,30 @@ button{font:inherit;color:inherit}
       <button id="lyrbtn" title="Camadas" aria-label="Camadas" aria-pressed="false" aria-controls="layers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 13 9 5 9-5"/></svg></button>
     </div>
     <div class="layers" id="layers" hidden>
-      <h3>Mostrar</h3>
-      <div class="vw-r" role="radiogroup" aria-label="O que mostrar">
-        <label><input type="radio" name="vw" value="all" checked> Tudo</label>
-        <label><input type="radio" name="vw" value="done"> Só o que já está plantado</label>
-        <label><input type="radio" name="vw" value="todo"> Só o que falta plantar</label>
-        <p class="vw-hint" id="vw-hint2" hidden></p>
-      </div>
-      <h3>Camadas do mapa</h3>
+      <div class="lyr-h"><h3>Camadas do mapa</h3><button class="lyr-x" id="lyrx" aria-label="Fechar as camadas" title="Fechar">×</button></div>
+      <p class="lyr-g">Plano</p>
       <label><input type="checkbox" id="L-cant" checked> Canteiros (números e contornos)</label>
+      <label><input type="checkbox" id="L-codes" checked> Códigos nas manchas</label>
+      <label><input type="checkbox" id="L-prog" checked> Avanço da plantação (com registo)</label>
+      <p class="lyr-g">Fundo</p>
       <label><input type="checkbox" id="L-ortho" checked> Ortofotomapa</label>
       <div class="range"><span>Opacidade</span><input type="range" id="L-orthoop" min="10" max="100" value="55" aria-label="Opacidade do ortofotomapa"></div>
       <label><input type="checkbox" id="L-relief" checked> Relevo do terreno (sombreado, curvas de nível e cotas)</label>
       <label><input type="checkbox" id="L-mounds" checked> Montes da modelação (curvas propostas)</label>
-      <label><input type="checkbox" id="L-codes" checked> Códigos nas manchas</label>
-      <label><input type="checkbox" id="L-orig"> Etiquetas originais do desenho</label>
-      <label><input type="checkbox" id="L-dims"> Medidas dos lados de todas as manchas</label>
-      <label><input type="checkbox" id="L-tdist"> Distâncias entre árvores</label>
-      <label><input type="checkbox" id="L-prog" checked> Avanço da plantação (com registo)</label>
       <label><input type="checkbox" id="L-paths" checked> Caminhos existentes</label>
       <label><input type="checkbox" id="L-water" checked> Linhas de água</label>
       <label><input type="checkbox" id="L-base" checked> Arruamentos e construções</label>
       <label><input type="checkbox" id="L-limit" checked> Limite de intervenção</label>
       <label><input type="checkbox" id="L-topo" checked> Toponímia</label>
+      <details class="lyr-more" id="lyrmore"><summary>Medidas</summary>
+        <label><input type="checkbox" id="L-dims"> Medidas dos lados de todas as manchas</label>
+        <label><input type="checkbox" id="L-tdist"> Distâncias entre árvores</label>
+        <label><input type="checkbox" id="L-orig"> Etiquetas originais do desenho</label>
+      </details>
     </div>
     <div class="tlstack">
     <div class="gps guide" id="guide" hidden><svg class="garrow" id="guidearrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 19.5 21 12 16.8 4.5 21z" fill="#6d28d9" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/></svg><div class="gps-t"><div id="guidetxt" aria-live="off"></div><div class="gnav" id="guidenav" hidden></div></div><button id="guidex" aria-label="Parar de guiar" title="Parar de guiar">×</button></div>
-    <div class="gps reg" id="regchip" hidden><i class="gps-dot rot"></i><div class="gps-t"><div id="regtxt" aria-live="polite"></div><div class="gnav"><button class="btn" id="regundo">Desfazer</button><button class="btn" id="reghere">Marcar onde estou</button></div></div><button id="regx" aria-label="Sair do modo registo" title="Sair do modo registo">×</button></div>
+    <div class="gps reg" id="regchip" hidden><i class="gps-dot rot"></i><div class="gps-t"><div id="regtxt" aria-live="polite"></div></div><div class="gnav"><button class="btn ic" id="regundo" title="Desfazer o último toque" aria-label="Desfazer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg><span>Desfazer</span></button><button class="btn ic" id="reghere" title="Marcar onde estou" aria-label="Marcar onde estou"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span>Marcar onde estou</span></button></div><button id="regx" aria-label="Sair do modo registo" title="Sair do modo registo">×</button></div>
     <div class="gps" id="gps" hidden role="status" aria-live="polite"><i class="gps-dot" id="gpsdot"></i><div class="gps-t" id="gpstxt"></div><button id="gpsx" aria-label="Desligar localização" title="Desligar localização">×</button></div>
     <div class="gps" id="rotmsg" hidden role="status" aria-live="polite"><i class="gps-dot rot" id="rotdot"></i><div class="gps-t" id="rottxt"></div><button id="rotx" aria-label="Fechar" title="Fechar">×</button></div>
     <div class="meas" id="meas" hidden>
@@ -474,7 +545,7 @@ button{font:inherit;color:inherit}
       <input class="search" id="q" type="search" placeholder="Procurar espécie ou código (ex.: Cistus, T.m.)" aria-label="Procurar espécie">
       <p class="vw-empty" id="vw-empty" hidden></p>
       <div id="legend"></div>
-      <p class="foot">Toque no nome para destacar a espécie no mapa. A caixa liga e desliga. A seta leva o mapa até onde a espécie está. <span class="warn">●</span> = há um ponto a confirmar em Notas.</p>
+      <p class="foot">Toque no nome para destacar, na cor para esconder e na mira para ir até à espécie.</p>
     </div>
     <div class="pane" id="p-can" role="tabpanel" hidden></div>
     <div class="pane" id="p-mod" role="tabpanel" hidden></div>
@@ -648,7 +719,7 @@ function cantOf(o){
 const PLANT_BB = (() => { const bb=[1e9,1e9,-1e9,-1e9]; for (const st of stat) if (st.bb[0]<1e9) grow(bb,...st.bb); for (const m in modStat) if (modStat[m].bb[0]<1e9) grow(bb,...modStat[m].bb); return [bb[0]-10,bb[1]-10,bb[2]+10,bb[3]+10]; })();
 // ---------- state
 const S = { scale:1, tx:0, ty:0, vis:SP.map(()=>true), modVis:{A:true,B:true,C:true,D:true,E:true},
-  hl:null, sel:null, meas:null, rot:0, sun:false, view:'all', L:{cant:true,ortho:true,orthoop:.55,codes:true,orig:false,dims:false,tdist:false,prog:true,relief:true,mounds:true,paths:true,water:true,base:true,limit:true,topo:true} };
+  hl:null, sel:null, meas:null, rot:0, base:0, sun:false, view:'all', L:{cant:true,ortho:true,orthoop:.55,codes:true,orig:false,dims:false,tdist:false,prog:true,relief:true,mounds:true,paths:true,water:true,base:true,limit:true,topo:true} };
 const VWK = 'wg-ericeira-vista';   // escolha «Mostrar» guardada no aparelho
 try{ const v=localStorage.getItem(VWK); if (v==='done'||v==='todo') S.view=v; }catch(_){}
 
@@ -699,24 +770,38 @@ readColors();
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>{readColors();req();});
 new MutationObserver(()=>{readColors();req();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 
+// Orientação de base: norte à direita, como no desenho. Com o mapa mais alto do que largo (ecrã de pé),
+// roda 90° para o norte ficar para cima e o parque, comprido no sentido norte–sul, encher o ecrã.
+const baseRot = () => H > W*1.1 ? -Math.PI/2 : 0;
 function resize(){
   const r = wrap.getBoundingClientRect(); dpr = Math.min(window.devicePixelRatio||1, 2.5);
   const firstFit = W===0;
   const oldW=W, oldH=H;
   W = Math.max(1,r.width); H = Math.max(1,r.height);
   cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
-  const fitS = Math.min(W/D.W, H/D.H)*0.96; minScale = fitS*0.6;
-  if (firstFit) fit(PLANT_BB, 14); else { S.tx += (W-oldW)/2; S.ty += (H-oldH)/2; }
+  const up = baseRot()!==0, fitS = Math.min(W/(up?D.H:D.W), H/(up?D.W:D.H))*0.96; minScale = fitS*0.6;
+  if (firstFit){ S.base=baseRot(); S.rot=S.base; fit(PLANT_BB, 14); }
+  else {
+    S.tx += (W-oldW)/2; S.ty += (H-oldH)/2;
+    // o telemóvel rodou: muda a orientação de base (se a bússola não estiver a rodar o mapa)
+    const b=baseRot(); if (b!==S.base){ const was=S.base; S.base=b; if (!ROT.on && Math.abs(wrapA(S.rot-was))<1e-6) setRotKeep(b); }
+  }
   req();
 }
+// espaço ocupado por cima do mapa (norte e escala) e em baixo (barra de botões), no ecrã de pé
+const barMQ = matchMedia('(max-width: 860px) and (min-height: 521px)');
+const mapPadTop = () => barMQ.matches ? 44 : 0;
+const mapPadBottom = () => barMQ.matches ? 64 : 0;
 function fit(bb, pad=24, top=0){
   bb = bb || [0,0,D.W,D.H];
   const bw = Math.max(bb[2]-bb[0], 8), bh = Math.max(bb[3]-bb[1], 8);
+  // no ecrã de pé, deixa livres a faixa de cima (norte e escala) e a de baixo (barra de botões)
+  const pt = top + mapPadTop(), pb = mapPadBottom();
   rcs(); const rw=bw*Math.abs(_rc)+bh*Math.abs(_rs), rh=bw*Math.abs(_rs)+bh*Math.abs(_rc);
-  const s = Math.min((W-pad*2)/rw, (H-pad*2-top)/rh, maxScale);
+  const s = Math.min((W-pad*2)/rw, (H-pad*2-pt-pb)/rh, maxScale);
   S.scale = Math.max(s, minScale);
   centreOn(bb[0]+bw/2, bb[1]+bh/2);
-  if (top) S.ty += top/2;   // deixa livre a faixa de cima (quadros sobre o mapa)
+  if (pt || pb) S.ty += (pt-pb)/2;   // deixa livre a faixa de cima (quadros sobre o mapa) e a de baixo
 }
 // Mundo (metros do desenho) ↔ ecrã, com a rotação opcional do mapa (S.rot, em radianos; 0 = norte à direita, como no desenho)
 let _rr=NaN, _rc=1, _rs=0;
@@ -743,6 +828,18 @@ function modPattern(m){
   }
   const p = patCache[key]; p.setTransform(new DOMMatrix().scaleSelf(1/(S.scale*dpr))); return p;
 }
+
+// Etiquetas sem sobreposição: cada etiqueta ocupa um retângulo no ecrã; uma etiqueta que tocaria noutra não se desenha.
+// (grelha de 48 px para procurar depressa)
+const PLC = new Map();
+function plcReset(){ PLC.clear(); }
+function plcCells(r, f){ for (let gx=Math.floor(r[0]/48); gx<=Math.floor(r[2]/48); gx++) for (let gy=Math.floor(r[1]/48); gy<=Math.floor(r[3]/48); gy++) if (f(gx*4096+gy)) return true; return false; }
+function plcHit(r){ return plcCells(r, k=>{ const b=PLC.get(k); return !!b && b.some(q=>!(r[2]<q[0]||r[0]>q[2]||r[3]<q[1]||r[1]>q[3])); }); }
+function plcAdd(r){ plcCells(r, k=>{ let b=PLC.get(k); if (!b) PLC.set(k, b=[]); b.push(r); return false; }); }
+function plcPut(r){ if (plcHit(r)) return false; plcAdd(r); return true; }
+// número do canteiro: etiqueta verde-escura de cantos arredondados (largura conforme o número de algarismos)
+const cantW = (n,R) => Math.max(R*2*0.95, String(n).length*R*0.62+10);
+function rrect(c,x,y,w,h,r){ c.beginPath(); c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }
 
 // Raio mínimo de desenho de uma planta (px de ecrã): maior no modo sol
 // (só com o mapa ampliado; de longe, símbolos maiores juntavam-se em manchas escuras)
@@ -798,9 +895,10 @@ function draw(){
     ctx.strokeStyle=SUN?(far?'rgba(70,45,10,.4)':'rgba(70,45,10,.85)'):(far?'rgba(92,60,20,.42)':'rgba(92,60,20,.62)'); ctx.lineWidth=(SUN?(far?.8:1.25):.95)*px; ctx.stroke(P_CMAS);
   }
   if (S.L.mounds){
+    // curvas dos montes mais leves, para não competirem com as plantas
     ctx.save(); ctx.lineJoin='round';
-    for (const m of MOUNDS){ if (!inView(m.bb)) continue; ctx.fillStyle='rgba(180,83,9,.10)'; ctx.fill(m.outer); }
-    ctx.strokeStyle=SUN?'#7c2d12':'rgba(154,52,18,.9)'; ctx.lineWidth=1.0*LW*px;
+    for (const m of MOUNDS){ if (!inView(m.bb)) continue; ctx.fillStyle='rgba(180,83,9,.07)'; ctx.fill(m.outer); }
+    ctx.strokeStyle=SUN?'rgba(124,45,18,.8)':'rgba(154,52,18,.55)'; ctx.lineWidth=(SUN?1:.8)*LW*px;
     for (const m of MOUNDS){ if (inView(m.bb)) ctx.stroke(m.path); }
     ctx.setLineDash([3*px,2*px]); ctx.stroke(P_PROP); ctx.setLineDash([]);
     ctx.restore();
@@ -848,63 +946,75 @@ function draw(){
   ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.lineJoin='round';
   const label = (txt,x,y,font,fill,halo='rgba(255,255,255,.9)',hw=3) => { ctx.font=font; ctx.strokeStyle=SUN?'#fff':halo; ctx.lineWidth=hw*HW; ctx.strokeText(txt,x,y); ctx.fillStyle=fill; ctx.fillText(txt,x,y); };
+  // Etiquetas sem se sobreporem: primeiro os números dos canteiros (reservam o lugar), depois os códigos das manchas,
+  // os das plantas, as letras dos módulos, as alturas dos montes e as cotas (estas duas só de perto).
+  plcReset();
+  const cantR=(SUN?13:11.5)*(s<1.1?.88:1);
+  if (S.L.cant){ const tf=`600 ${11*FZ}px "Source Sans 3", sans-serif`;
+    CANTS.forEach(c=>{ const sx=SX(c.l[0],c.l[1]), sy=SY(c.l[0],c.l[1]); if (sx<-60||sx>W+60||sy<-30||sy>H+30) return;
+      const w=cantW(c.n,cantR); plcAdd([sx-w/2-2, sy-cantR-2, sx+w/2+2, sy+cantR+2]);
+      if (s>3.2 && c.nome){ ctx.font=tf; const tw=ctx.measureText(c.nome).width, ny=sy+cantR+9*FZ; plcAdd([sx-tw/2-2, ny-7*FZ, sx+tw/2+2, ny+7*FZ]); } }); }
   if (S.L.topo){
     for (const [t,x,y] of topo){ const sx=SX(x,y), sy=SY(x,y); if(sx<-100||sx>W+100||sy<-20||sy>H+20) continue;
       label(t,sx,sy,`italic 600 ${12*FZ}px "Source Sans 3", sans-serif`,COL.topo, COL.bg, 3); }
   }
-  if (S.L.relief){
-    // valores das curvas mestras (de 2,5 em 2,5 m) e cotas do levantamento quando se aproxima
-    if (s>2.4){ const f=`600 ${10*FZ}px "Source Sans 3", sans-serif`; ctx.font=f;
-      for (const [x,y,a,el] of TER.clab){ const sx=SX(x,y), sy=SY(x,y); if (sx<-20||sx>W+20||sy<-20||sy>H+20) continue;
-        let ang=a+S.rot; while (ang>Math.PI/2) ang-=Math.PI; while (ang<-Math.PI/2) ang+=Math.PI;
-        ctx.save(); ctx.translate(sx,sy); ctx.rotate(ang); ctx.strokeStyle='rgba(255,255,255,.9)'; ctx.lineWidth=3*HW; const t=fmtD(el); ctx.strokeText(t,0,0); ctx.fillStyle='#6b3f0e'; ctx.fillText(t,0,0); ctx.restore(); } }
-    if (s>3.2){ const f=`italic 600 ${9.5*FZ}px "Source Sans 3", sans-serif`;
-      for (const [x,y,z] of TER.spots){ const sx=SX(x,y), sy=SY(x,y); if (sx<-20||sx>W+20||sy<-20||sy>H+20) continue;
-        ctx.strokeStyle='#4a2c0a'; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(sx-3,sy); ctx.lineTo(sx+3,sy); ctx.moveTo(sx,sy-3); ctx.lineTo(sx,sy+3); ctx.stroke();
-        ctx.textAlign='left'; label(fmt2(z), sx+4, sy-6, f, '#4a2c0a'); ctx.textAlign='center'; } }
-  }
-  if (S.L.mounds && s>2.4){
-    const f=`700 ${10.5*FZ}px "Source Sans 3", sans-serif`;
-    for (const m of MOUNDS){ const sx=SX(m.c[0],m.c[1]), sy=SY(m.c[0],m.c[1]); if (sx<-30||sx>W+30||sy<-20||sy>H+20) continue;
-      label(`▲ ≈ +${fmtD(m.h.toFixed(1))} m`, sx, sy, f, '#7c2d12'); }
-  }
-  // module letters
-  if (s>2.2){
-    const fs = Math.min(15, Math.max(9, s*2.2))*FZ;
-    const mlc = V!=='all' ? modLabCells() : null;
-    D.modlabels.forEach(([m,x,y],li)=>{ if(!S.modVis[m]) return; if (mlc && mlc[li]>=0 && !shownK(cells[mlc[li]].key)) return; const sx=SX(x,y), sy=SY(x,y); if(sx<-10||sx>W+10||sy<-10||sy>H+10) return;
-      ctx.globalAlpha = (S.hl&&!(S.hl.t==='mod'&&S.hl.k===m))?.25:1;
-      label(m,sx,sy,`700 ${fs}px "Source Sans 3", sans-serif`,MODC[m]); });
-    ctx.globalAlpha=1;
-  }
-  // patch codes
+  // valores das curvas mestras (de 2,5 em 2,5 m): só com o mapa bem aproximado
+  if (S.L.relief && s>7){ const f=`600 ${10*FZ}px "Source Sans 3", sans-serif`; ctx.font=f;
+    for (const [x,y,a,el] of TER.clab){ const sx=SX(x,y), sy=SY(x,y); if (sx<-20||sx>W+20||sy<-20||sy>H+20) continue;
+      let ang=a+S.rot; while (ang>Math.PI/2) ang-=Math.PI; while (ang<-Math.PI/2) ang+=Math.PI;
+      ctx.save(); ctx.translate(sx,sy); ctx.rotate(ang); ctx.strokeStyle='rgba(255,255,255,.9)'; ctx.lineWidth=3*HW; const t=fmtD(el); ctx.strokeText(t,0,0); ctx.fillStyle='#6b3f0e'; ctx.fillText(t,0,0); ctx.restore(); } }
+  // códigos das manchas
   if (S.L.codes){
     const cf=`700 ${11.5*FZ}px "Source Sans 3", sans-serif`, ch=7*FZ; ctx.font=cf;
-    const placed=[];
     const order = patches.map((p,i)=>i).sort((a,b)=>patches[b].a-patches[a].a);
     for (const pi of order){ const p=patches[pi];
       if (!S.vis[p.s] || !shownK(p.key)) continue; if (S.hl && !(S.hl.t==='sp'&&S.hl.k===p.s)) continue;
       const bw=(p.bb[2]-p.bb[0])*s, bh=(p.bb[3]-p.bb[1])*s; if (bw<22||bh<12) continue;
       const sx=SX(p.lp[0],p.lp[1]), sy=SY(p.lp[0],p.lp[1]); if(sx<-30||sx>W+30||sy<-10||sy>H+10) continue;
-      const code=SP[p.s].code, tw=ctx.measureText(code).width; if (tw+4>bw) continue;
-      const r=[sx-tw/2-2, sy-ch, sx+tw/2+2, sy+ch];
-      if (placed.some(q=>!(r[2]<q[0]||r[0]>q[2]||r[3]<q[1]||r[1]>q[3]))) continue;
-      placed.push(r);
+      ctx.font=cf; const code=SP[p.s].code, tw=ctx.measureText(code).width; if (tw+4>bw) continue;
+      if (!plcPut([sx-tw/2-2, sy-ch, sx+tw/2+2, sy+ch])) continue;
       label(code,sx,sy,cf,SUN?'#000':'#15170f');
     }
     ctx.globalAlpha=1;
-    // plant codes when zoomed in
+    // códigos das plantas, com o mapa aproximado: árvores primeiro; um código que tocaria noutro não aparece
     if (s>9){
-      SP.forEach((sp,i)=>{ if(sp.g==='herb'||!S.vis[i]||!plants[i]) return; const a=plants[i];
+      for (const g of ['arv','arb']) SP.forEach((sp,i)=>{ if(sp.g!==g||!S.vis[i]||!plants[i]) return; const a=plants[i];
         if (S.hl && !(S.hl.t==='sp'&&S.hl.k===i)) return;
-        const f = `700 ${(sp.g==='arv'?11:10)*FZ}px "Source Sans 3", sans-serif`;
+        const f = `700 ${(g==='arv'?11:10)*FZ}px "Source Sans 3", sans-serif`; ctx.font=f; const tw=ctx.measureText(sp.code).width, th=(g==='arv'?6:5.5)*FZ;
         for (let j=0;j<a.length;j+=3){ if (V!=='all' && !shownK(PKEY[i][j/3])) continue; const sx=SX(a[j],a[j+1]), sy=SY(a[j],a[j+1]); if(sx<-20||sx>W+20||sy<-20||sy>H+20) continue;
-          const dy = sp.g==='arv' ? -9*FZ : -(Math.max(a[j+2]*s,plantMinPx('arb'))+7*FZ);
-          label(sp.code, sx, sy+dy, f, sp.color);
+          const ly = sy + (g==='arv' ? -9*FZ : -(Math.max(a[j+2]*s,plantMinPx('arb'))+7*FZ));
+          if (!plcPut([sx-tw/2-1, ly-th, sx+tw/2+1, ly+th])) continue;
+          label(sp.code, sx, ly, f, sp.color);
         }
       });
     }
   }
+  // letras dos módulos: de longe, uma por cada ~50 px (cerca de uma por bloco); de perto, uma por célula
+  if (s>2.2){
+    const fs = Math.min(15, Math.max(9, s*2.2))*FZ, mf=`700 ${fs}px "Source Sans 3", sans-serif`;
+    const mlc = V!=='all' ? modLabCells() : null, gap = s<6 ? 50 : 0, seen = new Set();
+    D.modlabels.forEach(([m,x,y],li)=>{ if(!S.modVis[m]) return; if (mlc && mlc[li]>=0 && !shownK(cells[mlc[li]].key)) return; const sx=SX(x,y), sy=SY(x,y); if(sx<-10||sx>W+10||sy<-10||sy>H+10) return;
+      if (gap){ const k=m+Math.floor(sx/gap)+','+Math.floor(sy/gap); if (seen.has(k)) return; seen.add(k); }
+      if (!plcPut([sx-fs*.4, sy-fs*.5, sx+fs*.4, sy+fs*.5])) return;
+      ctx.globalAlpha = (S.hl&&!(S.hl.t==='mod'&&S.hl.k===m))?.25:1;
+      label(m,sx,sy,mf,MODC[m]); });
+    ctx.globalAlpha=1;
+  }
+  // altura dos montes: só de perto
+  if (S.L.mounds && s>6){
+    const f=`700 ${10.5*FZ}px "Source Sans 3", sans-serif`; ctx.font=f;
+    for (const m of MOUNDS){ const sx=SX(m.c[0],m.c[1]), sy=SY(m.c[0],m.c[1]); if (sx<-30||sx>W+30||sy<-20||sy>H+20) continue;
+      const t=`▲ ≈ +${fmtD(m.h.toFixed(1))} m`; ctx.font=f; const tw=ctx.measureText(t).width;
+      if (!plcPut([sx-tw/2-2, sy-8*FZ, sx+tw/2+2, sy+8*FZ])) continue;
+      label(t, sx, sy, f, '#7c2d12'); }
+  }
+  // cotas do levantamento: só muito perto
+  if (S.L.relief && s>11){ const f=`italic 600 ${9.5*FZ}px "Source Sans 3", sans-serif`;
+    for (const [x,y,z] of TER.spots){ const sx=SX(x,y), sy=SY(x,y); if (sx<-20||sx>W+20||sy<-20||sy>H+20) continue;
+      const t=fmt2(z); ctx.font=f; const tw=ctx.measureText(t).width;
+      if (!plcPut([sx-4, sy-13*FZ, sx+6+tw, sy+4])) continue;
+      ctx.strokeStyle='#4a2c0a'; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(sx-3,sy); ctx.lineTo(sx+3,sy); ctx.moveTo(sx,sy-3); ctx.lineTo(sx,sy+3); ctx.stroke();
+      ctx.textAlign='left'; label(t, sx+4, sy-6, f, '#4a2c0a'); ctx.textAlign='center'; } }
   // medidas dos lados
   const edgeLabels = (p, placed, numbers, hk=-1) => {
     const v=p.edge.v, n=v.length; ctx.font=`700 ${11.5*FZ}px "Source Sans 3", sans-serif`;
@@ -980,14 +1090,14 @@ function draw(){
     pts.forEach(([x,y])=>{ ctx.beginPath(); ctx.arc(x,y,5*FZ,0,Math.PI*2); ctx.fillStyle='#1d4ed8'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke(); });
   }
   if (S.L.cant){
-    // número num círculo; com o mapa aproximado, o nome por baixo
-    const R=(SUN?13:11.5)*(s<1.1?.88:1), nf=`700 ${Math.round(R*1.08)}px "Source Sans 3", sans-serif`, tf=`600 ${11*FZ}px "Source Sans 3", sans-serif`;
+    // número numa etiqueta verde-escura (os vértices das manchas são círculos pretos); o canteiro aberto fica ao contrário (fundo branco)
+    const R=cantR, nf=`700 ${Math.round(R*1.08)}px "Source Sans 3", sans-serif`, tf=`600 ${11*FZ}px "Source Sans 3", sans-serif`;
     CANTS.forEach((c,i)=>{ const sx=SX(c.l[0],c.l[1]), sy=SY(c.l[0],c.l[1]); if (sx<-60||sx>W+60||sy<-30||sy>H+30) return;
-      const on=i===selCant;
+      const on=i===selCant, w=cantW(c.n,R), h=R*2*0.92;
       if (s>3.2 && c.nome) label(c.nome, sx, sy+R+9*FZ, tf, '#1f2937');
-      ctx.beginPath(); ctx.arc(sx,sy,R,0,Math.PI*2); ctx.fillStyle=on?'#1f2937':'#fff'; ctx.shadowColor='rgba(0,0,0,.25)'; ctx.shadowBlur=3; ctx.fill(); ctx.shadowBlur=0; ctx.shadowColor='transparent';
-      ctx.lineWidth=SUN?2.4:1.8; ctx.strokeStyle='#1f2937'; ctx.stroke();
-      ctx.font=nf; ctx.fillStyle=on?'#fff':'#1f2937'; ctx.fillText(String(c.n), sx, sy+.5);
+      rrect(ctx, sx-w/2, sy-h/2, w, h, 5); ctx.fillStyle=on?'#fff':'#3d5c12'; ctx.shadowColor='rgba(0,0,0,.3)'; ctx.shadowBlur=3; ctx.fill(); ctx.shadowBlur=0; ctx.shadowColor='transparent';
+      ctx.lineWidth=on?2.6:(SUN?2.2:1.6); ctx.strokeStyle=on?'#3d5c12':'#fff'; ctx.stroke();
+      ctx.font=nf; ctx.fillStyle=on?'#3d5c12':'#fff'; ctx.fillText(String(c.n), sx, sy+.5);
     });
   }
   if (progOn() && s>2.2){
@@ -1114,22 +1224,23 @@ function sidesHTML(p){
   return `<div class="sides"><div class="sides-h"><b>Lados da mancha</b><span>${n} lados · perímetro ${fmt2(p.edge.per)} m</span></div>
     <ol class="sl">${p.edge.e.map((L,i)=>`<li><span>${i+1} → ${(i+1)%n+1}</span><b>${fmt2(L)} m</b></li>`).join('')}</ol>
     <div class="vgo"><span>Guiar até um vértice</span>${v.map((_,i)=>`<button class="vbtn" data-gv="${i}" aria-label="Guiar até ao vértice ${i+1}">${i+1}</button>`).join('')}</div>
-    <p class="credit">Os números são os vértices marcados no mapa; tocar num deles no mapa abre a ficha desse vértice. O 1 é o mais próximo do canto superior esquerdo e a contagem segue o sentido dos ponteiros do relógio.</p>
+    <p class="credit">Os números são os vértices marcados no mapa (toque num para abrir a sua ficha). O 1 é o mais a sudoeste; a contagem segue os ponteiros do relógio.</p>
     <details><summary>Coordenadas dos vértices (M, P)</summary><table class="vt">${v.map((q,i)=>`<tr><td>${i+1}</td><td>${fmt2(q[1]+D.X0)}</td><td>${fmt2(q[0]+D.Y0)}</td></tr>`).join('')}</table></details></div>`;
 }
 function cpBox(cp){ return cp?`<div class="cpbox"><span>Compasso (c.p.)</span><b>${cp.cp}</b><em>${fmtD(cp.d)} ${plt(cp.d)}/m²</em></div>`:''; }
 function speciesCard(i){
   const sp=SP[i], st=stat[i], cp=CP[sp.id], dif = cp ? cp.a - st.a : 0;
   const drawn = sp.g==='herb' ? `${st.n} ${st.n===1?'mancha':'manchas'} · ${fmt1(st.a)} m²${cp?` · ≈ ${fmt0(Math.round(st.a*cp.d))} plantas`:''}` : `${fmt0(st.count)} plantas`;
+  const det = `${cp?`<dl><dt>Área na lista</dt><dd>${fmt2(cp.a)} m² · ≈ ${fmt0(Math.round(cp.a*cp.d))} plantas${cp.a0!=null?`<br><span class="sub">${fmt2(cp.a0)} m² desta espécie + ${fmt2(cp.aSub)} m² de <i>${esc(SP[cp.subOf].name)}</i></span>`:''}${Math.abs(dif)>1?`<br><span class="diff">${dif>0?'+':'−'}${fmt1(Math.abs(dif))} m² em relação ao desenho</span>`:''}</dd></dl>`:''}
+    ${cp&&cp.obs?`<div class="note">${esc(cp.obs)}</div>`:''}${sp.note?`<div class="note">${esc(sp.note)}</div>`:''}
+    ${sp.g==='herb'?`<p class="credit">Toque numa mancha para ver os lados e os vértices.</p>`:''}`;
   return `<div class="kind">${KIND[sp.g]}</div><h2>${swHTML(i)}${esc(sp.name)}</h2>${cpBox(cp)}
     <dl><dt>Código</dt><dd><b>${esc(sp.code)}</b>${sp.lcode!==sp.code?` · no desenho «${esc(sp.lcode)}»`:''}</dd>
     <dt>No desenho</dt><dd>${drawn}${st.nSub?`<br><span class="sub">inclui ${st.nSub} ${st.nSub===1?'mancha':'manchas'} (${fmt1(st.aSub)} m²) que no projeto ${st.nSub===1?'era':'eram'} ${SP.filter(x=>x.repl===i).map(x=>'<i>'+esc(x.name)+'</i>').join(' / ')}, substituída por esta espécie em obra</span>`:''}</dd>
-    ${REG.cfg ? (()=>{ const C=regCounts(); const herb=sp.g==='herb'; const done=herb?C.per[i].a:C.per[i].n, tot=herb?st.a:st.count; return tot?`<dt>Plantado</dt><dd>${herb?fmt0(Math.round(done))+' de '+fmt0(Math.round(tot))+' m²':fmt0(done)+' de '+fmt0(tot)} · ${pct(done,tot)} %</dd>`:''; })() : ''}
-    ${cp?`<dt>Área na lista</dt><dd>${fmt2(cp.a)} m² · ≈ ${fmt0(Math.round(cp.a*cp.d))} plantas${cp.a0!=null?`<br><span class="sub">${fmt2(cp.a0)} m² desta espécie + ${fmt2(cp.aSub)} m² de <i>${esc(SP[cp.subOf].name)}</i></span>`:''}${Math.abs(dif)>1?`<br><span class="diff">${dif>0?'+':'−'}${fmt1(Math.abs(dif))} m² em relação ao desenho</span>`:''}</dd>`:''}</dl>
-    ${sp.g==='herb'?`<p class="credit">As medidas dos lados aparecem no mapa à medida que se aproxima. Toque numa mancha para ver os vértices numerados e a lista de lados.</p>`:''}
+    ${REG.cfg ? (()=>{ const C=regCounts(); const herb=sp.g==='herb'; const done=herb?C.per[i].a:C.per[i].n, tot=herb?st.a:st.count; return tot?`<dt>Plantado</dt><dd>${herb?fmt0(Math.round(done))+' de '+fmt0(Math.round(tot))+' m²':fmt0(done)+' de '+fmt0(tot)} · ${pct(done,tot)} %</dd>`:''; })() : ''}</dl>
+    <div class="acts"><button class="btn primary" data-hl="${i}">${S.hl&&S.hl.t==='sp'&&S.hl.k===i?'Mostrar tudo':'Destacar '+esc(sp.code)}</button><button class="btn" data-go="${i}">Ver onde está</button></div>
     ${galleryHTML(sp.id)}
-    ${cp&&cp.obs?`<div class="note">${esc(cp.obs)}</div>`:''}${sp.note?`<div class="note">${esc(sp.note)}</div>`:''}
-    <div class="acts"><button class="btn primary" data-hl="${i}">${S.hl&&S.hl.t==='sp'&&S.hl.k===i?'Mostrar tudo':'Destacar '+esc(sp.code)}</button><button class="btn" data-go="${i}">Ver onde está</button></div>`;
+    ${det.trim()?`<details class="more"><summary>Mais detalhes</summary>${det}</details>`:''}`;
 }
 function modSpeciesCard(key, code, mod){
   const F=FLORA[key]; const name = F ? F.q : code;
@@ -1154,22 +1265,24 @@ function showInfo(o, at){
   let h='';
   const [wx,wy] = at || [0,0];
   if (o.t==='zone'){ S.sel=null; req(); const st=info.scrollTop; info.innerHTML = `<button class="x" aria-label="Fechar">×</button>` + zoneCard(); info.hidden=false; info.dataset.zone='1'; info.scrollTop=st; zoneSyncChecks(); return; }
-  if (o.t==='species'){ S.sel=null; req(); info.innerHTML = `<button class="x" aria-label="Fechar">×</button>` + speciesCard(o.s); info.hidden=false; info.scrollTop=0; return; }
-  if (o.t==='cant'){ info.innerHTML = `<button class="x" aria-label="Fechar">×</button>` + cantCard(o.ci); info.hidden=false; info.dataset.cant='1'; info.scrollTop=0; keepVisible(CANTS[o.ci].bb); if (narrowMQ.matches) setTimeout(()=>info.scrollIntoView({behavior:'smooth',block:'nearest'}),50); return; }
-  if (o.t==='mspecies'){ S.sel=null; req(); info.innerHTML = `<button class="x" aria-label="Fechar">×</button>` + modSpeciesCard(o.key,o.code,o.mod); info.hidden=false; info.scrollTop=0; if (narrowMQ.matches) setTimeout(()=>info.scrollIntoView({behavior:'smooth',block:'nearest'}),50); return; }
+  if (o.t==='species'){ S.sel=null; req(); info.innerHTML = `<button class="x" aria-label="Fechar">×</button>` + speciesCard(o.s); cardShown(); return; }
+  if (o.t==='cant'){ info.innerHTML = `<button class="x" aria-label="Fechar">×</button>` + cantCard(o.ci); cardShown(); info.dataset.cant='1'; keepVisible(CANTS[o.ci].bb); return; }
+  if (o.t==='mspecies'){ S.sel=null; req(); info.innerHTML = `<button class="x" aria-label="Fechar">×</button>` + modSpeciesCard(o.key,o.code,o.mod); cardShown(); return; }
+  // Cada ficha mostra primeiro o essencial e os botões; o resto fica em «Mais detalhes» (no computador, aberto).
+  const more = body => body.trim() ? `<details class="more"><summary>Mais detalhes</summary>${body}</details>` : '';
   if (o.t==='plant'){
     const sp=SP[o.s], a=plants[o.s], j=o.j*3, st=stat[o.s];
     h = `<div class="kind">${KIND[sp.g]}</div><h2>${swHTML(o.s)}${esc(sp.name)}</h2>
-    <dl>${cantDT(cantOf(o))}<dt>Código</dt><dd><b>${esc(sp.code)}</b>${sp.lcode!==sp.code?` · no desenho «${esc(sp.lcode)}»`:''}</dd>
-    <dt>Copa no desenho</dt><dd>Ø ${fmt1(a[j+2]*2)} m</dd>
+    <dl>${cantDT(cantOf(o))}<dt>Código</dt><dd><b>${esc(sp.code)}</b>${sp.lcode!==sp.code?` · no desenho «${esc(sp.lcode)}»`:''}</dd></dl>
+    ${regBox(o)}
+    <div class="acts"><button class="btn primary" data-hl="${o.s}">Destacar ${esc(sp.code)}</button><button class="btn" data-guide>Guiar até aqui</button>${o.under!==undefined?`<button class="btn" data-under="${o.under}">Ver a mancha por baixo (${esc(SP[patches[o.under].s].code)})</button>`:''}</div>
+    ${more(`<dl><dt>Copa no desenho</dt><dd>Ø ${fmt1(a[j+2]*2)} m</dd>
     <dt>Total no plano</dt><dd>${fmt0(st.count)} plantas</dd>
     <dt>Coordenadas</dt><dd class="coord">${coordTxt(a[j],a[j+1])}</dd>${terrainHTML(a[j],a[j+1])}</dl>
     ${o.nb && o.nb.length ? `<div class="sides"><div class="sides-h"><b>${sp.g==='arv'?'Árvores mais próximas':'Arbustos mais próximos'}</b><span>de centro a centro</span></div>
       <ol class="nbl">${o.nb.map(nb=>{ const q=PL[o.g][nb.n]; return `<li><i class="sw ${D.sp[q.s].g==='arv'?'tree':'shrub'}" style="${D.sp[q.s].g==='arv'?`border-color:${SP[q.s].color};background:${hexA(SP[q.s].color,.22)}`:`background:${SP[q.s].color}`}"></i><span>${esc(SP[q.s].name)}</span><b>${fmt2(nb.d)} m</b></li>`; }).join('')}</ol></div>` : ''}
-    ${regBox(o)}
     ${galleryHTML(sp.id)}
-    ${sp.note?`<div class="note">${esc(sp.note)}</div>`:''}
-    <div class="acts"><button class="btn primary" data-hl="${o.s}">Destacar ${esc(sp.code)}</button><button class="btn" data-guide>Guiar até aqui</button>${o.under!==undefined?`<button class="btn" data-under="${o.under}">Ver a mancha por baixo (${esc(SP[patches[o.under].s].code)})</button>`:''}</div>`;
+    ${sp.note?`<div class="note">${esc(sp.note)}</div>`:''}`)}`;
   } else if (o.t==='patch'){
     const p=patches[o.i], sp=SP[p.s], st=stat[p.s];
     const ol = p.ol && p.ol.length ? p.ol.map(t=>'«'+esc(t)+'»').join(', ') : 'sem etiqueta';
@@ -1179,69 +1292,92 @@ function showInfo(o, at){
     ${was?`<div class="note subst"><b>Espécie substituída em obra.</b> No projeto esta mancha era <i>${esc(was.name)}</i> («${esc(was.code)}» no desenho). Planta-se <i>${esc(sp.name)}</i> (indicação de ${esc(was.replDia)}).</div>`:''}
     ${cp?`<div class="cpbox"><span>Compasso (c.p.)</span><b>${cp.cp}</b><em>${fmtD(cp.d)} ${plt(cp.d)}/m²</em></div>`:''}
     <dl>${cantDT(cantOf(o))}<dt>Código</dt><dd><b>${esc(sp.code)}</b>${was?` · no desenho «${esc(was.code)}»`:''}</dd>
-    <dt>Esta mancha</dt><dd>n.º ${p.id} · <b>${fmt1(p.a)} m²</b>${cp?` · ≈ ${fmt0(Math.round(p.a*cp.d))} ${plt(Math.round(p.a*cp.d))}`:''}</dd>
-    <dt>Total desenhado</dt><dd>${st.n} ${st.n===1?'mancha':'manchas'} · ${fmt1(st.a)} m²${cp?` · ≈ ${fmt0(Math.round(st.a*cp.d))} plantas`:''}</dd>
+    <dt>Esta mancha</dt><dd>n.º ${p.id} · <b>${fmt1(p.a)} m²</b>${cp?` · ≈ ${fmt0(Math.round(p.a*cp.d))} ${plt(Math.round(p.a*cp.d))}`:''}</dd></dl>
+    ${regBox(o)}
+    <div class="acts"><button class="btn primary" data-hl="${p.s}">Destacar ${esc(sp.code)}</button><button class="btn" data-guide>Guiar até aqui</button></div>
+    ${more(`<dl><dt>Total desenhado</dt><dd>${st.n} ${st.n===1?'mancha':'manchas'} · ${fmt1(st.a)} m²${cp?` · ≈ ${fmt0(Math.round(st.a*cp.d))} plantas`:''}</dd>
     ${cp?`<dt>Área na lista</dt><dd>${fmt2(cp.a)} m² · ≈ ${fmt0(Math.round(cp.a*cp.d))} plantas${cp.a0!=null?`<br><span class="sub">${fmt2(cp.a0)} m² desta espécie + ${fmt2(cp.aSub)} m² de <i>${esc(SP[cp.subOf].name)}</i></span>`:''}${Math.abs(dif)>1?`<br><span class="diff">${dif>0?'+':'−'}${fmt1(Math.abs(dif))} m² em relação ao desenho</span>`:''}</dd>`:''}
     <dt>Etiqueta no desenho</dt><dd>${ol}</dd>${terrainHTML(at?wx:p.lp[0], at?wy:p.lp[1])}</dl>
-    ${regBox(o)}
     ${sidesHTML(p)}
     ${galleryHTML(sp.id)}
     ${cp&&cp.obs?`<div class="note">${esc(cp.obs)}</div>`:''}
-    ${sp.note?`<div class="note">${esc(sp.note)}</div>`:''}
-    <div class="acts"><button class="btn primary" data-hl="${p.s}">Destacar ${esc(sp.code)}</button><button class="btn" data-guide>Guiar até aqui</button></div>`;
+    ${sp.note?`<div class="note">${esc(sp.note)}</div>`:''}`)}`;
   } else if (o.t==='point'){
     const mm=moundAt(o.x,o.y);
     h = `<div class="kind">Ponto do terreno</div><h2 class="plain">${mm?'Em cima de um monte':'Terreno'}</h2>
-    <dl>${cantPointDT(o.x,o.y)}${terrainHTML(o.x,o.y)}<dt>Coordenadas</dt><dd class="coord">${coordTxt(o.x,o.y)}</dd></dl>
-    <p class="credit">Cota do terreno pelo levantamento topográfico (folha PAI.03_IMPLA), interpolada entre curvas de nível e cotas.${mm?' A altura do monte é uma estimativa: ver Notas.':''}</p>
-    <div class="acts"><button class="btn" data-guide>Guiar até aqui</button></div>`;
+    <dl>${cantPointDT(o.x,o.y)}${terrainHTML(o.x,o.y)}</dl>
+    <div class="acts"><button class="btn" data-guide>Guiar até aqui</button></div>
+    ${more(`<dl><dt>Coordenadas</dt><dd class="coord">${coordTxt(o.x,o.y)}</dd></dl>
+    <p class="credit">Cota do levantamento topográfico (folha PAI.03_IMPLA), interpolada.${mm?' A altura do monte é uma estimativa (ver Notas).':''}</p>`)}`;
   } else if (o.t==='vertex'){
     const p=patches[o.i], sp=SP[p.s], E=p.edge, n=E.v.length, k=o.k, pr=(k-1+n)%n, nx=(k+1)%n, q=E.v[k];
     h = `<div class="kind">Vértice de mancha</div><h2 class="plain">${swHTML(p.s)}Vértice ${k+1}</h2>
     <dl>${cantDT(cantOf(o))}<dt>Mancha</dt><dd><b>${esc(sp.code)}</b> · <i>${esc(sp.name)}</i> · n.º ${p.id}</dd>
     <dt>Lado anterior</dt><dd>${pr+1} → ${k+1} · <b>${fmt2(E.e[pr])} m</b></dd>
-    <dt>Lado seguinte</dt><dd>${k+1} → ${nx+1} · <b>${fmt2(E.e[k])} m</b></dd>
-    <dt>Ângulo interno</dt><dd>${Math.round(vertexAngle(E,k))}°</dd>
-    <dt>Coordenadas</dt><dd class="coord">${coordTxt(q[0],q[1])}</dd></dl>
-    <div class="acts"><button class="btn primary" data-guide>Guiar até aqui</button><button class="btn" data-backpatch="${o.i}">Ver a mancha</button></div>`;
+    <dt>Lado seguinte</dt><dd>${k+1} → ${nx+1} · <b>${fmt2(E.e[k])} m</b></dd></dl>
+    <div class="acts"><button class="btn primary" data-guide>Guiar até aqui</button><button class="btn" data-backpatch="${o.i}">Ver a mancha</button></div>
+    ${more(`<dl><dt>Ângulo interno</dt><dd>${Math.round(vertexAngle(E,k))}°</dd>
+    <dt>Coordenadas</dt><dd class="coord">${coordTxt(q[0],q[1])}</dd></dl>`)}`;
   } else {
     const c=cells[o.i];
     if (c.m.length>1){
       const nA=[...c.m].filter(x=>x==='A').length, nB=[...c.m].filter(x=>x==='B').length;
       h = `<div class="kind">Módulos de plantação</div><h2 class="plain">Faixa de módulos A/B</h2>
-      <dl>${cantDT(cantOf(o))}<dt>Sequência</dt><dd><b>${c.m.split('').join(' · ')}</b></dd><dt>Módulos</dt><dd>${nA} A + ${nB} B</dd><dt>Área da faixa</dt><dd>${fmt1(c.a)} m²</dd>
-      <dt>Coordenadas</dt><dd class="coord">${coordTxt(wx,wy)}</dd></dl>
-      <div class="note">No desenho esta faixa não está dividida: as letras alternam ao longo dela.</div>
+      <dl>${cantDT(cantOf(o))}<dt>Sequência</dt><dd><b>${c.m.split('').join(' · ')}</b></dd><dt>Módulos</dt><dd>${nA} A + ${nB} B</dd><dt>Área da faixa</dt><dd>${fmt1(c.a)} m²</dd></dl>
       ${regBox(o)}
-      <div class="acts"><button class="btn" data-mod="A">Ver Módulo A</button><button class="btn" data-mod="B">Ver Módulo B</button><button class="btn" data-guide>Guiar até aqui</button></div>`;
+      <div class="acts"><button class="btn" data-mod="A">Ver Módulo A</button><button class="btn" data-mod="B">Ver Módulo B</button><button class="btn" data-guide>Guiar até aqui</button></div>
+      ${more(`<dl><dt>Coordenadas</dt><dd class="coord">${coordTxt(wx,wy)}</dd></dl>
+      <div class="note">No desenho esta faixa não está dividida: as letras alternam ao longo dela.</div>`)}`;
     } else {
       const M=D.modules[c.mod];
       h = `<div class="kind">Módulo de plantação</div><h2 class="plain"><i class="sw mod" style="background:${MODC[c.mod]}"></i>Módulo ${c.mod}</h2>
-      <dl>${cantDT(cantOf(o))}<dt>Esta célula</dt><dd>${fmt1(c.a)} m²</dd><dt>Esquema</dt><dd>${M.dim}</dd>
-      <dt>Espécies</dt><dd>${M.list.map(([cd,n])=>`<b>${esc(cd)}</b> <i>${esc(n)}</i>`).join('<br>')}</dd>
-      <dt>Coordenadas</dt><dd class="coord">${coordTxt(wx,wy)}</dd></dl>
+      <dl>${cantDT(cantOf(o))}<dt>Esta célula</dt><dd>${fmt1(c.a)} m²</dd>
+      <dt>Espécies</dt><dd>${M.list.map(([cd,n])=>`<b>${esc(cd)}</b> <i>${esc(n)}</i>`).join('<br>')}</dd></dl>
       ${regBox(o)}
-      <div class="acts"><button class="btn primary" data-hlmod="${c.mod}">Destacar Módulo ${c.mod}</button><button class="btn" data-mod="${c.mod}">Ver esquema</button><button class="btn" data-guide>Guiar até aqui</button></div>`;
+      <div class="acts"><button class="btn primary" data-hlmod="${c.mod}">Destacar Módulo ${c.mod}</button><button class="btn" data-mod="${c.mod}">Ver esquema</button><button class="btn" data-guide>Guiar até aqui</button></div>
+      ${more(`<dl><dt>Esquema</dt><dd>${M.dim}</dd><dt>Coordenadas</dt><dd class="coord">${coordTxt(wx,wy)}</dd></dl>`)}`;
     }
   }
-  info.innerHTML = `<button class="x" aria-label="Fechar">×</button>` + h; info.hidden=false; info.scrollTop=0;
-  if (o.t==='patch' || o.t==='vertex') keepVisible(patches[o.i].bb);
-  if (narrowMQ.matches) setTimeout(()=>info.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+  info.innerHTML = `<button class="x" aria-label="Fechar">×</button>` + h; cardShown();
+  const bb = selBB(o); if (bb) keepVisible(bb);
 }
-// No telemóvel a ficha fica por baixo do mapa; no computador flutua sobre o mapa.
+// A ficha fica sempre sobre o mapa: com o ecrã de pé, em baixo, por cima da barra de botões; deitado e no computador, à direita.
+// A página não se mexe e o que se tocou fica à vista.
 const narrowMQ = matchMedia('(max-width: 860px)');
-function placeInfo(){ if (narrowMQ.matches){ if (info.parentNode===wrap){ wrap.after(info); info.classList.add('docked'); } } else if (info.parentNode!==wrap){ wrap.appendChild(info); info.classList.remove('docked'); } }
-narrowMQ.addEventListener?.('change', placeInfo); placeInfo();
-// Afasta a mancha selecionada de debaixo da ficha (computador)
+const sheetMQ = barMQ;
+narrowMQ.addEventListener?.('change', ()=>{ if (!narrowMQ.matches) info.querySelectorAll('details.more').forEach(d=>d.open=true); });
+function cardShown(){
+  info.hidden=false; info.scrollTop=0;
+  if (!narrowMQ.matches) info.querySelectorAll('details.more').forEach(d=>d.open=true);
+}
+// caixa do elemento selecionado, para o afastar de debaixo da ficha
+function selBB(o){
+  if (!o) return null;
+  if (o.t==='plant'){ const a=plants[o.s], j=o.j*3, r=Math.max(a[j+2],1); return [a[j]-r,a[j+1]-r,a[j]+r,a[j+1]+r]; }
+  if (o.t==='patch') return patches[o.i].bb;
+  if (o.t==='vertex'){ const q=patches[o.i].edge.v[o.k]; return [q[0]-1,q[1]-1,q[0]+1,q[1]+1]; }
+  if (o.t==='cell') return cells[o.i].bb;
+  if (o.t==='point') return [o.x-1,o.y-1,o.x+1,o.y+1];
+  return null;
+}
+// Afasta o elemento selecionado de debaixo da ficha
 function keepVisible(bb){
-  if (narrowMQ.matches || info.hidden) return;
-  const cw = info.offsetWidth + 72; const free = W - cw;
+  if (info.hidden) return;
   const cx=[[bb[0],bb[1]],[bb[2],bb[1]],[bb[0],bb[3]],[bb[2],bb[3]]].map(([x,y])=>[SX(x,y),SY(x,y)]);
   const x0=Math.min(...cx.map(c=>c[0])), x1=Math.max(...cx.map(c=>c[0])), y0=Math.min(...cx.map(c=>c[1])), y1=Math.max(...cx.map(c=>c[1]));
   let dx = 0, dy = 0;
-  if (x1 > free - 16) dx = Math.max((free - 16) - x1, 16 - x0);
-  if (x0 + dx < 16) dx = 16 - x0;
-  if (y0 < 70) dy = 70 - y0; else if (y1 > H - 16) dy = Math.max(H - 16 - y1, 70 - y0);
+  if (sheetMQ.matches){
+    // ecrã de pé: o espaço livre fica entre o norte/escala (em cima) e a ficha (em baixo)
+    const top = 52, bot = info.offsetTop - 12;
+    if (bot - top < 40) return;
+    if (y0 < top || y1 > bot) dy = (top+bot)/2 - (y0+y1)/2;
+    if (x0 < 8 || x1 > W-8) dx = W/2 - (x0+x1)/2;
+  } else {
+    const cw = info.offsetWidth + 72; const free = W - cw;
+    if (x1 > free - 16) dx = Math.max((free - 16) - x1, 16 - x0);
+    if (x0 + dx < 16) dx = 16 - x0;
+    if (y0 < 70) dy = 70 - y0; else if (y1 > H - 16) dy = Math.max(H - 16 - y1, 70 - y0);
+  }
   if (dx||dy){ S.tx += dx; S.ty += dy; req(); }
 }
 info.addEventListener('click', e => {
@@ -1344,12 +1480,24 @@ document.getElementById('zin').onclick=()=>zoomAt(1.6,W/2,H/2);
 document.getElementById('zout').onclick=()=>zoomAt(1/1.6,W/2,H/2);
 document.getElementById('zfit').onclick=()=>fit(PLANT_BB, 14);
 const lyrbtn=document.getElementById('lyrbtn'), layers=document.getElementById('layers');
-lyrbtn.onclick=()=>{ layers.hidden=!layers.hidden; lyrbtn.setAttribute('aria-pressed',String(!layers.hidden)); };
+function layersShow(on){
+  layers.hidden=!on; lyrbtn.setAttribute('aria-pressed',String(on));
+  // o grupo «Medidas» abre sozinho se alguma das suas camadas estiver ligada
+  if (on && (S.L.dims||S.L.tdist||S.L.orig)) document.getElementById('lyrmore').open=true;
+}
+lyrbtn.onclick=()=>layersShow(layers.hidden);
+document.getElementById('lyrx').onclick=()=>layersShow(false);
 for (const k of ['cant','ortho','codes','orig','dims','tdist','prog','relief','mounds','paths','water','base','limit','topo']){
   const el=document.getElementById('L-'+k); el.checked=S.L[k]; el.onchange=()=>{ S.L[k]=el.checked; req(); };
 }
 document.getElementById('L-orthoop').oninput=e=>{ S.L.orthoop=e.target.value/100; req(); };
 new ResizeObserver(resize).observe(wrap);
+// no telemóvel o mapa vai até à barra dos separadores: guarda a altura do cabeçalho e dos separadores
+(function(){
+  const hd=document.querySelector('header.top'), tb=document.querySelector('.tabs'), st=document.documentElement.style;
+  const set=()=>{ st.setProperty('--hdr', hd.offsetHeight+'px'); st.setProperty('--tabs', tb.offsetHeight+'px'); };
+  const ro=new ResizeObserver(set); ro.observe(hd); ro.observe(tb); set();
+})();
 
 // ---------- legend
 const legend=document.getElementById('legend');
@@ -1361,19 +1509,18 @@ function buildLegend(){
   let h='';
   for (const G of GROUPS){
     const idxs = SP.map((s,i)=>i).filter(i=>SP[i].g===G.g && !isGone(i));
-    const tot = G.g==='herb' ? fmt0(idxs.reduce((a,i)=>a+stat[i].a,0))+' m²' : fmt0(idxs.reduce((a,i)=>a+stat[i].count,0))+' plantas';
+    const tot = `${idxs.length} ${idxs.length===1?'espécie':'espécies'} · ` + (G.g==='herb' ? fmt0(idxs.reduce((a,i)=>a+stat[i].a,0))+' m²' : fmt0(idxs.reduce((a,i)=>a+stat[i].count,0))+' plantas');
     h += `<section class="grp" data-g="${G.g}"><div class="grp-h"><input type="checkbox" id="g-${G.g}" aria-label="Mostrar ou ocultar ${esc(G.title)}"><h3>${esc(G.title)}</h3><span class="tot">${tot}</span></div>`;
     const sorted = idxs.slice().sort((a,b)=> SP[a].name.localeCompare(SP[b].name));
     for (const i of sorted){
       const sp=SP[i], st=stat[i];
       const cp = CP[sp.id];
-      const q = sp.g==='herb' ? `${fmt0(st.a)} m²<br><span style="font-size:11px">${cp?'c.p. '+cp.cp:st.n+' manchas'}</span>` : `${fmt0(st.count)}`;
+      // uma linha por espécie: o compasso e os avisos ficam na ficha da espécie
+      const q = sp.g==='herb' ? `${fmt0(st.a)} m²` : `${fmt0(st.count)}`;
       const olds = SP.filter(x=>x.repl===i).map(x=>' '+x.name).join('');
       h += `<div class="row" data-i="${i}" data-q="${esc((sp.name+' '+sp.code+' '+sp.pcode+' '+sp.lcode+olds).toLowerCase())}">
-        <input type="checkbox" id="v-${i}" aria-label="Mostrar ${esc(sp.name)}">
-        ${swHTML(i)}
-        <button class="nm" data-i="${i}" title="Destacar no mapa"><span class="cd">${esc(sp.code)}</span><span class="sn">${esc(sp.name)}</span>${flagHTML(sp)}</button>
-        <span class="q">${q}</span>
+        <button class="swb" data-tog="${i}" aria-pressed="true" title="Esconder no mapa" aria-label="Esconder ${esc(sp.name)} no mapa">${swHTML(i)}</button>
+        <button class="nm" data-i="${i}" title="Destacar no mapa"><span class="cd">${esc(sp.code)}</span><span class="sn">${esc(sp.name)}</span><span class="q">${q}</span></button>
         <button class="go" data-go="${i}" title="Ver onde está" aria-label="Ver ${esc(sp.name)} no mapa">${goSVG}</button></div>`;
     }
     h += `</section>`;
@@ -1383,10 +1530,8 @@ function buildLegend(){
   for (const m of 'ABCDE'){
     const M=D.modules[m];
     h += `<div class="row" data-m="${m}" data-q="módulo ${m.toLowerCase()} ${esc(M.list.map(x=>x[1]+' '+x[0]).join(' ').toLowerCase())}">
-      <input type="checkbox" id="vm-${m}" aria-label="Mostrar Módulo ${m}">
-      <i class="sw mod" style="background:repeating-linear-gradient(135deg, ${hexA(MODC[m],.7)} 0 1.5px, ${hexA(MODC[m],.12)} 1.5px 5px);border-color:${MODC[m]}"></i>
-      <button class="nm" data-m="${m}" title="Destacar no mapa"><span class="cd">${m}</span><span class="sn" style="font-style:normal">${esc(M.list.map(x=>x[1].split(' ')[0]).filter((v,i,a)=>a.indexOf(v)===i).join(', '))}</span></button>
-      <span class="q">${fmt0(M.n)}</span>
+      <button class="swb" data-togm="${m}" aria-pressed="true" title="Esconder no mapa" aria-label="Esconder o Módulo ${m} no mapa"><i class="sw mod" style="background:repeating-linear-gradient(135deg, ${hexA(MODC[m],.7)} 0 1.5px, ${hexA(MODC[m],.12)} 1.5px 5px);border-color:${MODC[m]}"></i></button>
+      <button class="nm" data-m="${m}" title="Destacar no mapa"><span class="cd">${m}</span><span class="sn" style="font-style:normal">${esc(M.list.map(x=>x[1].split(' ')[0]).filter((v,i,a)=>a.indexOf(v)===i).join(', '))}</span><span class="q">${fmt0(M.n)}</span></button>
       <button class="go" data-gom="${m}" title="Ver onde está" aria-label="Ver Módulo ${m} no mapa">${goSVG}</button></div>`;
   }
   h += `</section>`;
@@ -1394,8 +1539,11 @@ function buildLegend(){
 }
 function syncLegend(){
   legend.querySelectorAll('.row').forEach(r=>{
-    if (r.dataset.i!==undefined){ const i=+r.dataset.i; r.querySelector('input').checked=S.vis[i]; r.classList.toggle('on', !!(S.hl&&S.hl.t==='sp'&&S.hl.k===i)); }
-    else { const m=r.dataset.m; r.querySelector('input').checked=S.modVis[m]; r.classList.toggle('on', !!(S.hl&&S.hl.t==='mod'&&S.hl.k===m)); }
+    const sp = r.dataset.i!==undefined, i=+r.dataset.i, m=r.dataset.m;
+    const vis = sp ? S.vis[i] : S.modVis[m], nm = sp ? SP[i].name : 'o Módulo '+m;
+    r.classList.toggle('off', !vis);
+    const b=r.querySelector('.swb'); b.setAttribute('aria-pressed', String(vis)); b.title = vis?'Esconder no mapa':'Mostrar no mapa'; b.setAttribute('aria-label', (vis?'Esconder ':'Mostrar ')+nm+' no mapa');
+    r.classList.toggle('on', sp ? !!(S.hl&&S.hl.t==='sp'&&S.hl.k===i) : !!(S.hl&&S.hl.t==='mod'&&S.hl.k===m));
   });
   for (const G of GROUPS){ const idxs=SP.map((s,i)=>i).filter(i=>SP[i].g===G.g && !isGone(i)); const n=idxs.filter(i=>S.vis[i]).length; const cb=document.getElementById('g-'+G.g); cb.checked=n===idxs.length; cb.indeterminate=n>0&&n<idxs.length; }
   const nm=Object.values(S.modVis).filter(Boolean).length, cbm=document.getElementById('g-mod'); cbm.checked=nm===5; cbm.indeterminate=nm>0&&nm<5;
@@ -1411,6 +1559,13 @@ legend.addEventListener('change', e => {
 });
 legend.addEventListener('click', e => {
   const b=e.target.closest('button'); if(!b) return;
+  // a amostra de cor liga e desliga a espécie (ou o módulo) no mapa
+  if (b.dataset.tog!==undefined || b.dataset.togm!==undefined){
+    if (b.dataset.tog!==undefined){ const i=+b.dataset.tog; S.vis[i]=!S.vis[i]; }
+    else { const m=b.dataset.togm; S.modVis[m]=!S.modVis[m]; }
+    if (S.hl && ((S.hl.t==='sp'&&!S.vis[S.hl.k])||(S.hl.t==='mod'&&!S.modVis[S.hl.k]))) { S.hl=null; hlchip.hidden=true; }
+    syncLegend(); req(); return;
+  }
   if (b.classList.contains('nm')){
     if (b.dataset.i!==undefined){ const i=+b.dataset.i; setHL({t:'sp',k:i}); showInfo(S.hl?{t:'species',s:i}:null); if (S.hl && matchMedia('(max-width:860px)').matches) wrap.scrollIntoView({behavior:'smooth'}); }
     else { showInfo(null); setHL({t:'mod',k:b.dataset.m}); }
@@ -1438,31 +1593,29 @@ function sumRender(v, C){
   const trees = SP.reduce((a,s,i)=>a+(s.g==='arv'?stat[i].count:0),0);
   const nmod = Object.values(D.modules).reduce((a,m)=>a+(m.n||0),0);
   const el=document.getElementById('sum');
+  // quatro números numa fila (o pormenor por espécie está na lista, logo abaixo)
   if (v==='all' || !C){
     el.classList.remove('ava-sum');
     el.innerHTML =
-   `<div><b>${fmt0(trees)}</b><span>árvores · 2 espécies</span></div>
-    <div><b>${fmt0(shrubs)}</b><span>arbustos · 5 espécies</span></div>
-    <div><b>${fmt0(herbA)} m²</b><span>manchas · ${nHerb} espécies · ${patches.length} manchas</span></div>
-    <div><b>${fmt0(nmod)}</b><span>módulos A–E</span></div>`;
+   `<div title="${fmt0(trees)} árvores de 2 espécies"><b>${fmt0(trees)}</b><span>árvores</span></div>
+    <div title="${fmt0(shrubs)} arbustos de 5 espécies"><b>${fmt0(shrubs)}</b><span>arbustos</span></div>
+    <div title="${patches.length} manchas de ${nHerb} espécies"><b>${fmt0(herbA)}</b><span>m² de manchas</span></div>
+    <div title="${fmt0(nmod)} módulos A a E"><b>${fmt0(nmod)}</b><span>módulos</span></div>`;
     return;
   }
   const d = v==='done', val=(done,tot)=>d?done:tot-done;
-  const nSp = g => SP.filter((sp,i)=>sp.g===g && (g==='herb' ? val(C.per[i].a,stat[i].a)>=.5 : val(C.per[i].n,stat[i].count)>=1)).length;
-  const esp = n => `${n} ${n===1?'espécie':'espécies'}`;
-  const nPat = patches.filter(p=>isPlanted(p.key)===d).length;
   el.classList.add('ava-sum');
   el.innerHTML =
-   `<div><b>${fmt0(val(C.arv,C.arvT))} <small>/ ${fmt0(C.arvT)}</small></b><span>árvores ${d?'plantadas':'por plantar'} · ${esp(nSp('arv'))}</span></div>
-    <div><b>${fmt0(val(C.arb,C.arbT))} <small>/ ${fmt0(C.arbT)}</small></b><span>arbustos ${d?'plantados':'por plantar'} · ${esp(nSp('arb'))}</span></div>
-    <div><b>${fmt0(Math.round(val(C.area,C.areaT)))} m² <small>/ ${fmt0(Math.round(C.areaT))}</small></b><span>${nPat} ${nPat===1?'mancha':'manchas'} ${d?(nPat===1?'plantada':'plantadas'):'por plantar'} · ${esp(nSp('herb'))}</span></div>
-    <div><b>${fmt0(val(C.mods,C.modsTot))} <small>/ ${fmt0(C.modsTot)}</small></b><span>módulos ${d?'plantados':'por plantar'}</span></div>`;
+   `<div><b>${fmt0(val(C.arv,C.arvT))}</b><span>de ${fmt0(C.arvT)} árvores</span></div>
+    <div><b>${fmt0(val(C.arb,C.arbT))}</b><span>de ${fmt0(C.arbT)} arbustos</span></div>
+    <div><b>${fmt0(Math.round(val(C.area,C.areaT)))}</b><span>de ${fmt0(Math.round(C.areaT))} m²</span></div>
+    <div><b>${fmt0(val(C.mods,C.modsTot))}</b><span>de ${fmt0(C.modsTot)} módulos</span></div>`;
 }
 sumRender('all', null);
 
 // ---------- modules tab
 (function(){
-  let h = `<p style="margin:0 0 12px;font-size:14px;color:var(--muted)">Os módulos são células de plantação com um esquema fixo. Os esquemas abaixo são recortes do desenho 07. As quantidades totais multiplicam o esquema pelo número de módulos desenhados no plano.</p>`;
+  let h = `<p style="margin:0 0 12px;font-size:14px;color:var(--muted)">Esquemas recortados do desenho 07. Total = esquema × módulos desenhados.</p>`;
   for (const m of 'ABCDE'){
     const M=D.modules[m]; const sch=M.scheme; const nameOfCode = Object.fromEntries(M.list);
     const per = Object.values(sch).reduce((a,v)=>a+v,0);
@@ -1518,12 +1671,23 @@ sumRender('all', null);
     <p>O DWG tem uma segunda cópia do plano, rodada e com menos elementos, que não aparece em nenhuma folha. Não foi usada.</p>
     <h3>Como ler</h3>
     <ul>
-      <li>O mapa está orientado como a folha 07: mar em cima, EN 247 em baixo. O norte aponta para a direita.</li>
+      <li>No computador e com o telemóvel deitado, o mapa está orientado como a folha 07: mar em cima, EN 247 em baixo, norte à direita. Com o ecrã de pé, o mapa roda para o norte ficar para cima: o mar fica à esquerda e a EN 247 à direita. A seta do norte mostra sempre a orientação.</li>
+      <li>Etiquetas verdes com número: canteiros. Círculos pretos com número: vértices da mancha aberta na ficha.</li>
       <li>Manchas coloridas: herbáceas e subarbustos, uma cor por espécie, com o código ao centro quando há espaço. As áreas são as das manchas desenhadas, em m².</li>
       <li>Discos com contorno branco: arbustos. Círculos maiores com centro marcado: árvores. O tamanho é o do símbolo no desenho.</li>
-      <li>Células tracejadas com letra: módulos A a E.</li>
-      <li>Ao tocar num elemento aparecem as coordenadas do DWG (M, P), que parecem estar em PT-TM06/ETRS89. Confirme o sistema antes de as usar para implantação.</li>
-      <li>«Etiquetas originais do desenho» (em Camadas) mostra os textos do projeto tal como estão, com as linhas de chamada.</li>
+      <li>Células tracejadas com letra: módulos A a E. De longe aparece uma letra por grupo de células; de perto, uma em cada célula.</li>
+      <li>Os valores das curvas de nível, a altura dos montes e as cotas do terreno aparecem quando se aproxima o mapa.</li>
+      <li>Nas fichas, em «Mais detalhes», estão as coordenadas do DWG (M, P), que parecem estar em PT-TM06/ETRS89. Confirme o sistema antes de as usar para implantação.</li>
+      <li>«Etiquetas originais do desenho» (Camadas, grupo Medidas) mostra os textos do projeto tal como estão, com as linhas de chamada.</li>
+    </ul>
+    <h3>Como usar</h3>
+    <ul>
+      <li><b>Canteiros.</b> Cada canteiro tem um número, para se poder dizer onde se está («estou no canteiro 12»). Tocar no número abre a ficha do canteiro; com o «Onde estou» ligado, o aviso diz em que canteiro está. São números e não letras porque as letras A a E já são os módulos. O contorno tracejado junta as plantas, manchas e módulos do canteiro; na ficha, «Partilhar» dá uma ligação que abre o mapa já no canteiro.</li>
+      <li><b>Fichas.</b> Tocar numa planta, mancha ou módulo abre a ficha com o essencial e os botões; o resto está em «Mais detalhes».</li>
+      <li><b>Lista de espécies.</b> Tocar no nome destaca a espécie no mapa; tocar na cor esconde-a ou volta a mostrá-la; a mira leva o mapa até onde a espécie está.</li>
+      <li><b>Avisos sobre o mapa.</b> Tocar no texto de um aviso mostra o pormenor (precisão do GPS, mancha onde está, instruções).</li>
+      <li><b>Registo.</b> No separador Avanço, com o nome e o código da obra. Com o modo registo ligado, cada toque numa planta, mancha ou módulo marca-o como plantado e outro toque desmarca; também se marca na ficha. O que já está plantado fica esbatido, com um visto verde. Em Espécies, «Mostrar» deixa ver só o que está plantado ou só o que falta plantar.</li>
+      <li><b>Vértices.</b> A ficha de uma mancha tem a lista dos lados e os vértices numerados: o 1 é o mais a sudoeste e a contagem segue os ponteiros do relógio. Tocar num vértice no mapa abre a ficha dele, com «Guiar até aqui».</li>
     </ul>
     ${SUBS.length?`<h3>Alterações em obra</h3>
     <ul>${SUBS.map(r=>{ const b=SP[r.sp.repl], n=patches.filter(p=>p.was===r.i), a=n.reduce((t,p)=>t+p.a,0);
@@ -1570,9 +1734,9 @@ function updMeas(){
   if (!S.meas) return; const pts=S.meas.pts, Z=S.meas.mode==='zona';
   document.getElementById('measlist').hidden = !(Z && pts.length>=3);
   if (Z){
-    if (pts.length<3){ document.getElementById('meastxt').innerHTML='Toque nos cantos da zona, pela ordem do contorno. Com 3 ou mais pontos, a zona fecha sozinha e aparece a lista do que leva.'; if (pts.length<3 && info.dataset.zone) showInfo(null); return; }
+    if (pts.length<3){ document.getElementById('meastxt').innerHTML='Toque nos cantos da zona, pela ordem do contorno. Com 3 pontos a zona fecha e «Ver lista» mostra o que leva.'; if (pts.length<3 && info.dataset.zone) showInfo(null); return; }
     const A=Math.abs(polyArea(pts)), per=pts.reduce((s,p,i)=>{ const q=pts[(i+1)%pts.length]; return s+Math.hypot(q[0]-p[0],q[1]-p[1]); },0);
-    document.getElementById('meastxt').innerHTML = `<b class="meas-tot">${fmt0(Math.round(A))} m²</b> · perímetro ${fmt1(per)} m · ${pts.length} cantos. Toque para acrescentar cantos.`;
+    document.getElementById('meastxt').innerHTML = `<b class="meas-tot">${fmt0(Math.round(A))} m²</b> · perímetro ${fmt1(per)} m · ${pts.length} cantos.`;
     zoneShowSoon(); return;
   }
   let tot=0; for (let i=1;i<pts.length;i++) tot+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);
@@ -1655,6 +1819,7 @@ function zoneShowSoon(){ clearTimeout(zoneTimer); zoneTimer=setTimeout(()=>zoneS
 function zoneShow(force){
   if (!S.meas || S.meas.mode!=='zona' || S.meas.pts.length<3) return;
   if (!force && info.hidden && info.dataset.zoneClosed) return;   // a pessoa fechou a lista: não voltar a abrir sozinha
+  if (!force && info.hidden && sheetMQ.matches) return;           // ecrã de pé: a lista tapava o mapa; abre-se em «Ver lista»
   showInfo({t:'zone'});
 }
 // o que vai para a exportação: tudo por defeito; guardam-se as linhas desligadas (p:espécie, h:espécie, m:módulo, mp:código)
@@ -1701,11 +1866,10 @@ function zoneCard(){
     : `<div class="note">Esta lista ainda não desconta o que já está plantado. Para isso, entre no registo no <button class="lnk" data-openava>separador «Avanço»</button>.</div>`;
   return `<div class="kind">Zona selecionada</div><h2 class="plain">${fmt0(Math.round(Z.area))} m² · ≈ ${fmt0(total)} plantas</h2>
     ${head}
-    <p class="credit">Herbáceas pelo compasso de cada espécie; módulos pela parte de cada módulo dentro da zona e pelos esquemas.${reg?' «Por plantar» desconta o que está marcado como plantado no registo (no mapa, com um visto verde).':''}</p>
-    <p class="credit zsel-h">Escolha nas caixas o que vai para a exportação (por defeito, tudo).</p>
-    <table class="zt"><thead>${th}</thead><tbody>${rows}</tbody></table>
     <div class="acts"><button class="btn primary" data-zcsv>Exportar seleção (CSV)</button><button class="btn" data-zclr>Limpar zona</button></div>
-    <p class="credit" id="zselinfo"></p>`;
+    <p class="credit" id="zselinfo"></p>
+    <p class="credit zsel-h">As caixas escolhem o que vai para a exportação. Herbáceas pelo compasso; módulos pelos esquemas.</p>
+    <table class="zt"><thead>${th}</thead><tbody>${rows}</tbody></table>`;
 }
 function zoneSyncChecks(){
   const keys=Object.values(ZGROUPS).flat(), on=keys.filter(k=>!ZOFF.has(k)).length;
@@ -1777,7 +1941,7 @@ const gpsbtn=document.getElementById('gpsbtn'), gpsEl=document.getElementById('g
 const G={watch:null, follow:false};
 S.gps=null;
 gpsEl.addEventListener('click', e=>{ const b=e.target.closest('[data-cant]'); if (b) showInfo({t:'cant', ci:+b.dataset.cant}); });
-function gpsMsg(html, kind){ gpsEl.hidden=false; gpsTxt.innerHTML=html; gpsDot.className='gps-dot'+(kind?' '+kind:''); }
+function gpsMsg(html, kind){ gpsEl.hidden=false; gpsTxt.innerHTML=html; gpsDot.className='gps-dot'+(kind?' '+kind:''); gpsEl.classList.toggle('open', kind==='err' || kind==='far'); }
 function gpsSetBtn(){ gpsbtn.setAttribute('aria-pressed', String(G.watch!==null)); gpsbtn.classList.toggle('follow', G.watch!==null && G.follow); }
 function gpsUnfollow(){ if (G.follow){ G.follow=false; gpsSetBtn(); } }
 function gpsStop(){ if (GUIDE.t) guideStop(); if (G.watch!==null && navigator.geolocation) navigator.geolocation.clearWatch(G.watch); G.watch=null; G.follow=false; S.gps=null; gpsEl.hidden=true; gpsSetBtn(); req(); }
@@ -1807,7 +1971,7 @@ function gpsFix(pos){
   const here = !cn || ca.d>25 ? '<b>Está aqui</b>'
     : ca.d===0 ? `<b>Está no <button class="lnk" data-cant="${ca.ci}">canteiro ${cn.n}</button></b>${esc(cantNm(ca.ci))}`
     : `<b>Perto do <button class="lnk" data-cant="${ca.ci}">canteiro ${cn.n}</button></b> · a ${fmtDist(ca.d)}`;
-  gpsMsg(`${here}<small>Precisão ± ${Math.max(1,Math.round(acc))} m${weak?' (sinal fraco)':''}${w?' · '+w:''}</small>`, weak?'weak':'');
+  gpsMsg(`${here} · ± ${Math.max(1,Math.round(acc))} m${weak?'<small>Sinal fraco.'+(w?' '+w:'')+'</small>':w?`<small>${w}</small>`:''}`, weak?'weak':'');
   if (GUIDE.t){ gpsEl.hidden=true; guideUpdate(true); }   // a guiar: o quadro do guia mostra o que interessa
   if (REG.here) setTimeout(regHere, 0);
   if (G.follow) gpsCentre(); else req();
@@ -1892,7 +2056,7 @@ const siteLink = () => `<a href="${SITE_URL}" target="_blank" rel="noopener">${S
 // ---------- rodar o mapa com a direção do telemóvel (opção; por defeito o mapa fica como o desenho, norte à direita)
 const rotbtn=document.getElementById('rotbtn'), rotEl=document.getElementById('rotmsg'), rotTxt=document.getElementById('rottxt'), rotDot=document.getElementById('rotdot');
 const ROT={on:false, wait:0, hide:0, anim:0};
-function rotMsg(html, kind, ms){ clearTimeout(ROT.hide); rotEl.hidden=false; rotTxt.innerHTML=html; rotDot.className='gps-dot '+(kind||'rot'); if (ms) ROT.hide=setTimeout(()=>{ rotEl.hidden=true; }, ms); }
+function rotMsg(html, kind, ms){ clearTimeout(ROT.hide); rotEl.hidden=false; rotTxt.innerHTML=html; rotDot.className='gps-dot '+(kind||'rot'); rotEl.classList.toggle('open', kind==='err'); if (ms) ROT.hide=setTimeout(()=>{ rotEl.hidden=true; }, ms); }
 function rotSetBtn(){ rotbtn.setAttribute('aria-pressed', String(ROT.on)); }
 function setRotKeep(r){ const [x,y]=toWorld(W/2,H/2); S.rot=r; centreOn(x,y); }
 function rotDenied(){
@@ -1906,7 +2070,7 @@ async function rotStart(){
   cancelAnimationFrame(ROT.anim);
   ROT.on=true; rotSetBtn(); compassOn('rot');
   if (COMP.h!=null) setRotKeep(S.rot+wrapA(-Math.PI/2-COMP.h-S.rot));
-  rotMsg('O mapa roda conforme a direção para onde aponta o telemóvel.<small>Segure-o à sua frente. Perto de carros ou de ferro, a bússola pode desviar-se.</small>','rot',7000);
+  rotMsg('<b>Bússola ligada</b> · o mapa roda com o telemóvel<small>Segure-o à sua frente. Perto de carros ou de ferro, a bússola pode desviar-se.</small>','rot',7000);
   clearTimeout(ROT.wait);
   ROT.wait=setTimeout(()=>{
     if (!ROT.on || COMP.h!=null) return;
@@ -1918,11 +2082,11 @@ async function rotStart(){
 function rotStop(keepMsg){
   ROT.on=false; clearTimeout(ROT.wait); rotSetBtn(); compassOff('rot');
   if (!keepMsg){ clearTimeout(ROT.hide); rotEl.hidden=true; }
-  // volta à orientação do desenho (norte à direita), com uma pequena animação
-  const from=S.rot, d=wrapA(-from), t0=performance.now();
+  // volta à orientação de base (norte à direita, ou para cima com o ecrã de pé), com uma pequena animação
+  const from=S.rot, d=wrapA(S.base-from), t0=performance.now();
   cancelAnimationFrame(ROT.anim);
   const step=t=>{ const k=Math.min(1,(t-t0)/380), e=k<.5?2*k*k:1-((-2*k+2)**2)/2; setRotKeep(from+d*e);
-    if (k<1) ROT.anim=requestAnimationFrame(step); else { S.rot=0; req(); } };
+    if (k<1) ROT.anim=requestAnimationFrame(step); else { setRotKeep(S.base); } };
   ROT.anim=requestAnimationFrame(step);
 }
 rotbtn.onclick=()=>{ if (ROT.on) rotStop(); else rotStart(); };
@@ -1964,7 +2128,7 @@ function sideWords(rel){ // rel em graus, positivo = para a direita
 }
 const CARD=['norte','nordeste','este','sudeste','sul','sudoeste','oeste','noroeste'];
 const fmtDist = d => d>=1000 ? fmt1(d/1000)+' km' : d<10 ? fmt1(d)+' m' : Math.round(d)+' m';
-function guideMsg(html, arrowDeg){ guideEl.hidden=false; guideTxt.innerHTML=html; guideArrow.style.visibility = arrowDeg==null?'hidden':'visible'; if (arrowDeg!=null) guideArrow.style.transform=`rotate(${arrowDeg}deg)`; }
+function guideMsg(html, arrowDeg){ guideEl.hidden=false; guideTxt.innerHTML=html; guideEl.classList.toggle('open', html.startsWith('<b>Chegou')); guideArrow.style.visibility = arrowDeg==null?'hidden':'visible'; if (arrowDeg!=null) guideArrow.style.transform=`rotate(${arrowDeg}deg)`; }
 function guideUpdate(force){
   if (!GUIDE.t) return;
   req();
@@ -2064,9 +2228,8 @@ function viewApply(){
   const v=viewNow(), C = (REG.cfg && v!=='all') ? regCounts() : null;
   legend.dataset.vw=v;
   document.querySelectorAll('#vw-esp [data-vw]').forEach(b=>{ b.setAttribute('aria-pressed', String(b.dataset.vw===v)); b.disabled = b.dataset.vw!=='all' && !REG.cfg; });
-  document.querySelectorAll('#layers input[name=vw]').forEach(r=>{ r.checked = r.value===v; r.disabled = r.value!=='all' && !REG.cfg; });
-  const hint = REG.cfg ? '' : 'Para ver só o que já está plantado ou só o que falta, entre no separador <button class="lnk" data-openava>Avanço</button> com o nome e o código da obra.';
-  for (const id of ['vw-hint','vw-hint2']){ const el=document.getElementById(id); el.innerHTML=hint; el.hidden=!hint; }
+  // «Mostrar» só aparece depois de entrar no registo (separador «Avanço»)
+  document.getElementById('vw-esp').hidden = !REG.cfg;
   vwchip.hidden = v==='all';
   if (v!=='all') vwtxt.textContent = v==='done' ? 'Só já plantado' : 'Só por plantar';
   sumRender(v, C);
@@ -2100,8 +2263,6 @@ document.getElementById('vw-esp').addEventListener('click', e=>{
   if (e.target.closest('[data-openava]')){ openTab('ava'); return; }
   const b=e.target.closest('[data-vw]'); if (b && !b.disabled) setView(b.dataset.vw);
 });
-document.getElementById('layers').addEventListener('change', e=>{ if (e.target.name==='vw') setView(e.target.value); });
-document.getElementById('layers').addEventListener('click', e=>{ if (e.target.closest('[data-openava]')){ openTab('ava'); if (narrowMQ.matches) document.querySelector('.panel').scrollIntoView({behavior:'smooth'}); } });
 document.getElementById('vwall').onclick=()=>setView('all');
 
 function elemKey(o){
@@ -2205,7 +2366,7 @@ function regRender(){
   if (!REG.cfg || REG.state==='codigo'){
     const nome = REG.cfg ? REG.cfg.nome : '';
     avaEl.innerHTML = `<h3 class="ava-h">Registo da plantação</h3>
-      <p class="ava-p">Marque no mapa o que já está plantado: árvores e arbustos um a um, manchas e módulos inteiros. O registo é partilhado por todos os telemóveis com o código da obra e funciona sem rede (envia quando houver ligação).</p>
+      <p class="ava-p">Marque no mapa o que já está plantado. O registo é partilhado pela equipa e funciona sem rede.</p>
       ${REG.state==='codigo'?'<p class="ava-msg warn">O código da obra mudou. Introduza o código novo.</p>':''}
       <form class="ava-form" id="regform" autocomplete="off">
         <label>O seu nome<input id="regnome" maxlength="40" required value="${esc(nome)}" placeholder="ex.: João Silva"></label>
@@ -2229,11 +2390,11 @@ function regRender(){
   avaEl.innerHTML = `<div class="ava-top"><div>A registar como <b>${esc(REG.cfg.nome)}</b> · <button class="lnk" id="regsair">mudar</button></div><div class="ava-sync">${regStatusHTML()}</div></div>
     <div class="ava-ctl"><button class="btn ${REG.mode?'':'primary'}" id="regmodebtn">${REG.mode?'Desligar modo registo':'Ligar modo registo'}</button>
       <label>Data a registar <input type="date" id="regdia" value="${REG.dia}" max="${todayISO()}"></label></div>
-    <p class="ava-p">Com o modo registo ligado, cada toque numa planta, mancha ou módulo marca-o como plantado (outro toque desmarca). Também se marca na ficha de cada elemento. No mapa, o que já está plantado fica esbatido e com um visto verde. Em «Mostrar» (separador Espécies ou botão das camadas) pode ver só o que já está plantado ou só o que falta plantar.</p>
+    <p class="ava-p">Com o modo registo ligado, cada toque marca ou desmarca. O que já está plantado fica esbatido, com um visto. Em Espécies, «Mostrar» filtra o que está plantado ou por plantar.</p>
     ${sum}
     <table class="ava-t"><thead><tr><th>Espécie</th><th class="n">Plantado</th><th></th></tr></thead><tbody>${rowsSp}${rowsMod}</tbody></table>
     <div class="acts"><button class="btn" id="regcsv">Exportar para Excel (CSV)</button><button class="btn" id="regnow">Sincronizar agora</button></div>
-    <p class="foot">O registo fica na base de dados da We Garden. Num terreno sem rede, os registos ficam guardados neste telemóvel e seguem sozinhos quando houver ligação.</p>`;
+    <p class="foot">Sem rede, os registos ficam neste telemóvel e seguem sozinhos quando houver ligação.</p>`;
   document.getElementById('regsair').onclick=()=>{
     if (REG.queue.length && !confirm(`Há ${REG.queue.length} registos por enviar neste telemóvel. Se mudar de nome agora, seguem com o nome antigo quando houver rede. Continuar?`)) return;
     REG.cfg=null; REG.mode=false; regSave(); regRender(); req(); };
@@ -2264,7 +2425,7 @@ function regChipRender(){
   regChip.hidden=false;
   if (REG.flash && Date.now()<REG.flash) return;
   const n=REG.queue.length;
-  regTxt.innerHTML=`<b>Modo registo</b> · toque numa planta, mancha ou módulo para marcar ou desmarcar<small>Data ${fmtDate(REG.dia)} · ${esc(REG.cfg.nome)}${n?` · ${n} por enviar`:''}</small>`;
+  regTxt.innerHTML=`<b>Registo</b> · ${fmtDate(REG.dia).slice(0,5)} · ${esc(REG.cfg.nome)}${n?` · ${n} por enviar`:''}<small>Toque numa planta, mancha ou módulo para marcar ou desmarcar (data ${fmtDate(REG.dia)}).</small>`;
   document.getElementById('regundo').disabled = !REG.undo.length;
 }
 function regFlash(html){ REG.flash=Date.now()+2600; regTxt.innerHTML=html; setTimeout(()=>{ if (REG.mode) regChipRender(); }, 2700); }
@@ -2371,9 +2532,9 @@ function cantCard(ci){
     <p class="cdesc">${esc(c.desc)}</p>
     <dl><dt>Área</dt><dd>≈ ${fmt0(c.a)} m²</dd><dt>Plantas</dt><dd>≈ ${fmt0(Z.total)}</dd></dl>
     ${reg?`<div class="zprog"><div><b>Já plantado:</b> ≈ ${fmt0(done)} plantas · ${pct(done,Z.total)} %</div>${bar(done,Z.total)}<div><b>Por plantar:</b> ≈ ${fmt0(Z.todo)} plantas</div></div>`:''}
-    <table class="zt"><thead><tr><th>Espécie</th><th class="n">No canteiro</th>${reg?'<th class="n">Por plantar</th>':''}</tr></thead><tbody>${rows}</tbody></table>
     <div class="acts"><button class="btn primary" data-guide>Guiar até aqui</button><button class="btn" data-cfit="${ci}">Ver no mapa</button><button class="btn" data-cshare="${ci}">Partilhar</button><button class="btn" data-ccsv="${ci}">Exportar lista (CSV)</button></div>
-    <p class="credit">A área é a do contorno tracejado no mapa. Plantas das manchas estimadas pelo compasso de cada espécie; plantas dos módulos pelos esquemas.</p>`;
+    <table class="zt"><thead><tr><th>Espécie</th><th class="n">No canteiro</th>${reg?'<th class="n">Por plantar</th>':''}</tr></thead><tbody>${rows}</tbody></table>
+    <p class="credit">Área do contorno tracejado; plantas pelo compasso de cada espécie e pelos esquemas dos módulos.</p>`;
 }
 function cantCSV(ci){
   if (inFrame()){ const m=document.createElement('p'); m.className='note'; m.innerHTML=`Nesta pré-visualização não é possível descarregar ficheiros. Exporte no site da obra: ${siteLink()}`; info.appendChild(m); return; }
@@ -2399,10 +2560,10 @@ function cantShare(ci, btn){
 const canEl=document.getElementById('p-can');
 function cantListRender(){
   const reg=!!REG.cfg;
-  let h=`<p class="ava-p">Cada canteiro tem um número, para se poder dizer onde se está: «estou no canteiro 12». Os números estão no mapa; tocar num número abre a ficha do canteiro, com o que leva${reg?' e o que falta plantar':''}. Com «Onde estou» ligado, o mapa diz em que canteiro está. São números e não letras porque as letras A a E já são os módulos de plantação.</p><div class="clist">`;
+  let h=`<p class="ava-p">Toque num canteiro para ver o que leva${reg?' e o que falta plantar':''}. O número também está no mapa.</p><div class="clist">`;
   CANTS.forEach((c,ci)=>{ const B=cantBrief(ci), Z=B.Z, done=Z.total-Z.todo;
-    h+=`<button class="crow" data-cant="${ci}"><span class="cbadge">${c.n}</span><span class="cn">${c.nome?`<b>${esc(c.nome)}</b><small>${B.txt}</small>`:`<span class="cs">${B.txt}</span>`}</span><span class="cq">${reg?`${pct(done,Z.total)} % plantado${bar(done,Z.total)}`:`≈ ${fmt0(Z.total)} pl.`}</span></button>`; });
-  canEl.innerHTML = h+`</div><p class="foot">O contorno tracejado de cada canteiro junta as suas plantas, manchas e módulos. «Partilhar», na ficha do canteiro, dá uma ligação que abre o mapa já no canteiro.</p>`;
+    h+=`<button class="crow" data-cant="${ci}"><span class="cbadge">${c.n}</span><span class="cn">${c.nome?`<b>${esc(c.nome)}</b>`:''}<small>${B.txt}</small></span><span class="cq">${reg?`${pct(done,Z.total)} % plantado${bar(done,Z.total)}`:`≈ ${fmt0(Z.total)} pl.`}</span></button>`; });
+  canEl.innerHTML = h+`</div>`;
 }
 canEl.addEventListener('click', e=>{ const b=e.target.closest('[data-cant]'); if (!b) return; const ci=+b.dataset.cant; fit(CANTS[ci].bb, 60); showInfo({t:'cant', ci}); if (narrowMQ.matches) setTimeout(()=>wrap.scrollIntoView({behavior:'smooth', block:'start'}), 120); });
 function cantFromHash(){ const m=location.hash.match(/^#c(\d+)$/); if (!m) return; const ci=CANTS.findIndex(c=>c.n===+m[1]); if (ci<0) return; fit(CANTS[ci].bb, 60); showInfo({t:'cant', ci}); }
@@ -2415,7 +2576,7 @@ if (REG.cfg) regSync();
 (function(){
   const el=document.getElementById('offl');
   if (!document.querySelector('link[rel="manifest"]') || !('serviceWorker' in navigator) || !window.caches) return;
-  const BUILD='29/10/2026 14:04';
+  const BUILD='31/10/2026 17:46';
   const urls=[...new Set(Object.values(FLORA).flatMap(F=>F.ph.map(p=>p.f).filter(Boolean)))];
   const set=(h,k)=>{ el.hidden=false; el.className='offl'+(k?' '+k:''); el.innerHTML=h; };
   const ios=/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
@@ -2439,7 +2600,7 @@ if (REG.cfg) regSync();
       let i=0;
       const worker=async()=>{ while (i<todo.length){ const u=todo[i++]; try{ const r=await fetch(u); if (r.ok){ await c.put(u,r); done++; show(); } }catch(_){} } };
       await Promise.all([worker(),worker(),worker(),worker()]);
-      if (done===urls.length) set(`<b>✓ Disponível sem rede</b> neste aparelho · versão de ${BUILD}${hint}`, 'ok');
+      if (done===urls.length) set(`<b>✓ Disponível sem rede</b> · versão de ${BUILD}${hint}`, 'ok');
       else set(`Ficaram ${urls.length-done} fotos por guardar.<small>Abra o mapa outra vez com rede para completar.</small>`, 'warn');
     } finally { busy=false; }
   }
@@ -2469,7 +2630,17 @@ function openTab(k){
 }
 for (const t of ['esp','can','mod','not','ava']) document.getElementById('t-'+t).onclick=()=>openTab(t);
 
-buildLegend(); syncLegend(); viewApply(); resize();
+// ---------- avisos sobre o mapa: no telemóvel, um por linha e empilhados; tocar no texto mostra o pormenor
+const tlstack=document.querySelector('.tlstack');
+tlstack.addEventListener('click', e=>{ if (e.target.closest('button,a,input')) return; const g=e.target.closest('.gps'); if (g && g.querySelector('.gps-t small')) g.classList.toggle('open'); });
+function placeChips(){
+  for (const id of ['hlchip','vwchip']){ const el=document.getElementById(id);
+    if (narrowMQ.matches){ if (el.parentNode!==tlstack){ tlstack.appendChild(el); el.classList.add('in-stack'); } }
+    else if (el.parentNode!==wrap){ wrap.insertBefore(el, wrap.querySelector('.scalebox')); el.classList.remove('in-stack'); } }
+}
+narrowMQ.addEventListener?.('change', placeChips);
+
+buildLegend(); syncLegend(); viewApply(); placeChips(); resize();
 setTimeout(cantFromHash, 80);
 })();
 </script>
