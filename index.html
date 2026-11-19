@@ -183,6 +183,18 @@ button{font:inherit;color:inherit}
 .regbox{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0 0;padding:9px 11px;border-radius:7px;background:var(--chip);border:1px solid var(--line);font-size:13.5px}
 .regbox.ok{background:var(--erva);border-color:var(--verde)}
 .regbox.ok b{color:var(--verde-ink)}
+.modreg{display:block}
+.modreg .mr-h{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.modreg .mr-l{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:2px}
+.modreg .mr-l li{padding:5px 2px;border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
+.modreg .mr-l label{display:flex;align-items:center;gap:8px;cursor:pointer;min-height:30px}
+.modreg .mr-l input{width:20px;height:20px;accent-color:var(--verde);flex:none}
+.modreg .mr-l small{display:block;margin-left:28px;color:var(--verde-ink);font-size:12px}
+.modreg .mr-l li.ok b{color:var(--verde-ink)}
+.modreg .mr-p{font-size:12.5px;color:var(--muted)}
+.ava-t tr.sub td{font-size:12.5px;color:var(--muted)}
+.ava-t tr.sub td:first-child{padding-left:16px}
+.ava-ctl select{font:inherit;font-size:14px;padding:5px 8px;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface);color:var(--ink);max-width:100%}
 .ava-h{font-family:var(--f-display);font-weight:500;font-size:17px;margin:2px 0 6px}
 .ava-p{font-size:13.5px;color:var(--muted);margin:6px 0 12px}
 .ava-form{display:grid;gap:10px;max-width:340px}
@@ -1120,7 +1132,9 @@ function draw(){
     for (const k in PKEY){ const sp=SP[+k]; if (sp.g!=='arv' || !S.vis[+k]) continue; const a=plants[k];
       PKEY[k].forEach((key,j)=>{ if (!isPlanted(key) || !shownK(key)) return; const sx=SX(a[j*3],a[j*3+1]), sy=SY(a[j*3],a[j*3+1]); if (sx<-10||sx>W+10||sy<-10||sy>H+10) return; tick(sx+Math.max(a[j*3+2]*s*.55,7),sy-Math.max(a[j*3+2]*s*.55,7),tr); }); }
     if (s>3) for (const p of patches){ if (!S.vis[p.s] || !isPlanted(p.key) || !shownK(p.key)) continue; const sx=SX(p.lp[0],p.lp[1]), sy=SY(p.lp[0],p.lp[1]); if (sx<-10||sx>W+10||sy<-10||sy>H+10) continue; tick(sx, sy+12*FZ, tr); }
-    if (s>4) for (const c of cells){ if (!isPlanted(c.key) || !shownK(c.key)) continue; const sx=SX(c.c[0],c.c[1]), sy=SY(c.c[0],c.c[1]); if (sx<-10||sx>W+10||sy<-10||sy>H+10) continue; tick(sx+8, sy-8, tr*.85); }
+    const half=(x,y,r)=>{ ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill(); ctx.beginPath(); ctx.moveTo(x,y); ctx.arc(x,y,r,-Math.PI/2,Math.PI/2); ctx.closePath(); ctx.fillStyle='#2f6d0f'; ctx.fill();
+      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.strokeStyle='#2f6d0f'; ctx.lineWidth=1.6; ctx.stroke(); };
+    if (s>4) cells.forEach((c,ci)=>{ const st=cellState(ci); if (!st || !shownK(c.key)) return; const sx=SX(c.c[0],c.c[1]), sy=SY(c.c[0],c.c[1]); if (sx<-10||sx>W+10||sy<-10||sy>H+10) return; (st===2?tick:half)(sx+8, sy-8, tr*.85); });
   }
   if (GUIDE.t){
     const T = S.gps ? guideTarget(S.gps.x,S.gps.y) : ((GUIDE.t==='plant'||GUIDE.t==='vertex'||GUIDE.t==='point') ? {x:GUIDE.x, y:GUIDE.y, inside:false} : null);
@@ -1707,7 +1721,7 @@ sumRender('all', null);
       <li><b>Fichas.</b> Tocar numa planta, mancha ou módulo abre a ficha com o essencial e os botões; o resto está em «Mais detalhes».</li>
       <li><b>Lista de espécies.</b> Tocar no nome destaca a espécie no mapa; tocar na cor esconde-a ou volta a mostrá-la; a mira leva o mapa até onde a espécie está.</li>
       <li><b>Avisos sobre o mapa.</b> Tocar no texto de um aviso mostra o pormenor (precisão do GPS, mancha onde está, instruções).</li>
-      <li><b>Registo.</b> No separador Avanço, com o nome e o código da obra. Com o modo registo ligado, cada toque numa planta, mancha ou módulo marca-o como plantado e outro toque desmarca; também se marca na ficha. O que já está plantado fica esbatido, com um visto verde. Em Espécies, «Mostrar» deixa ver só o que está plantado ou só o que falta plantar.</li>
+      <li><b>Registo.</b> No separador Avanço, com o nome e o código da obra. Com o modo registo ligado, cada toque numa planta, mancha ou módulo marca-o como plantado e outro toque desmarca; também se marca na ficha. Nos módulos, cada espécie marca-se à parte, na ficha do módulo ou escolhendo a espécie no separador Avanço; o módulo só conta como plantado quando todas as espécies estão. O que já está plantado fica esbatido, com um visto verde. Em Espécies, «Mostrar» deixa ver só o que está plantado ou só o que falta plantar.</li>
       <li><b>Vértices.</b> A ficha de uma mancha tem a lista dos lados e os vértices numerados: o 1 é o mais a sudoeste e a contagem segue os ponteiros do relógio. Tocar num vértice no mapa abre a ficha dele, com «Guiar até aqui».</li>
     </ul>
     ${SUBS.length?`<h3>Alterações em obra</h3>
@@ -1825,14 +1839,14 @@ function zoneSummary(p){
     if (a<0.01) return;
     const r=herbBy[pt.s]||(herbBy[pt.s]={a:0,todo:0}); r.a+=a; if (!reg || !isPlanted(pt.key)) r.todo+=a;
   });
-  cells.forEach(c=>{
+  const modPlants={};
+  cells.forEach((c,ci)=>{
     if (!over(c.bb)) return;
     const a=ringArea(c.rings[0],tris); if (a<0.01) return;
     const f=a/c.a, todo=!reg || !isPlanted(c.key);
-    for (const L of c.m){ const r=modBy[L]||(modBy[L]={n:0,todo:0,a:0}); r.n+=f; r.a+=a/c.m.length; if (todo) r.todo+=f; }
+    for (const L of c.m){ const r=modBy[L]||(modBy[L]={n:0,todo:0,a:0}); r.n+=f; r.a+=a/c.m.length; if (todo) r.todo+=f;
+      const sch=D.modules[L].scheme||{}; for (const code in sch){ const q=modPlants[code]||(modPlants[code]={n:0,todo:0}); q.n+=f*sch[code]; if (!reg || !spDone(ci,code)) q.todo+=f*sch[code]; } }
   });
-  const modPlants={};
-  for (const L in modBy){ const sch=D.modules[L].scheme||{}; for (const code in sch){ const r=modPlants[code]||(modPlants[code]={n:0,todo:0}); r.n+=modBy[L].n*sch[code]; r.todo+=modBy[L].todo*sch[code]; } }
   return {area:Math.abs(polyArea(p)), plantsBy, herbBy, modBy, modPlants, reg};
 }
 let zoneTimer=0;
@@ -1902,7 +1916,13 @@ function zoneSyncChecks(){
   if (t) t.textContent = on===keys.length ? `Vão ${keys.length} linhas (tudo).` : on ? `Vão ${on} de ${keys.length} linhas.` : 'Nada escolhido para exportar.';
 }
 info.addEventListener('change', e=>{
-  const el=e.target; if (!el.matches || !el.matches('input[type=checkbox]')) return;
+  const el=e.target; if (!el.matches || !el.matches('input[data-regsp]')) return;
+  if (!S.sel || S.sel.t!=='cell') return;
+  regSet({t:'cellsp', i:S.sel.i, cd:el.dataset.regsp}, el.checked);
+  const box=el.closest('.regbox'); if (box) box.outerHTML=regBox(S.sel);
+});
+info.addEventListener('change', e=>{
+  const el=e.target; if (!el.matches || !el.matches('input[type=checkbox]') || el.dataset.regsp) return;
   if (el.dataset.zk){ if (el.checked) ZOFF.delete(el.dataset.zk); else ZOFF.add(el.dataset.zk); }
   else if (el.dataset.zg){ const list = el.dataset.zg==='all' ? Object.values(ZGROUPS).flat() : (ZGROUPS[el.dataset.zg]||[]); for (const k of list){ if (el.checked) ZOFF.delete(k); else ZOFF.add(k); } }
   else return;
@@ -2216,11 +2236,23 @@ const PKEY = {};   // índice da espécie -> chaves das plantas (arv:pinpin:12)
 for (const k in plants){ const sp=SP[+k]; if (sp.g==='herb') continue; PKEY[k]=Array.from({length:plants[k].length/3}, (_,j)=>`${sp.g}:${sp.id}:${j}`); }
 const todayISO = () => { const d=new Date(); return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10); };
 const fmtDate = s => s ? s.slice(8,10)+'/'+s.slice(5,7)+'/'+s.slice(0,4) : '';
-const REG = { cfg:null, map:new Map(), queue:[], last:null, dia:todayISO(), mode:false, busy:false, state:'', err:'', syncAt:null, undo:[], here:false, flash:0, keep:new Set() };
+const REG = { cfg:null, map:new Map(), queue:[], last:null, dia:todayISO(), mode:false, busy:false, state:'', err:'', syncAt:null, undo:[], here:false, flash:0, keep:new Set(), modSp:'' };
 const LSK = 'wg-ericeira-registo';
-function regSave(){ try{ localStorage.setItem(LSK, JSON.stringify({cfg:REG.cfg, map:[...REG.map], queue:REG.queue, last:REG.last})); }catch(_){} }
-(function regLoad(){ try{ const o=JSON.parse(localStorage.getItem(LSK)||'null'); if (!o) return; REG.cfg=o.cfg||null; REG.map=new Map(o.map||[]); REG.queue=o.queue||[]; REG.last=o.last||null; }catch(_){} })();
-const isPlanted = k => { const m=REG.map.get(k); return !!(m && m.p); };
+function regSave(){ try{ localStorage.setItem(LSK, JSON.stringify({cfg:REG.cfg, map:[...REG.map], queue:REG.queue, last:REG.last, modSp:REG.modSp})); }catch(_){} }
+(function regLoad(){ try{ const o=JSON.parse(localStorage.getItem(LSK)||'null'); if (!o) return; REG.cfg=o.cfg||null; REG.map=new Map(o.map||[]); REG.queue=o.queue||[]; REG.last=o.last||null; REG.modSp=o.modSp&&MODSPALL[o.modSp]?o.modSp:''; }catch(_){} })();
+// Módulos: cada espécie de cada célula tem o seu registo (mod:<célula>:<código>). A célula conta como plantada
+// quando todas as espécies estão plantadas. Um registo antigo da célula inteira (mod:<célula>) vale para as espécies sem registo próprio.
+const CELLSP = cells.map(c=>{ const o={}; for (const L of c.m){ const sch=D.modules[L].scheme||{}; for (const cd in sch) o[cd]=(o[cd]||0)+sch[cd]; } return o; });
+const CELLCD = CELLSP.map(o=>Object.keys(o).sort((a,b)=>a.localeCompare(b,'pt')));
+const MODSPALL = (()=>{ const o={}; for (const L of 'ABCDE') for (const cd in (D.modules[L].scheme||{})) (o[cd]||(o[cd]=[])).push(L); return o; })();
+const spNm = cd => { for (const L of 'ABCDE') for (const [c,n] of D.modules[L].list) if (c===cd) return n; return ''; };
+const spKey = (ci,cd) => `mod:${ci}:${cd}`;
+const spEntry = (ci,cd) => REG.map.get(spKey(ci,cd)) || REG.map.get('mod:'+ci) || null;
+const spDone = (ci,cd) => { const m=spEntry(ci,cd); return !!(m && m.p); };
+function cellDoneN(ci){ let n=0; for (const cd of CELLCD[ci]) if (spDone(ci,cd)) n++; return n; }
+function cellState(ci){ const n=cellDoneN(ci); return n===0 ? 0 : n===CELLCD[ci].length ? 2 : 1; }
+const cellIdx = k => { if (k.charCodeAt(0)!==109 || k.charCodeAt(1)!==111) return -1; const m=/^mod:(\d+)$/.exec(k); return m ? +m[1] : -1; };
+const isPlanted = k => { const ci=cellIdx(k); if (ci>=0) return cellState(ci)===2; const m=REG.map.get(k); return !!(m && m.p); };
 const progOn = () => !!(REG.cfg && S.L.prog);
 
 // ---------- «Mostrar»: tudo / só o que já está plantado / só o que falta plantar
@@ -2228,7 +2260,9 @@ const progOn = () => !!(REG.cfg && S.L.prog);
 function viewNow(){ return REG.cfg ? S.view : 'all'; }
 // o que se marca ou desmarca com «Já plantado» ou «Por plantar» fica à vista (esbatido) até se mudar de vista ou sair do modo registo,
 // para um segundo toque no mesmo sítio desfazer em vez de apanhar a mancha que está por baixo
-function shownK(k){ const v=viewNow(); return v==='all' || !k || isPlanted(k)===(v==='done') || REG.keep.has(k); }
+function shownK(k){ const v=viewNow(); if (v==='all' || !k || REG.keep.has(k)) return true;
+  const ci=cellIdx(k); if (ci>=0){ const st=cellState(ci); return v==='done' ? st>0 : st<2; }   // módulos começados aparecem nas duas vistas
+  return isPlanted(k)===(v==='done'); }
 let MODLAB=null;   // célula onde fica cada letra de módulo (para a esconder com a célula)
 function modLabCells(){
   if (MODLAB) return MODLAB; hit.setTransform(1,0,0,1,0,0);
@@ -2291,27 +2325,46 @@ function elemKey(o){
   if (o.t==='plant') return PKEY[o.s] ? PKEY[o.s][o.j] : null;
   if (o.t==='patch') return patches[o.i].key;
   if (o.t==='cell') return cells[o.i].key;
+  if (o.t==='cellsp') return spKey(o.i, o.cd);
   return null;
 }
 function elemName(o){
   if (o.t==='plant'){ const sp=SP[o.s]; return `<i>${esc(sp.name)}</i> (${esc(sp.code)})`; }
   if (o.t==='patch'){ const sp=SP[patches[o.i].s]; return `mancha ${esc(sp.code)} n.º ${patches[o.i].id}`; }
-  const c=cells[o.i]; return c.m.length>1 ? 'faixa de módulos A/B' : 'módulo '+c.mod;
+  const c=cells[o.i], where = c.m.length>1 ? 'faixa de módulos A/B' : 'módulo '+c.mod;
+  if (o.t==='cellsp') return `<b>${esc(o.cd)}</b> <i>${esc(spNm(o.cd))}</i> no ${where}`;
+  return where;
 }
 function regItem(o, plantado){
   const base={elem:elemKey(o), plantado, dia:REG.dia, por:REG.cfg.nome};
   if (o.t==='plant'){ const sp=SP[o.s]; return {...base, tipo:sp.g==='arv'?'arvore':'arbusto', especie:`${sp.code} ${sp.name}`, n:1}; }
   if (o.t==='patch'){ const p=patches[o.i], sp=SP[p.s], cp=CP[sp.id]; return {...base, tipo:'mancha', especie:`${sp.code} ${sp.name}`, area:+p.a.toFixed(2), n:cp?Math.round(p.a*cp.d):null}; }
-  const c=cells[o.i]; return {...base, tipo:'modulo', especie:c.m.length>1?'Faixa de módulos A/B':'Módulo '+c.mod, area:+c.a.toFixed(2), n:c.m.length};
+  const c=cells[o.i], where=c.m.length>1?'Faixa de módulos A/B':'Módulo '+c.mod;
+  if (o.t==='cellsp') return {...base, tipo:'modulo', especie:`${o.cd} ${spNm(o.cd)} · ${where}`, area:+c.a.toFixed(2), n:CELLSP[o.i][o.cd]||null};
+  return {...base, tipo:'modulo', especie:where, area:+c.a.toFixed(2), n:c.m.length};
 }
-function regSet(o, plantado, noUndo){
-  const k=elemKey(o); if (!k || !REG.cfg) return;
-  if (!noUndo) REG.undo.push({o, was:isPlanted(k)});
-  if (REG.undo.length>50) REG.undo.shift();
+// a célula inteira marca-se espécie a espécie: cada espécie fica com o seu registo
+function regParts(o){ return o.t==='cell' ? CELLCD[o.i].map(cd=>({t:'cellsp', i:o.i, cd})) : [o]; }
+function regDone(o){ return o.t==='cellsp' ? spDone(o.i, o.cd) : isPlanted(elemKey(o)); }
+function regPut(o, plantado){
+  const k=elemKey(o); if (!k) return;
   const it=regItem(o, plantado);
-  if (viewNow()!=='all') REG.keep.add(k);
+  if (viewNow()!=='all'){ REG.keep.add(k); if (o.t==='cellsp') REG.keep.add(cells[o.i].key); }
   REG.map.set(k, {p:plantado, dia:it.dia, por:it.por, pend:true});
   REG.queue=REG.queue.filter(q=>q.elem!==k); REG.queue.push(it);
+}
+function regSet(o, plantado, noUndo){
+  if (!REG.cfg || !elemKey(o)) return;
+  const parts=regParts(o);
+  if (!noUndo){ REG.undo.push({o, was:parts.map(x=>[x, regDone(x)])}); if (REG.undo.length>50) REG.undo.shift(); }
+  for (const x of parts) if (regDone(x)!==plantado || !REG.map.has(elemKey(x))) regPut(x, plantado);
+  // registo antigo da célula inteira: acompanha, para não voltar a valer para as espécies
+  if (o.t==='cell'){ const old=REG.map.get(cells[o.i].key); if (old && old.p!==plantado) regPut(o, plantado); }
+  regSave(); regRender(); req(); regSyncSoon();
+}
+function regUndoOne(u){
+  if (!Array.isArray(u.was)){ regSet(u.o, u.was, true); return; }
+  for (const [x,w] of u.was) if (regDone(x)!==w) regPut(x, w);
   regSave(); regRender(); req(); regSyncSoon();
 }
 async function rpc(fn, body){
@@ -2353,13 +2406,14 @@ document.addEventListener('visibilitychange', ()=>{ if (document.visibilityState
 // contagens para o separador «Avanço» e para a exportação
 function regCounts(){
   const per=SP.map(()=>({n:0,a:0}));
-  let arv=0, arb=0, area=0, mods=0, modsTot=0; const modL={A:[0,0],B:[0,0],C:[0,0],D:[0,0],E:[0,0]};
+  let arv=0, arb=0, area=0, mods=0, modsTot=0, modsPart=0; const modL={A:[0,0],B:[0,0],C:[0,0],D:[0,0],E:[0,0]}, modP={A:0,B:0,C:0,D:0,E:0}, modSp={A:{},B:{},C:{},D:{},E:{}};
   for (const k in PKEY){ const g=SP[+k].g; for (const key of PKEY[k]) if (isPlanted(key)){ per[+k].n++; if (g==='arv') arv++; else arb++; } }
   for (const p of patches) if (isPlanted(p.key)){ per[p.s].a+=p.a; area+=p.a; }
-  for (const c of cells){ const on=isPlanted(c.key); for (const m of c.m){ modL[m][1]++; modsTot++; if (on){ modL[m][0]++; mods++; } } }
+  cells.forEach((c,ci)=>{ const st=cellState(ci); for (const m of c.m){ modL[m][1]++; modsTot++; if (st===2){ modL[m][0]++; mods++; } else if (st===1){ modP[m]++; modsPart++; }
+    const sch=D.modules[m].scheme||{}; for (const cd in sch){ const r=modSp[m][cd]||(modSp[m][cd]=[0,0]); r[1]+=sch[cd]; if (st===2 || (st===1 && spDone(ci,cd))) r[0]+=sch[cd]; } } });
   let arvT=0, arbT=0; SP.forEach((sp,i)=>{ if (sp.g==='arv') arvT+=stat[i].count; else if (sp.g==='arb') arbT+=stat[i].count; });
   const areaT=patches.reduce((s,p)=>s+p.a,0);
-  return {per, arv, arb, area, mods, arvT, arbT, areaT, modsTot, modL};
+  return {per, arv, arb, area, mods, arvT, arbT, areaT, modsTot, modL, modP, modsPart, modSp};
 }
 const pct = (a,b) => b ? Math.round(100*a/b) : 0;
 const bar = (a,b) => `<span class="pbar"><i style="width:${Math.min(100,b?100*a/b:0).toFixed(1)}%"></i></span>`;
@@ -2403,15 +2457,17 @@ function regRender(){
       <div><b>${fmt0(C.arv)} <small>/ ${fmt0(C.arvT)}</small></b><span>árvores · ${pct(C.arv,C.arvT)} %</span>${bar(C.arv,C.arvT)}</div>
       <div><b>${fmt0(C.arb)} <small>/ ${fmt0(C.arbT)}</small></b><span>arbustos · ${pct(C.arb,C.arbT)} %</span>${bar(C.arb,C.arbT)}</div>
       <div><b>${fmt0(Math.round(C.area))} <small>/ ${fmt0(Math.round(C.areaT))} m²</small></b><span>manchas · ${pct(C.area,C.areaT)} %</span>${bar(C.area,C.areaT)}</div>
-      <div><b>${fmt0(C.mods)} <small>/ ${fmt0(C.modsTot)}</small></b><span>módulos · ${pct(C.mods,C.modsTot)} %</span>${bar(C.mods,C.modsTot)}</div></div>`;
+      <div><b>${fmt0(C.mods)} <small>/ ${fmt0(C.modsTot)}</small></b><span>módulos completos · ${pct(C.mods,C.modsTot)} %${C.modsPart?` · ${fmt0(C.modsPart)} em curso`:''}</span>${bar(C.mods,C.modsTot)}</div></div>`;
   const rowsSp = SP.map((sp,i)=>({sp,i})).filter(r=>r.sp.g!=='herb' ? stat[r.i].count : stat[r.i].n)
     .map(({sp,i})=>{ const herb=sp.g==='herb', done=herb?C.per[i].a:C.per[i].n, tot=herb?stat[i].a:stat[i].count;
       return `<tr><td><b>${esc(sp.code)}</b> <i>${esc(sp.name)}</i></td><td class="n">${herb?fmt0(Math.round(done))+' / '+fmt0(Math.round(tot))+' m²':fmt0(done)+' / '+fmt0(tot)}</td><td class="pc">${bar(done,tot)}${pct(done,tot)} %</td></tr>`; }).join('');
-  const rowsMod = Object.entries(C.modL).filter(([m,v])=>v[1]).map(([m,v])=>`<tr><td><b>Módulo ${m}</b></td><td class="n">${fmt0(v[0])} / ${fmt0(v[1])}</td><td class="pc">${bar(v[0],v[1])}${pct(v[0],v[1])} %</td></tr>`).join('');
+  const rowsMod = Object.entries(C.modL).filter(([m,v])=>v[1]).map(([m,v])=>`<tr><td><b>Módulo ${m}</b> <span style="font-size:11.5px;color:var(--muted)">completos${C.modP[m]?` · ${fmt0(C.modP[m])} em curso`:''}</span></td><td class="n">${fmt0(v[0])} / ${fmt0(v[1])}</td><td class="pc">${bar(v[0],v[1])}${pct(v[0],v[1])} %</td></tr>`
+    + Object.keys(C.modSp[m]).sort((a,b)=>a.localeCompare(b,'pt')).map(cd=>{ const [d,t]=C.modSp[m][cd]; return `<tr class="sub"><td><b>${esc(cd)}</b> <i>${esc(spNm(cd))}</i></td><td class="n">${fmt0(d)} / ${fmt0(t)} pl.</td><td class="pc">${bar(d,t)}${pct(d,t)} %</td></tr>`; }).join('')).join('');
   avaEl.innerHTML = `<div class="ava-top"><div>A registar como <b>${esc(REG.cfg.nome)}</b> · <button class="lnk" id="regsair">mudar</button></div><div class="ava-sync">${regStatusHTML()}</div></div>
     <div class="ava-ctl"><button class="btn ${REG.mode?'':'primary'}" id="regmodebtn">${REG.mode?'Desligar modo registo':'Ligar modo registo'}</button>
-      <label>Data a registar <input type="date" id="regdia" value="${REG.dia}" max="${todayISO()}"></label></div>
-    <p class="ava-p">Com o modo registo ligado, cada toque marca ou desmarca. O que já está plantado fica esbatido, com um visto. Em Espécies, «Mostrar» filtra o que está plantado ou por plantar.</p>
+      <label>Data a registar <input type="date" id="regdia" value="${REG.dia}" max="${todayISO()}"></label>
+      <label>Nos módulos, cada toque marca <select id="regmodsp"><option value="">o módulo inteiro</option>${Object.keys(MODSPALL).sort((a,b)=>a.localeCompare(b,'pt')).map(cd=>`<option value="${esc(cd)}" ${REG.modSp===cd?'selected':''}>só ${esc(cd)} ${esc(spNm(cd))} (${MODSPALL[cd].join(', ')})</option>`).join('')}</select></label></div>
+    <p class="ava-p">Com o modo registo ligado, cada toque marca ou desmarca. O que já está plantado fica esbatido, com um visto. Nos módulos, escolha acima se o toque marca o módulo inteiro ou só uma espécie; na ficha do módulo marca-se espécie a espécie. Um módulo começado tem um meio círculo verde. Em Espécies, «Mostrar» filtra o que está plantado ou por plantar.</p>
     ${sum}
     <table class="ava-t"><thead><tr><th>Espécie</th><th class="n">Plantado</th><th></th></tr></thead><tbody>${rowsSp}${rowsMod}</tbody></table>
     <div class="acts"><button class="btn" id="regcsv">Exportar para Excel (CSV)</button><button class="btn" id="regnow">Sincronizar agora</button></div>
@@ -2421,6 +2477,7 @@ function regRender(){
     REG.cfg=null; REG.mode=false; regSave(); regRender(); req(); };
   document.getElementById('regmodebtn').onclick=()=>regMode(!REG.mode);
   document.getElementById('regdia').onchange=e=>{ REG.dia=e.target.value||todayISO(); regRender(); };
+  document.getElementById('regmodsp').onchange=e=>{ REG.modSp=e.target.value; regSave(); regRender(); };
   document.getElementById('regcsv').onclick=()=>{ if (inFrame()){ const m=document.createElement('p'); m.className='ava-msg warn'; m.innerHTML=`Nesta pré-visualização não é possível descarregar ficheiros. Exporte no site da obra: ${siteLink()}`; document.getElementById('regcsv').closest('.acts').after(m); return; } regCSV(); };
   document.getElementById('regnow').onclick=regSync;
 }
@@ -2446,19 +2503,27 @@ function regChipRender(){
   regChip.hidden=false;
   if (REG.flash && Date.now()<REG.flash) return;
   const n=REG.queue.length;
-  regTxt.innerHTML=`<b>Registo</b> · ${fmtDate(REG.dia).slice(0,5)} · ${esc(REG.cfg.nome)}${n?` · ${n} por enviar`:''}<small>Toque numa planta, mancha ou módulo para marcar ou desmarcar (data ${fmtDate(REG.dia)}).</small>`;
+  regTxt.innerHTML=`<b>Registo</b> · ${fmtDate(REG.dia).slice(0,5)} · ${esc(REG.cfg.nome)}${REG.modSp?` · módulos: só ${esc(REG.modSp)}`:''}${n?` · ${n} por enviar`:''}<small>Toque numa planta, mancha ou módulo para marcar ou desmarcar (data ${fmtDate(REG.dia)}). ${REG.modSp?`Nos módulos marca-se só <b>${esc(REG.modSp)}</b> <i>${esc(spNm(REG.modSp))}</i>.`:'Nos módulos marca-se o módulo inteiro.'} Para mudar, escolha no separador Avanço.</small>`;
   document.getElementById('regundo').disabled = !REG.undo.length;
 }
 function regFlash(html){ REG.flash=Date.now()+2600; regTxt.innerHTML=html; setTimeout(()=>{ if (REG.mode) regChipRender(); }, 2700); }
 function regTap(o){
   if (!o || !['plant','patch','cell'].includes(o.t)){ regFlash('Aqui não há nada para marcar.<small>Toque numa árvore, arbusto, mancha ou módulo.</small>'); return; }
-  const k=elemKey(o), now=!isPlanted(k);
+  if (o.t==='cell' && REG.modSp){
+    const cd=REG.modSp;
+    if (!CELLSP[o.i][cd]){ regFlash(`Este módulo não leva <b>${esc(cd)}</b> <i>${esc(spNm(cd))}</i><small>${elemName(o)[0].toUpperCase()+elemName(o).slice(1)}: ${CELLCD[o.i].map(esc).join(', ')}. Para marcar outra espécie, escolha-a no separador Avanço.</small>`); return; }
+    o={t:'cellsp', i:o.i, cd};
+  }
+  const now=!regDone(o);
   regSet(o, now);
-  regFlash(`<b>${now?'✓ Plantado':'Desmarcado'}</b> · ${elemName(o)}<small>${now?`a ${fmtDate(REG.dia)} por ${esc(REG.cfg.nome)}`:'volta a ficar por plantar'}</small>`);
+  const extra = o.t==='cell' ? ' (todas as espécies)' : '';
+  const st = o.t==='cellsp' ? cellState(o.i) : -1;
+  const after = o.t==='cellsp' ? ` · módulo ${st===2?'completo':st===1?`com ${cellDoneN(o.i)} de ${CELLCD[o.i].length} espécies`:'por plantar'}` : '';
+  regFlash(`<b>${now?'✓ Plantado':'Desmarcado'}</b> · ${elemName(o)}${extra}<small>${now?`a ${fmtDate(REG.dia)} por ${esc(REG.cfg.nome)}`:'volta a ficar por plantar'}${after}</small>`);
 }
 regbtn.onclick=()=>regMode(!REG.mode);
 document.getElementById('regx').onclick=()=>regMode(false);
-document.getElementById('regundo').onclick=()=>{ const u=REG.undo.pop(); if (!u) return; regSet(u.o, u.was, true); regFlash(`<b>Desfeito</b> · ${elemName(u.o)}<small>${u.was?'volta a estar plantado':'volta a ficar por plantar'}</small>`); };
+document.getElementById('regundo').onclick=()=>{ const u=REG.undo.pop(); if (!u) return; regUndoOne(u); const w=Array.isArray(u.was)?u.was.some(x=>x[1]):u.was; regFlash(`<b>Desfeito</b> · ${elemName(u.o)}<small>${w?'volta ao que estava':'volta a ficar por plantar'}</small>`); };
 // «Marcar onde estou»: abre a ficha da planta por plantar mais próxima (até 6 m ou a precisão do GPS), ou da mancha/módulo onde se está
 document.getElementById('reghere').onclick=()=>{ if (S.gps) regHere(); else { REG.here=true; if (G.watch===null) gpsbtn.click(); regFlash('A obter a sua posição…<small>Ao ar livre costuma bastar meio minuto.</small>'); } };
 function regHere(){
@@ -2480,8 +2545,17 @@ function regHere(){
   regFlash(`Confirme na ficha: ${elemName(o)}${best?`<small>a ${fmt1(best.d)} m de si</small>`:''}`);
 }
 // caixa de estado nas fichas
+function modRegBox(ci){
+  const cs=CELLCD[ci], sch=CELLSP[ci], st=cellState(ci), nd=cellDoneN(ci);
+  const rows=cs.map(cd=>{ const m=spEntry(ci,cd), on=!!(m&&m.p);
+    return `<li class="${on?'ok':''}"><label><input type="checkbox" data-regsp="${esc(cd)}" ${on?'checked':''}><span><b>${esc(cd)}</b> <i>${esc(spNm(cd))}</i> · ${fmt0(sch[cd])} ${plt(sch[cd])}</span></label>${on?`<small>✓ Plantado a ${fmtDate(m.dia)} · ${esc(m.por||'')}${m.pend?' · por enviar':''}</small>`:''}</li>`; }).join('');
+  const head = st===2 ? '<b>✓ Plantado</b> · todas as espécies' : st===1 ? `<b>Em curso</b> · ${nd} de ${cs.length} espécies` : '<b>Por plantar</b>';
+  return `<div class="regbox modreg ${st===2?'ok':''}"><div class="mr-h"><span>${head}</span><button class="btn ${st===2?'':'primary'}" data-reg="${st===2?0:1}">${st===2?'Desmarcar tudo':'Marcar tudo'}</button></div>
+    <ul class="mr-l">${rows}</ul><div class="mr-p">Marque cada espécie à medida que é plantada.</div></div>`;
+}
 function regBox(o){
   if (!REG.cfg) return '';
+  if (o.t==='cell') return modRegBox(o.i);
   const k=elemKey(o); if (!k) return '';
   const m=REG.map.get(k), on=!!(m&&m.p);
   return `<div class="regbox ${on?'ok':''}"><span>${on?`<b>✓ Plantado</b> a ${fmtDate(m.dia)} · ${esc(m.por||'')}${m.pend?' · por enviar':''}`:'<b>Por plantar</b>'}</span><button class="btn ${on?'':'primary'}" data-reg="${on?0:1}">${on?'Desmarcar':'Marcar como plantado'}</button></div>`;
@@ -2494,14 +2568,16 @@ function regCSV(){
   L.push([]); L.push(['Resumo por espécie']); L.push(['Grupo','Código','Espécie','Unidade','No plano','Plantado','%']);
   SP.forEach((sp,i)=>{ const herb=sp.g==='herb'; const tot=herb?stat[i].a:stat[i].count; if (!tot) return; const done=herb?C.per[i].a:C.per[i].n;
     L.push([herb?'Herbácea/subarbusto':sp.g==='arv'?'Árvore':'Arbusto', sp.code, sp.name, herb?'m²':'un', num(herb?tot.toFixed(2):tot), num(herb?done.toFixed(2):done), pct(done,tot)]); });
-  Object.entries(C.modL).forEach(([m,v])=>{ if (v[1]) L.push(['Módulo', m, 'Módulo '+m, 'módulos', v[1], v[0], pct(v[0],v[1])]); });
+  Object.entries(C.modL).forEach(([m,v])=>{ if (!v[1]) return; L.push(['Módulo', m, 'Módulo '+m+' (completos)', 'módulos', v[1], v[0], pct(v[0],v[1])]);
+    Object.keys(C.modSp[m]).sort((a,b)=>a.localeCompare(b,'pt')).forEach(cd=>{ const [d,t]=C.modSp[m][cd]; L.push(['Módulo '+m, cd, spNm(cd), 'plantas', t, d, pct(d,t)]); }); });
   const cn = ci => ci!=null && ci>=0 ? CANTS[ci].n : '';
   L.push([]); L.push(['Resumo por canteiro']); L.push(['Canteiro','Nome','Plantas (estimativa)','Plantadas (estimativa)','%']);
   CANTS.forEach((c,ci)=>{ const Z=cantSummary(ci); L.push([c.n, c.nome, Z.total, Z.total-Z.todo, pct(Z.total-Z.todo, Z.total)]); });
   L.push([]); L.push(['Elementos plantados']); L.push(['Tipo','Elemento','Código','Espécie / módulo','Área (m²)','Plantas (estimativa)','Plantado em','Registado por','Canteiro']);
   for (const k in PKEY){ const sp=SP[+k]; PKEY[k].forEach((key,j)=>{ const m=REG.map.get(key); if (m&&m.p) L.push([sp.g==='arv'?'Árvore':'Arbusto', `${sp.code} n.º ${j+1}`, sp.code, sp.name, '', 1, fmtDate(m.dia), m.por, cn((CANT_OF.p[k]||{})[j])]); }); }
   patches.forEach((p,pi)=>{ const m=REG.map.get(p.key); if (m&&m.p){ const sp=SP[p.s], cp=CP[sp.id]; L.push(['Mancha', `n.º ${p.id}`, sp.code, sp.name, num(p.a.toFixed(2)), cp?Math.round(p.a*cp.d):'', fmtDate(m.dia), m.por, cn(CANT_OF.m[pi])]); } });
-  cells.forEach((c,i)=>{ const m=REG.map.get(c.key); if (m&&m.p) L.push(['Módulo', c.m.length>1?`faixa A/B (${c.m.length} módulos)`:`célula ${i+1}`, c.m.length>1?'A/B':c.mod, c.m.length>1?'Faixa de módulos A/B':'Módulo '+c.mod, num(c.a.toFixed(2)), '', fmtDate(m.dia), m.por, cn(CANT_OF.c[i])]); });
+  cells.forEach((c,i)=>{ const el=c.m.length>1?`faixa A/B (${c.m.length} módulos)`:`célula ${i+1}`, mn=c.m.length>1?'Faixa de módulos A/B':'Módulo '+c.mod;
+    for (const cd of CELLCD[i]){ const m=spEntry(i,cd); if (m&&m.p) L.push(['Módulo', el, cd, `${spNm(cd)} · ${mn}`, num(c.a.toFixed(2)), CELLSP[i][cd], fmtDate(m.dia), m.por, cn(CANT_OF.c[i])]); } });
   const csv='﻿'+L.map(r=>r.map(q).join(';')).join('\r\n');
   const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   a.download=`avanco-plantacao-ericeira-${todayISO()}.csv`; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
@@ -2511,9 +2587,9 @@ function cantSummary(ci){
   const c=CANTS[ci], reg=!!REG.cfg, plantsBy={}, herbBy={}, modBy={};
   for (const [s,j] of c.p){ const r=plantsBy[s]||(plantsBy[s]={n:0,todo:0}); r.n++; if (!reg || !isPlanted(PKEY[s][j])) r.todo++; }
   for (const i of c.pi){ const p=patches[i], r=herbBy[p.s]||(herbBy[p.s]={a:0,todo:0}); r.a+=p.a; if (!reg || !isPlanted(p.key)) r.todo+=p.a; }
-  for (const i of c.c){ const cc=cells[i], todo=!reg || !isPlanted(cc.key); for (const L of cc.m){ const r=modBy[L]||(modBy[L]={n:0,todo:0,a:0}); r.n++; r.a+=cc.a/cc.m.length; if (todo) r.todo++; } }
   const modPlants={};
-  for (const L in modBy){ const sch=D.modules[L].scheme||{}; for (const code in sch){ const r=modPlants[code]||(modPlants[code]={n:0,todo:0}); r.n+=modBy[L].n*sch[code]; r.todo+=modBy[L].todo*sch[code]; } }
+  for (const i of c.c){ const cc=cells[i], todo=!reg || !isPlanted(cc.key); for (const L of cc.m){ const r=modBy[L]||(modBy[L]={n:0,todo:0,a:0}); r.n++; r.a+=cc.a/cc.m.length; if (todo) r.todo++;
+    const sch=D.modules[L].scheme||{}; for (const code in sch){ const q=modPlants[code]||(modPlants[code]={n:0,todo:0}); q.n+=sch[code]; if (!reg || !spDone(i,code)) q.todo+=sch[code]; } } }
   let total=0, todo=0;
   for (const s in plantsBy){ total+=plantsBy[s].n; todo+=plantsBy[s].todo; }
   for (const s in herbBy){ const cp=CP[SP[s].id]; if (cp){ total+=Math.round(herbBy[s].a*cp.d); todo+=Math.round(herbBy[s].todo*cp.d); } }
@@ -2597,7 +2673,7 @@ if (REG.cfg) regSync();
 (function(){
   const el=document.getElementById('offl');
   if (!document.querySelector('link[rel="manifest"]') || !('serviceWorker' in navigator) || !window.caches) return;
-  const BUILD='31/10/2026 17:58';
+  const BUILD='19/11/2026 14:11';
   const urls=[...new Set(Object.values(FLORA).flatMap(F=>F.ph.map(p=>p.f).filter(Boolean)))];
   const set=(h,k)=>{ el.hidden=false; el.className='offl'+(k?' '+k:''); el.innerHTML=h; };
   const ios=/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
